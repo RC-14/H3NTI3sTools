@@ -1,0 +1,82 @@
+[
+	{
+		"matches": [
+			"<all_urls>"
+		],
+		"js": [
+			"hideCursor.js",
+			"noSpaceScroll.js"
+		],
+		"all_frames": true
+	},
+	{
+		"matches": [
+			"asura.gg"
+		],
+		"js": [
+			"asurascans.js"
+		],
+		"all_frames": true
+	},
+	{
+		"matches": [
+			"flamescans.org"
+		],
+		"js": [
+			"flamescans.js"
+		],
+		"all_frames": true
+	},
+	{
+		"matches": [
+			"reaperscans.com"
+		],
+		"js": [
+			"reaperscans.js"
+		],
+		"all_frames": true
+	},
+	{
+		"matches": [
+			"hiperdex.com"
+		],
+		"js": [
+			"hiperdex.js"
+		],
+		"all_frames": true
+	},
+	{
+		"matches": [
+			"mangahub.io"
+		],
+		"js": [
+			"mangahub.js"
+		],
+		"all_frames": true
+	},
+	{
+		"matches": [
+			"pixiv.net"
+		],
+		"js": [
+			"pixiv.js",
+			"pixivViewer.js"
+		]
+	},
+	{
+		"matches": [
+			"saucenao.com"
+		],
+		"js": [
+			"saucenao.js"
+		]
+	},
+	{
+		"matches": [
+			"nhentai.net"
+		],
+		"js": [
+			"nhentai.js"
+		]
+	}
+]

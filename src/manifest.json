@@ -1,0 +1,130 @@
+{
+	"manifest_version": 3,
+	"name": "H3NTI3's Tools",
+	"short_name": "H3NTI3's Tools",
+	"version": "1.0.0",
+	"author": "H3NTI3",
+	"description": "Things I find useful",
+	"icons": {
+		"120": "icons/120px.png"
+	},
+	"background": {
+		"service_worker": "worker/main.js",
+		"type": "module"
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"contentScriptLoader.js"
+			],
+			"run_at": "document_start",
+			"all_frames": true
+		},
+		{
+			"matches": [
+				"*://*.hiperdex.com/*"
+			],
+			"css": [
+				"content/css/hiperdex.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.mm-scans.org/*"
+			],
+			"css": [
+				"content/css/mm-scans.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.pixiv.net/*"
+			],
+			"css": [
+				"content/css/pixiv.css",
+				"content/css/pixivViewer.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.nhentai.net/*"
+			],
+			"css": [
+				"content/css/nhentai.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.reaperscans.com/*"
+			],
+			"css": [
+				"content/css/reaperscans.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.leviatanscans.com/*"
+			],
+			"css": [
+				"content/css/leviatanscans.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.asura.gg/*"
+			],
+			"css": [
+				"content/css/asurascans.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.flamescans.org/*"
+			],
+			"css": [
+				"content/css/flamescans.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.mangahub.io/*"
+			],
+			"css": [
+				"content/css/mangahub.css"
+			]
+		}
+	],
+	"action": {
+		"default_popup": "popup/index.html"
+	},
+	"declarative_net_request": {
+		"rule_resources": [{
+		  "id": "pixivViewer",
+		  "enabled": true,
+		  "path": "netRequestRules/pixivViewer.json"
+		}]
+	  },
+	"offline_enabled": true,
+	"permissions": [
+		"declarativeNetRequest",
+		"declarativeNetRequestFeedback",
+		"webRequest",
+		"webNavigation",
+		"tabs",
+		"storage",
+		"unlimitedStorage",
+		"scripting"
+	],
+	"host_permissions": [
+		"<all_urls>"
+	],
+	"web_accessible_resources": [
+		{
+			"resources": ["*"],
+			"matches": ["<all_urls>"]
+		}
+	]
+}

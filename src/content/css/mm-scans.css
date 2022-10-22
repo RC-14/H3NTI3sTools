@@ -1,0 +1,11 @@
+/* Don't stupidly show the navigation bar when scrolling up */
+.reading-manga.minimal-reading-layout.sticky__active .wp-manga-nav {
+    position: unset !important;
+    background-color: unset !important;
+    top: unset !important;
+}
+
+.reading-content img {
+	width: 25vw;
+	height: auto;
+}

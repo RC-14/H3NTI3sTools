@@ -1,0 +1,39 @@
+:root {
+	--green: rgb(49, 100, 49);
+}
+
+/* Mark full color stuff green */
+#tags > div > span > a[href="/tag/full-color/"] > span.name {
+	background-color: var(--green);
+}
+
+div.gallery[data-tags~="20905"] {
+	--border-width: 3px;
+	--border-style: solid;
+	--height: 317px /* average height | actual height of the image gets added with JS */;
+}
+
+div.gallery[data-tags~="20905"] > a {
+	padding-bottom: var(--height) !important;
+}
+
+div.gallery[data-tags~="20905"] > a > img {
+	border-color: var(--green);
+	border-width: var(--border-width);
+	border-style: var(--border-style);
+	border-bottom-style: none;
+}
+
+div.gallery[data-tags~="20905"] > a > div.caption {
+	border-color: var(--green);
+	border-width: var(--border-width);
+	border-style: var(--border-style);
+	border-top-style: none;
+}
+
+/* Make the navigation bar stick to the top of the screen (bug that's now a feature: after a bit of scrolling the bar disappears until you scroll back up) */
+nav[role="navigation"] {
+	position: sticky;
+	top: 0px;
+	z-index: 100;
+}

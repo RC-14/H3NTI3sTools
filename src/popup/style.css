@@ -1,0 +1,57 @@
+:root {
+	--navbar-height: 32px;
+}
+
+* {
+	color: rgb(245, 245, 245);
+	background-color: rgb(14, 14, 14);
+	margin: 0px;
+	padding: 0px;
+	border: none;
+}
+
+body {
+	width: 250px;
+	height: 400px;
+}
+
+#navbar {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	height: var(--navbar-height);
+	overflow-x: scroll;
+	display: flex;
+	align-items: flex-start;
+	justify-content: left;
+	background-color: rgb(17, 21, 28);
+}
+
+.navbar-item {
+	display: inline-block;
+	margin: 0px 0.5px;
+	padding: 0px 8px;
+	height: calc(var(--navbar-height) - 2px);
+	width: fit-content;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(33, 45, 64);
+	color: rgb(15, 192, 192);
+}
+
+.navbar-item:hover {
+	color: rgb(12, 128, 128);
+}
+
+.navbar-item.selected {
+	background-color: rgb(54, 65, 86);
+}
+
+#content {
+	margin-top: var(--navbar-height);
+	width: 100%;
+	height: calc(100% - var(--navbar-height));
+}

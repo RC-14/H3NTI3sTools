@@ -1,0 +1,20 @@
+[
+	{
+		"id": 1,
+		"condition": {
+			"requestDomains": [
+				"i.piximg.net"
+			]
+		},
+		"action": {
+			"type": "modifyHeaders",
+			"requestHeaders": [
+				{
+					"header": "Referer",
+					"operation": "set",
+					"value": "https://www.pixiv.net/"
+				}
+			]
+		}
+	}
+]

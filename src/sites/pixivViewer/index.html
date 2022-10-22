@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>pixivViewer</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=0.1">
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" type="module" defer></script>
+</head>
+
+<body>
+	<main>
+		<div id="image-container" class="hidden"></div>
+		<div id="error-container">
+			<p class="error-title"></p>
+			<p class="error-description"></p>
+		</div>
+	</main>
+	<div id="counter" class="hidden"></div>
+	<template id="image-template">
+		<div class="hidden" data-src=""><img loading="eager" fetchpriority="low" decoding="async"><a target="_blank">Open in new tab</a></div>
+	</template>
+</body>
+
+</html>

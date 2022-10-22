@@ -1,0 +1,9 @@
+/* Remove the weird gap between pictures */
+.py-4 {
+	padding: 0px !important;
+}
+
+main img {
+	width: 25vw;
+	height: auto;
+}

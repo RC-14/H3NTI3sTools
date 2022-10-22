@@ -1,0 +1,16 @@
+{
+	"private": true,
+	"name": "h3nti3stools",
+	"scripts": {
+		"build": "tsc",
+		"watch": "tsc --watch"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RC-14/H3NTI3sTools.git"
+	},
+	"devDependencies": {
+		"@types/chrome": ">=0.0.199",
+		"typescript": "^4.8.4"
+	}
+}
