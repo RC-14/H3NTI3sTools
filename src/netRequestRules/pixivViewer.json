@@ -3,7 +3,8 @@
 		"id": 1,
 		"condition": {
 			"requestDomains": [
-				"i.piximg.net"
+				"i.piximg.net",
+				"i.pximg.net"
 			]
 		},
 		"action": {
