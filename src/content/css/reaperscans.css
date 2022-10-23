@@ -3,7 +3,7 @@
 	padding: 0px !important;
 }
 
-main img {
+img.max-w-full.mx-auto.display-block {
 	width: 25vw;
 	height: auto;
 }
