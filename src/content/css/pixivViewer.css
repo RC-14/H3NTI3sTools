@@ -1,7 +1,7 @@
 .pixivViewer-selected {
-    outline-style: ridge;
-    outline-color: rgb(0, 150, 250);
-    outline-width: 4px;
-    outline-offset: 4px;
-    border-radius: 1em;
+	outline-style: ridge;
+	outline-color: rgb(0, 150, 250);
+	outline-width: 4px;
+	outline-offset: 4px;
+	border-radius: 1em;
 }

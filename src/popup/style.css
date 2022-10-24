@@ -17,36 +17,36 @@ body {
 
 #navbar {
 	position: fixed;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-around;
-    overflow-y: hidden;
-    height: var(--navbar-height);
-    background-color: rgb(17, 21, 28);
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: space-around;
+	overflow-y: hidden;
+	height: var(--navbar-height);
+	background-color: rgb(17, 21, 28);
 }
 
 #navbar:hover {
-    overflow-y: overlay;
+	overflow-y: overlay;
 }
 
 .navbar-item {
 	margin: 1px;
-    padding: 0px 5px;
-    height: calc(var(--navbar-height) - 6px);
-    width: fit-content;
+	padding: 0px 5px;
+	height: calc(var(--navbar-height) - 6px);
+	width: fit-content;
 	max-width: 30vw;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(33, 45, 64);
-    color: rgb(15, 192, 192);
-    text-overflow: ellipsis;
-    white-space: nowrap;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(33, 45, 64);
+	color: rgb(15, 192, 192);
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .navbar-item:hover {
