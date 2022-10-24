@@ -42,7 +42,14 @@ const storageChangeListener = (changes: { [key: string]: chrome.storage.StorageC
 const keydownListener = (event: KeyboardEvent) => {
 	if (!event.altKey || event.code !== 'KeyH') return;
 
-	storage.set({ isCursorHidden: !isCursorHidden });
+	// Only toggle the cursor visiblitiy if the extension context is valid
+	if (chrome.runtime?.id) {
+		storage.set({ isCursorHidden: !isCursorHidden });
+		return;
+	}
+
+	// If the extension context got invalidated reload the tab
+	location.reload();
 };
 
 export const addListeners = async () => {
