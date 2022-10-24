@@ -46,7 +46,6 @@ const keydownListener = (event: KeyboardEvent) => {
 };
 
 export const addListeners = async () => {
-	// If Alt + F get pressed, toggle fullscreen
 	document.addEventListener('keydown', keydownListener, {
 		passive: true,
 		capture: true
