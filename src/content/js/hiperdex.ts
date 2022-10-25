@@ -62,14 +62,22 @@ const imageLoader = () => {
 
 locationManager();
 
+document.addEventListener('click', (event) => {
+	if (event.target === null) return;
+	const target = event.target as HTMLElement;
+
+	// Check if the element clicked on is the "Sign In" button
+	if (target.tagName !== 'A' || target.dataset.target !== '#form-login') return;
+
+	// Check remember me checkbox for login
+	const rememberme = qs<HTMLInputElement>('#rememberme');
+	if (rememberme) rememberme.checked = true;
+});
+
 document.addEventListener('readystatechange', () => {
 	if (document.readyState === 'loading') return;
 	if (document.readyState === 'interactive') {
 		if (isReading) imageLoader();
 		return;
 	}
-
-	// Check remember me checkbox for login if not logged in
-	const rememberme = qs<HTMLInputElement>('input#rememberme');
-	if (rememberme) rememberme.checked = true;
 });
