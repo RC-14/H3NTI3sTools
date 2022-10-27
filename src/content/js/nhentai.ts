@@ -55,6 +55,10 @@ if (isSearching() || isBrowsing()) {
 				}, 100);
 				break;
 
+			case 'Space':
+				qs<HTMLElement>('.next')?.click()
+				break;
+				
 			default:
 				break;
 		}
