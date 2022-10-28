@@ -43,7 +43,7 @@ if (isSearching() || isBrowsing()) {
 	});
 } else if (isReading()) {
 	const navBar = qs<HTMLElement>(`nav[role="navigation"]`);
-	if (navBar) navBar.style.position = 'position: unset;';
+	if (navBar) navBar.style.position = 'relative';
 
 	document.addEventListener('keydown', (event) => {
 		if (isElementEditable(event.target as HTMLElement)) return;
