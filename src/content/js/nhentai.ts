@@ -1,4 +1,4 @@
-import { qs, qsa, isElementEditable } from '../../utils.js';
+import { qs, isElementEditable } from '../../utils.js';
 
 const isReading = () => {
 	return location.pathname.match(/^\/g\/\d+\/\d+\/?$/gi) !== null;
@@ -18,12 +18,6 @@ const isBrowsing = () => {
 	}
 
 	return false;
-};
-
-const addHeightToGallery = (imgElem: HTMLImageElement) => {
-	if (!imgElem.parentElement?.parentElement?.classList.contains('gallery')) return;
-
-	imgElem.parentElement.style.setProperty('--height', `${imgElem.height}px`);
 };
 
 if (isSearching() || isBrowsing()) {
@@ -63,13 +57,3 @@ if (isSearching() || isBrowsing()) {
 		}
 	});
 }
-
-document.addEventListener('readystatechange', () => {
-	if (document.readyState !== 'interactive') return;
-
-	qsa<HTMLImageElement>('div.gallery > a > img').forEach((elem) => {
-		elem.addEventListener('load', () => {
-			addHeightToGallery(elem);
-		});
-	});
-});
