@@ -30,10 +30,3 @@ div.gallery[data-tags~="20905"] > a > div.caption {
 	border-style: var(--border-style);
 	border-top-style: none;
 }
-
-/* Make the navigation bar stick to the top of the screen (bug that's now a feature: after a bit of scrolling the bar disappears until you scroll back up) */
-nav[role="navigation"] {
-	position: sticky;
-	top: 0px;
-	z-index: 100;
-}

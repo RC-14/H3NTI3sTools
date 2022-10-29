@@ -1,11 +1,13 @@
 import { qs, qsa, isElementEditable } from '../../utils.js';
 
 const isReading = () => {
-	return location.pathname.match(/^\/g\/\d{1,6}\/\d+\/?$/gi) !== null;
+	return location.pathname.match(/^\/g\/\d+\/\d+\/?$/gi) !== null;
 };
+
 const isSearching = () => {
 	return location.pathname.startsWith('/search/') && location.search !== '';
 };
+
 const isBrowsing = () => {
 	if (location.pathname === '' || location.pathname === '/') return true;
 
@@ -42,9 +44,6 @@ if (isSearching() || isBrowsing()) {
 		}
 	});
 } else if (isReading()) {
-	const navBar = qs<HTMLElement>(`nav[role="navigation"]`);
-	if (navBar) navBar.style.position = 'relative';
-
 	document.addEventListener('keydown', (event) => {
 		if (isElementEditable(event.target as HTMLElement)) return;
 
@@ -56,9 +55,9 @@ if (isSearching() || isBrowsing()) {
 				break;
 
 			case 'Space':
-				qs<HTMLElement>('.next')?.click()
+				qs<HTMLElement>('.next')?.click();
 				break;
-				
+
 			default:
 				break;
 		}
