@@ -57,8 +57,13 @@ body {
 	background-color: rgb(54, 65, 86);
 }
 
-#content {
+main {
 	margin-top: var(--navbar-height);
 	width: 100%;
-	height: calc(100% - var(--navbar-height));
+	height: 100%;
+}
+
+main>iframe {
+	width: 100%;
+	height: 100%;
 }

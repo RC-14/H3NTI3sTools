@@ -4,12 +4,12 @@ const tabList = [
 	{ name: 'Pixiv Viewer', path: 'pixivViewer' },
 ];
 
-const contentFrame = qs<HTMLIFrameElement>('#content');
+const mainFrame = qs<HTMLIFrameElement>('main > iframe');
 const navbar = qs<HTMLUListElement>('#navbar');
 const navbarItemTemplate = qs<HTMLTemplateElement>('#navbar-item-template');
 
-if (contentFrame == null) {
-	throw new Error('[popup] content not found');
+if (mainFrame == null) {
+	throw new Error('[popup] main frame not found');
 } else if (navbar == null) {
 	throw new Error('[popup] navbar not found');
 } else if (navbarItemTemplate == null) {
@@ -26,7 +26,7 @@ navbar.addEventListener('click', (event) => {
 
 	const path = event.target.dataset.path;
 	if (path == null) return;
-	contentFrame.src = chrome.runtime.getURL(`popup/${path}/index.html`);
+	mainFrame.src = chrome.runtime.getURL(`popup/${path}/index.html`);
 });
 
 for (const tab of tabList) {
