@@ -66,8 +66,8 @@ const imageUrlList: URL[] = [];
 let imageIndex = -1;
 
 const updateCounter = () => {
-	counter.innerText = `${imageIndex + 1}/${imageUrlList.length}`
-}
+	counter.innerText = `${imageIndex + 1}/${imageUrlList.length}`;
+};
 
 const addImage = (srcUrl: URL, siteUrl?: URL) => {
 	// Prevent loading images multiple times

@@ -106,7 +106,7 @@ clearButton.addEventListener('click', (event) => {
 
 showLink.addEventListener('click', (event) => {
 	storage.set({ isSelecting: false, selection: [] });
-})
+});
 
 /*
  * UI preparations

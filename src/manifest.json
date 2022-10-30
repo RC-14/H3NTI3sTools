@@ -101,12 +101,14 @@
 		"default_popup": "popup/index.html"
 	},
 	"declarative_net_request": {
-		"rule_resources": [{
-		  "id": "pixivViewer",
-		  "enabled": true,
-		  "path": "netRequestRules/pixivViewer.json"
-		}]
-	  },
+		"rule_resources": [
+			{
+				"id": "pixivViewer",
+				"enabled": true,
+				"path": "netRequestRules/pixivViewer.json"
+			}
+		]
+	},
 	"offline_enabled": true,
 	"permissions": [
 		"declarativeNetRequest",
@@ -123,8 +125,12 @@
 	],
 	"web_accessible_resources": [
 		{
-			"resources": ["*"],
-			"matches": ["<all_urls>"]
+			"resources": [
+				"*"
+			],
+			"matches": [
+				"<all_urls>"
+			]
 		}
 	]
 }

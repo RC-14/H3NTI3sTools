@@ -18,7 +18,7 @@ if (contentFrame == null) {
 
 navbar.addEventListener('click', (event) => {
 	if (!(event.target instanceof HTMLLIElement)) return;
-	
+
 	const prevSelected = qs('.navbar-item.selected');
 	if (prevSelected) prevSelected.classList.remove('selected');
 

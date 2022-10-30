@@ -122,11 +122,11 @@ export default class StorageHelper {
 		await this.#waitForMe;
 
 		if (typeof arg1 === 'string') {
-			const obj: { [key: string]: unknown } = {};
+			const obj: { [key: string]: unknown; } = {};
 			obj[arg1] = arg2;
 			arg1 = obj;
 		}
-		
+
 		arg1 = this.#safeCopy(arg1) as { [key: string]: unknown; };
 		const keys = Object.keys(arg1);
 
