@@ -48,15 +48,15 @@ const isSelected = async (illustration: PixivViewer.Illustration) => {
 	}
 
 	return false;
-}
+};
 
 const select = async (illustration: PixivViewer.Illustration) => {
 	getAllIllustrationElements().forEach((element) => {
 		if (getDataFromIllustrationElement(element).id === illustration.id)
 			selectElement(element);
-	})
+	});
 	if (await isSelected(illustration)) return;
-	
+
 	let selection = await storage.get('selection') as PixivViewer.Illustration[];
 	if (!Array.isArray(selection)) selection = [];
 
@@ -68,7 +68,7 @@ const unselect = async (illustration: PixivViewer.Illustration) => {
 	getAllIllustrationElements().forEach((element) => {
 		if (getDataFromIllustrationElement(element).id === illustration.id)
 			unselectElement(element);
-	})
+	});
 	let selection = await storage.get('selection') as PixivViewer.Illustration[];
 	if (!Array.isArray(selection)) {
 		storage.set({ selection: [] });
@@ -104,7 +104,7 @@ const updateSelectedElements = async () => {
 
 	for (let i = 0; i < elements.length; i++) {
 		const element = elements[i];
-		
+
 		if (await isSelected(getDataFromIllustrationElement(element))) {
 			selectElement(element);
 		} else {
@@ -124,7 +124,7 @@ storage.addChangeListener((changes) => {
 	if (changes.selection !== undefined) {
 		updateSelectedElements();
 	}
-})
+});
 
 // Handle clicks on illustration elements
 document.addEventListener('click', (event) => {
