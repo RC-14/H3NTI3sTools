@@ -1,7 +1,7 @@
 #tags>div>span>a[href="/tag/full-color/"]>span.name {
-	background-color: var(rgb(49, 100, 49));
+	background-color: #3d643f;
 }
 
 div.gallery[data-tags~="20905"]>a>div.caption {
-	background-color: var(rgb(49, 100, 49));
+	background-color: #3d643f;
 }
