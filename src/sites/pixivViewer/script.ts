@@ -215,6 +215,23 @@ const showImages = async () => {
 				break;
 		}
 	});
+
+	document.addEventListener('mouseup', (event) => {
+		// Return if it's neither the back nor the forward button (usually at the side of the mouse)
+		if (event.button < 3 || event.button > 4) return;
+
+		event.preventDefault();
+
+		switch (event.button) {
+			case 3:
+				previous();
+				break;
+				
+			case 4:
+				next();
+				break;
+		}
+	});
 };
 
 if (location.search) {
