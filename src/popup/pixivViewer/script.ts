@@ -91,7 +91,10 @@ storage.addChangeListener((changes) => {
 
 document.addEventListener('click', (event) => {
 	if (event.target == null) return;
-	if (isElementInactive(event.target as HTMLElement)) event.preventDefault();
+	if (!isElementInactive(event.target as HTMLElement)) return;
+
+	event.stopImmediatePropagation();
+	event.preventDefault();
 }, { capture: true });
 
 selectButton.addEventListener('click', async (event) => {
@@ -105,7 +108,10 @@ clearButton.addEventListener('click', (event) => {
 });
 
 showLink.addEventListener('click', (event) => {
+	event.preventDefault();
+
 	storage.set({ isSelecting: false, selection: [] });
+	chrome.tabs.update({ url: showLink.href });
 });
 
 /*
