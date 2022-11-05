@@ -19,9 +19,7 @@ const nextChapter = () => {
 
 document.addEventListener('keydown', (event) => {
 	// Return if the user can write text in the target element
-	if (event.target instanceof HTMLElement) {
-		if (isElementEditable(event.target)) return;
-	}
+	if (event.target instanceof HTMLElement && isElementEditable(event.target)) return;
 
 	getChapterButtons();
 

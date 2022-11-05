@@ -2,10 +2,10 @@ import { qs, StorageHelper } from '../../utils.js';
 
 const storage = new StorageHelper('session', 'pixivViewer');
 
-const link = qs<HTMLAnchorElement>('#link');
-const showLink = qs<HTMLAnchorElement>('#showLink');
-const selectButton = qs<HTMLButtonElement>('#selectButton');
-const clearButton = qs<HTMLButtonElement>('#clearButton');
+const link = qs<HTMLAnchorElement>('a#link');
+const showLink = qs<HTMLAnchorElement>('a#showLink');
+const selectButton = qs<HTMLButtonElement>('button#selectButton');
+const clearButton = qs<HTMLButtonElement>('button#clearButton');
 
 if (link == null || showLink == null || selectButton == null || clearButton == null) {
 	document.body.innerText = 'Fatal error: required elements not found';
@@ -90,8 +90,8 @@ storage.addChangeListener((changes) => {
 });
 
 document.addEventListener('click', (event) => {
-	if (event.target == null) return;
-	if (!isElementInactive(event.target as HTMLElement)) return;
+	if (!(event.target instanceof HTMLElement)) return;
+	if (!isElementInactive(event.target)) return;
 
 	event.stopImmediatePropagation();
 	event.preventDefault();

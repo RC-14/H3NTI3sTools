@@ -22,15 +22,17 @@ const isBrowsing = () => {
 
 if (isSearching() || isBrowsing()) {
 	document.addEventListener('keydown', (event) => {
-		if (isElementEditable(event.target as HTMLElement)) return;
+		if (event.target instanceof HTMLElement && isElementEditable(event.target)) return;
 
 		switch (event.code) {
 			case 'ArrowLeft':
-				if (qs('.previous')) qs<HTMLAnchorElement>('.previous')?.click();
+				const previous = qs('.previous');
+				if (previous instanceof HTMLElement) previous?.click();
 				break;
 
 			case 'ArrowRight':
-				if (qs('.next')) qs<HTMLAnchorElement>('.next')?.click();
+				const next = qs('.next');
+				if (next instanceof HTMLElement) next?.click();
 				break;
 
 			default:
@@ -44,12 +46,14 @@ if (isSearching() || isBrowsing()) {
 		switch (event.code) {
 			case 'Escape':
 				setTimeout(() => {
-					open(qs<HTMLAnchorElement>('.go-back')?.href, '_self');
+					const back = qs('.go-back');
+					if (back instanceof HTMLAnchorElement) open(back?.href, '_self');
 				}, 100);
 				break;
 
 			case 'Space':
-				qs<HTMLElement>('.next')?.click();
+				const next = qs('.next');
+				if (next instanceof HTMLElement) next?.click();
 				break;
 
 			default:

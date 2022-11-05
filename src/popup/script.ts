@@ -5,8 +5,8 @@ const tabList = [
 ];
 
 const mainFrame = qs<HTMLIFrameElement>('main > iframe');
-const navbar = qs<HTMLUListElement>('#navbar');
-const navbarItemTemplate = qs<HTMLTemplateElement>('#navbar-item-template');
+const navbar = qs<HTMLUListElement>('ul#navbar');
+const navbarItemTemplate = qs<HTMLTemplateElement>('template#navbar-item-template');
 
 if (mainFrame == null) {
 	throw new Error('[popup] main frame not found');
@@ -30,7 +30,9 @@ navbar.addEventListener('click', (event) => {
 });
 
 for (const tab of tabList) {
-	const navbarItem = useTemplate(navbarItemTemplate) as HTMLLIElement;
+	const navbarItem = useTemplate(navbarItemTemplate);
+	if (!(navbarItem instanceof HTMLLIElement)) throw new Error("Navbar item isn't an LI element.");
+
 	navbarItem.dataset.path = tab.path;
 	navbarItem.textContent = tab.name;
 	navbar.appendChild(navbarItem);

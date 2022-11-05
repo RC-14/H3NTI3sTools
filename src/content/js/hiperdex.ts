@@ -28,7 +28,7 @@ const locationManager = () => {
 };
 
 const imageLoader = () => {
-	let images = Array.from(qsa<HTMLImageElement>('.wp-manga-chapter-img'));
+	let images = Array.from(qsa<HTMLImageElement>('img.wp-manga-chapter-img'));
 
 	// Filter out already loaded images and return if there are no images to load
 	images = images.filter(image => !image.complete);
@@ -63,15 +63,13 @@ const imageLoader = () => {
 locationManager();
 
 document.addEventListener('click', (event) => {
-	if (event.target === null) return;
-	const target = event.target as HTMLElement;
-
 	// Check if the element clicked on is the "Sign In" button
-	if (target.tagName !== 'A' || target.dataset.target !== '#form-login') return;
+	if (!(event.target instanceof HTMLAnchorElement)) return;
+	if (event.target.dataset.target !== '#form-login') return;
 
 	// Check remember me checkbox for login
-	const rememberme = qs<HTMLInputElement>('#rememberme');
-	if (rememberme) rememberme.checked = true;
+	const rememberme = qs('input#rememberme');
+	if (rememberme instanceof HTMLInputElement) rememberme.checked = true;
 });
 
 document.addEventListener('readystatechange', () => {

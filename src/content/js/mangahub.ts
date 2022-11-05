@@ -6,8 +6,8 @@ const chapterButtons = {
 };
 
 const getChapterButtons = () => {
-	if (!chapterButtons.previous) chapterButtons.previous = qs<HTMLAnchorElement>('.previous > a');
-	if (!chapterButtons.next) chapterButtons.next = qs<HTMLAnchorElement>('.next > a');
+	if (!chapterButtons.previous) chapterButtons.previous = qs('.previous > a');
+	if (!chapterButtons.next) chapterButtons.next = qs('.next > a');
 };
 
 const previousChapter = () => {
@@ -41,9 +41,7 @@ document.addEventListener('click', (event) => {
 });
 
 document.addEventListener('keydown', (event) => {
-	if (event.target instanceof HTMLElement) {
-		if (isElementEditable(event.target)) return;
-	}
+	if (event.target instanceof HTMLElement && isElementEditable(event.target)) return;
 
 	getChapterButtons();
 

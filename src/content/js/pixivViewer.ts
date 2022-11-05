@@ -1,4 +1,4 @@
-import { qs, qsa, isElementEditable, StorageHelper } from '../../utils.js';
+import { qs, qsa, StorageHelper } from '../../utils.js';
 
 const storage = new StorageHelper('session', 'pixivViewer');
 
@@ -11,9 +11,11 @@ const getAllIllustrationElements = () => {
 	const illustrations: HTMLLIElement[] = [];
 	qsa<HTMLElement>('[type="illust"] a').forEach(element => {
 		while (element.parentElement != null) {
-			if (element.parentElement?.tagName === 'UL' && element.tagName === 'LI') {
-				break;
-			}
+			if (
+				element.parentElement instanceof HTMLUListElement &&
+				element instanceof HTMLLIElement
+			) break;
+
 			element = element.parentElement;
 		}
 		if (element.parentElement !== null) illustrations.push(element as HTMLLIElement);
@@ -130,12 +132,15 @@ storage.addChangeListener((changes) => {
 document.addEventListener('click', (event) => {
 	if (!isSelecting) return;
 
-	let element = event.target as HTMLElement;
+	if (!(event.target instanceof HTMLElement)) return;
+	let element = event.target;
 
 	while (element.parentElement != null) {
-		if (element.parentElement?.tagName === 'UL' && element.tagName === 'LI') {
-			break;
-		}
+		if (
+			element.parentElement instanceof HTMLUListElement &&
+			element instanceof HTMLLIElement
+		) break;
+
 		element = element.parentElement;
 	}
 	if (element.parentElement == null) return;
@@ -147,5 +152,8 @@ document.addEventListener('readystatechange', () => {
 	if (document.readyState !== 'complete') return;
 
 	updateSelectedElements();
-	new MutationObserver(updateSelectedElements).observe(document, { childList: true, subtree: true });
+	new MutationObserver(updateSelectedElements).observe(
+		document,
+		{ childList: true, subtree: true }
+	);
 });

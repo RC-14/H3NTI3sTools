@@ -3,9 +3,21 @@ import { addListeners as addHideCursorListeners } from '../../hideCursor.js';
 
 addHideCursorListeners();
 
-const errorContainer = qs('#error-container') as HTMLDivElement;
-const errorTitle = qs('.error-title', errorContainer) as HTMLParagraphElement;
-const errorDescription = qs('.error-description', errorContainer) as HTMLParagraphElement;
+const errorContainer = qs<HTMLDivElement>('div#error-container');
+const imageContainer = qs<HTMLDivElement>('div#image-container');
+
+if (!(errorContainer instanceof HTMLDivElement)) throw new Error("Error container isn't a DIV element");
+if (!(imageContainer instanceof HTMLDivElement)) throw new Error("Image container isn't a DIV element");
+
+const errorTitle = qs<HTMLParagraphElement>('p.error-title', errorContainer);
+const errorDescription = qs<HTMLParagraphElement>('p.error-description', errorContainer);
+
+if (!(errorTitle instanceof HTMLParagraphElement)) throw new Error("Error title isn't a DIV element");
+if (!(errorDescription instanceof HTMLParagraphElement)) throw new Error("Error description isn't a DIV element");
+
+const imageTemplate = qs<HTMLTemplateElement>('template#image-template');
+
+if (!(imageTemplate instanceof HTMLTemplateElement)) throw new Error("Image template isn't a template element");
 
 const showError = (title: string, description: string) => {
 	imageContainer.classList.add('hidden');
@@ -14,9 +26,6 @@ const showError = (title: string, description: string) => {
 	errorTitle.innerText = title;
 	errorDescription.innerText = description;
 };
-
-const imageContainer = qs('#image-container') as HTMLDivElement;
-const imageTemplate = qs('#image-template') as HTMLTemplateElement;
 
 const pixivArtworkInfoRequestMap = new Map<PixivViewer.Illustration['id'], Promise<PixivViewer.APIResponse>>();
 
@@ -73,18 +82,28 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => {
 	// Prevent loading images multiple times
 	if (qs(`[data-src="${srcUrl.href}"]`, imageContainer) !== null) return;
 
-	const wrapper = useTemplate(imageTemplate) as HTMLDivElement;
-	const imgElem = qs('img', wrapper) as HTMLImageElement;
-	const aElem = qs('a', wrapper) as HTMLAnchorElement;
+	const wrapper = useTemplate(imageTemplate);
+
+	if (!(wrapper instanceof HTMLDivElement)) throw new Error("Wrapper isn't a div element.");
+	
+	const imgElem = qs<HTMLImageElement>('img', wrapper);
+	const aElem = qs<HTMLAnchorElement>('a', wrapper);
+
+	if (!(imgElem instanceof HTMLImageElement)) throw new Error("Img elem isn't an image element.");
+	if (!(aElem instanceof HTMLAnchorElement)) throw new Error("A elem isn't an anchor element.");
 
 	imgElem.addEventListener('error', (event) => {
+		if (!(event.target instanceof HTMLImageElement)) return;
+
 		// Make the image invisable but still clickable if it fails to load
-		(event.target as HTMLImageElement).style.opacity = '0';
+		event.target.style.opacity = '0';
 	});
 
 	imgElem.addEventListener('load', (event) => {
+		if (!(event.target instanceof HTMLImageElement)) return;
+
 		// If loading of the image previously failed and it gets reloaded make it visible again
-		(event.target as HTMLImageElement).style.opacity = '';
+		event.target.style.opacity = '';
 	});
 
 	// Try to accellerate loading of the first image

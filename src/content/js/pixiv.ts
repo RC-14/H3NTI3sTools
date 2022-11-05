@@ -8,15 +8,16 @@ document.addEventListener("keydown", (event) => {
 		location.pathname.match(/^\/(?:\w\w\/)?tags\/[^\/]+\/.+/gi) === null
 	) return;
 
-	if (event.target instanceof HTMLElement) {
-		if (isElementEditable(event.target)) return;
-	}
+	if (event.target instanceof HTMLElement && isElementEditable(event.target)) return;
 
-	const pageButtons = qsa<HTMLAnchorElement>('.sc-d98f2c-0.sc-xhhh7v-2.cCkJiq.sc-xhhh7v-1-filterProps-Styled-Component.fIxZrk');
+	const pageButtons = qsa('a.sc-d98f2c-0.sc-xhhh7v-2.cCkJiq.sc-xhhh7v-1-filterProps-Styled-Component.fIxZrk');
 	if (pageButtons.length !== 2) throw new Error(`Not the right amount of elements. Expected 2, got ${pageButtons.length}`);
 
 	const previousButton = pageButtons[0];
 	const nextButton = pageButtons[1];
+
+	if (!(previousButton instanceof HTMLAnchorElement)) throw new Error("Previous button isn't an anchor element");
+	if (!(nextButton instanceof HTMLAnchorElement)) throw new Error("Next button button isn't an anchor element");
 
 	switch (event.code) {
 		case "ArrowLeft":

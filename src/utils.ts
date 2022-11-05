@@ -10,8 +10,8 @@ export const useTemplate = (template: HTMLTemplateElement, deep = true): Node | 
 };
 
 export const isElementEditable = (element: HTMLElement): boolean => {
-	if (element.tagName === 'INPUT') return true;
-	if (element.tagName === 'TEXTAREA') return true;
+	if (element instanceof HTMLInputElement) return true;
+	if (element instanceof HTMLTextAreaElement) return true;
 	if (element.isContentEditable) return true;
 	return false;
 };
@@ -60,7 +60,7 @@ export const showMessage = (message: string, options?: { color?: string, duratio
 	const size = options?.size ?? 'large';
 
 	// Get the wrapper element
-	let wrapper = qs<HTMLDivElement>('#h3nti3Messages');
+	let wrapper = qs<HTMLDivElement>('div#h3nti3Messages');
 	if (wrapper === null) {
 		// If the wrapper element doesn't exist, create it
 		wrapper = document.createElement('div');
