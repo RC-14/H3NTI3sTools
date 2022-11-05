@@ -78,5 +78,13 @@
 		"js": [
 			"nhentai.js"
 		]
+	},
+	{
+		"matches": [
+			"webtoons.com"
+		],
+		"js": [
+			"webtoon.js"
+		]
 	}
 ]
