@@ -21,3 +21,21 @@ fetch(chrome.runtime.getURL('contentScripts.json'))
 			}
 		}
 	});
+// Stop VSCode from indenting
+
+import(chrome.runtime.getURL('utils.js')).then((utils) => {
+	Object.defineProperties(
+		window,
+		{
+			qs: {
+				value: utils.qs
+			},
+			qsa: {
+				value: utils.qsa
+			},
+			StorageHelper: {
+				value: utils.StorageHelper
+			}
+		}
+	);
+});
