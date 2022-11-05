@@ -1,0 +1,20 @@
+._images {
+	width: 25vw;
+	height: auto;
+}
+
+/* Dark mode for the reader */
+
+.cont_box .viewer_lst {
+	overflow: visible !important;
+}
+
+#_imageList {
+	width: 100vw;
+	padding: 50px 0px;
+	translate: -17.86vw -50px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: rgb(10, 10, 10);
+}

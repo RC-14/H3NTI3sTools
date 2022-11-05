@@ -95,6 +95,14 @@
 			"css": [
 				"content/css/mangahub.css"
 			]
+		},
+		{
+			"matches": [
+				"*://*.webtoons.com/*"
+			],
+			"css": [
+				"content/css/webtoon.css"
+			]
 		}
 	],
 	"action": {
