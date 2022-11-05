@@ -1,6 +1,10 @@
 ._images {
-	width: 25vw;
-	height: auto;
+	width: 25vw !important;
+	height: auto !important;
+	min-width: unset !important;
+	min-height: unset !important;
+	max-width: unset !important;
+	max-height: unset !important;
 }
 
 /* Dark mode for the reader */
