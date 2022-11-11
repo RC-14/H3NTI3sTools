@@ -19,6 +19,8 @@ styleElement.innerHTML = `
 }
 `;
 
+let timeoutID = -1;
+
 const hideCursor = () => {
 	document.documentElement.append(styleElement);
 	isCursorHidden = true;
@@ -29,22 +31,10 @@ const showCursor = () => {
 	isCursorHidden = false;
 };
 
-const storageChangeListener = (changes: { [key: string]: chrome.storage.StorageChange; }) => {
-	if (changes.isCursorHidden === undefined) return;
-
-	if (changes.isCursorHidden.newValue) {
-		hideCursor();
-	} else {
-		showCursor();
-	}
-};
-
-const keydownListener = (event: KeyboardEvent) => {
-	if (!event.altKey || event.code !== 'KeyH') return;
-
+const setIsCursorHidden = (hidden: boolean) => {
 	// Only toggle the cursor visiblitiy if the extension context is valid
 	if (chrome.runtime?.id) {
-		storage.set({ isCursorHidden: !isCursorHidden });
+		storage.set({ isCursorHidden: hidden });
 		return;
 	}
 
@@ -52,8 +42,44 @@ const keydownListener = (event: KeyboardEvent) => {
 	location.reload();
 };
 
-export const addListeners = async () => {
+const storageChangeListener = (changes: { [key: string]: chrome.storage.StorageChange; }) => {
+	if (changes.isCursorHidden === undefined) return;
+
+	if (changes.isCursorHidden.newValue) {
+		clearTimeout(timeoutID);
+		hideCursor();
+	} else {
+		showCursor();
+	}
+};
+
+// Hides the server on ket press (Alt + H)
+const keydownListener = (event: KeyboardEvent) => {
+	if (!event.altKey || event.code !== 'KeyH') return;
+
+	setIsCursorHidden(!isCursorHidden);
+};
+
+// Hides the cursor after 5 seconds of inactivity
+const mouseMoveListener = (event: MouseEvent) => {
+	if (isCursorHidden) {
+		setIsCursorHidden(false);
+	} else {
+		clearTimeout(timeoutID);
+	}
+
+	timeoutID = setTimeout(() => {
+		setIsCursorHidden(true);
+	}, 5000);
+};
+
+export const addListeners = () => {
 	document.addEventListener('keydown', keydownListener, {
+		passive: true,
+		capture: true
+	});
+
+	document.addEventListener('mousemove', mouseMoveListener, {
 		passive: true,
 		capture: true
 	});
@@ -69,6 +95,10 @@ export const addListeners = async () => {
 
 export const removeListeners = () => {
 	document.removeEventListener('keydown', keydownListener, {
+		capture: true
+	});
+
+	document.removeEventListener('mousemove', mouseMoveListener, {
 		capture: true
 	});
 
