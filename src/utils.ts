@@ -90,3 +90,18 @@ export const showMessage = (message: string, options?: { color?: string, duratio
 		msgElement.remove();
 	}, duration);
 };
+
+export const generateIDBGetter = (name: string, version: number, onupgradeneeded: (event: IDBVersionChangeEvent) => void) => {
+	return () => new Promise<IDBDatabase>((resolve, reject) => {
+		const request = indexedDB.open(name, version);
+
+		request.onerror = (event) => reject(request.error);
+		request.onsuccess = (event) => {
+			if (!(event.target instanceof IDBRequest)) return;
+			if (!(event.target.result instanceof IDBDatabase)) return;
+			resolve(event.target.result);
+		};
+
+		request.onupgradeneeded = onupgradeneeded;
+	});
+};
