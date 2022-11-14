@@ -91,17 +91,22 @@ export const showMessage = (message: string, options?: { color?: string, duratio
 	}, duration);
 };
 
-export const generateIDBGetter = (name: string, version: number, onupgradeneeded: (event: IDBVersionChangeEvent) => void) => {
+export const generateIDBGetter = (name: string, version: number, upgradeneededListener: (event: IDBVersionChangeEvent) => void) => {
 	return () => new Promise<IDBDatabase>((resolve, reject) => {
 		const request = indexedDB.open(name, version);
 
-		request.onerror = (event) => reject(request.error);
-		request.onsuccess = (event) => {
-			if (!(event.target instanceof IDBRequest)) return;
-			if (!(event.target.result instanceof IDBDatabase)) return;
-			resolve(event.target.result);
-		};
+		request.addEventListener('error', (event) => reject(request.error));
+		request.addEventListener('blocked', (event) => reject(new Error('Request was blocked.')));
 
-		request.onupgradeneeded = onupgradeneeded;
+		request.addEventListener('success', (event) => {
+			if (request.result instanceof IDBDatabase) {
+				resolve(request.result);
+				return;
+			}
+
+			reject(new Error("Result of the request isn't an instance of IDBDatabase."));
+		});
+
+		request.addEventListener('upgradeneeded', upgradeneededListener);
 	});
 };
