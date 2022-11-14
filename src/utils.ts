@@ -1,15 +1,15 @@
 export { default as StorageHelper } from './StorageHelper.js';
 
-export const qs = <T extends Element>(selector: string, parent: Document | Element = document) => parent.querySelector(selector) as T | null;
-export const qsa = <T extends Element>(selector: string, parent: Document | Element = document) => parent.querySelectorAll(selector) as NodeListOf<T>;
+export const qs = <T extends Element>(selector: string, parent: Document | Element = document) => parent.querySelector<T>(selector);
+export const qsa = <T extends Element>(selector: string, parent: Document | Element = document) => parent.querySelectorAll<T>(selector);
 
 // function that returns a copy of the contents of a template element
-export const useTemplate = (template: HTMLTemplateElement, deep = true): Node | null => {
+export const useTemplate = (template: HTMLTemplateElement, deep = true) => {
 	if (!template.content.firstElementChild) return null;
 	return template.content.firstElementChild.cloneNode(deep);
 };
 
-export const isElementEditable = (element: HTMLElement): boolean => {
+export const isElementEditable = (element: HTMLElement) => {
 	if (element instanceof HTMLInputElement) return true;
 	if (element instanceof HTMLTextAreaElement) return true;
 	if (element.isContentEditable) return true;
@@ -25,7 +25,7 @@ export const sendRuntimeMessage: sendRuntimeMessage = (handler, msg, data) => {
 	});
 };
 
-export const getOS = (): 'MacOS' | 'iOS' | 'Windows' | 'Android' | 'Linux' | 'Unknown' => {
+export const getOS = () => {
 	let userAgent = navigator.userAgent;
 	// @ts-ignore - Unknown by types but it's there... and if it's not there we use something else
 	let platform: string = navigator.userAgentData?.platform;
