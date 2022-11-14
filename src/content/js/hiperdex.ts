@@ -1,9 +1,9 @@
-import { qs, qsa, generateWildcardPath } from '../../utils.js';
+import { qs, qsa } from '../../utils.js';
 
 const cloudflareSearchArgName = '__cf_chl_rt_tk';
 const timestamp = Math.round(Date.now() / 1000);
 
-const wildcardPath = generateWildcardPath(location.pathname);
+const wildcardPath = location.pathname.replace(/\/[^\/]*/g, '/*');
 
 const isReading = wildcardPath.split('/').length === 5 && location.pathname.startsWith('/manga/');
 
