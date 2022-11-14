@@ -3,7 +3,7 @@ export default class StorageHelper {
 		this.#storage = chrome.storage[areaName];
 		this.#namespace = namespace;
 
-		this.#waitForMe = this.#storage.get(this.#namespace).then((data) => {
+		this.#storageInit = this.#storage.get(this.#namespace).then((data) => {
 			if (this.#namespace !== null) {
 				data = data[this.#namespace];
 			}
@@ -16,7 +16,7 @@ export default class StorageHelper {
 		this.#storage.onChanged.addListener(this.#onChangeListener.bind(this));
 	}
 
-	#waitForMe: Promise<void>;
+	#storageInit: Promise<void>;
 	#storage: chrome.storage.StorageArea;
 	#namespace: string | null;
 	#data: { [key: string]: unknown; } = {};
@@ -30,7 +30,7 @@ export default class StorageHelper {
 	}
 
 	async #pushData() {
-		await this.#waitForMe;
+		await this.#storageInit;
 
 		let data: { [key: string]: unknown; } = {};
 
@@ -47,7 +47,7 @@ export default class StorageHelper {
 		const namespaces = Object.keys(changes);
 		if (this.#namespace !== null && !namespaces.includes(this.#namespace)) return;
 
-		await this.#waitForMe;
+		await this.#storageInit;
 
 		if (this.#namespace === null) {
 			for (let i = 0; i < namespaces.length; i++) {
@@ -109,7 +109,7 @@ export default class StorageHelper {
 	}
 
 	async get(key?: string) {
-		await this.#waitForMe;
+		await this.#storageInit;
 
 		if (key == null) return this.#safeCopy(this.#data) as { [key: string]: unknown; };
 
@@ -119,7 +119,7 @@ export default class StorageHelper {
 	async set(key: string, value: unknown): Promise<void>;
 	async set(items: { [key: string]: unknown; }): Promise<void>;
 	async set(arg1: string | { [key: string]: unknown; }, arg2?: unknown) {
-		await this.#waitForMe;
+		await this.#storageInit;
 
 		if (typeof arg1 === 'string') {
 			const obj: { [key: string]: unknown; } = {};
@@ -137,7 +137,7 @@ export default class StorageHelper {
 	}
 
 	async remove(keys: string | string[]) {
-		await this.#waitForMe;
+		await this.#storageInit;
 
 		if (typeof keys === 'string') {
 			delete this.#data[keys];
