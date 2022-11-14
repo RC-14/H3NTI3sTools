@@ -85,7 +85,7 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => {
 	const wrapper = useTemplate(imageTemplate);
 
 	if (!(wrapper instanceof HTMLDivElement)) throw new Error("Wrapper isn't a div element.");
-	
+
 	const imgElem = qs<HTMLImageElement>('img', wrapper);
 	const aElem = qs<HTMLAnchorElement>('a', wrapper);
 
@@ -179,6 +179,7 @@ const showImages = async () => {
 	showMessage('Getting the image URLs...');
 
 	for (const image of imageList) {
+		// Handle non pixiv images
 		if (typeof image === 'string') {
 			imageUrlList.push(new URL(image));
 			continue;
@@ -187,7 +188,9 @@ const showImages = async () => {
 			continue;
 		}
 
+		// Handle pixiv images
 		const index = imageUrlList.length;
+		// Add a temporary url which gets overwritten later to keep the images in the right order
 		imageUrlList.push(new URL(`pixiv://id=${image.id}` + (image.page === undefined ? '' : `&page=${image.page}`)));
 
 		imageSourcePromiseList.push(new Promise(async (resolve, reject) => {
@@ -245,7 +248,7 @@ const showImages = async () => {
 			case 3:
 				previous();
 				break;
-				
+
 			case 4:
 				next();
 				break;
