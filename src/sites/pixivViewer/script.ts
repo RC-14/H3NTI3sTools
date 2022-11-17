@@ -243,7 +243,7 @@ const showImages = async () => {
 			const urls: URL[] = [];
 
 			// If there are overwrites set write them to indexedDB otherwise use the overwrites that are present (if there are any)
-			if (artwork.overwrite?.length) {
+			if (!artwork.ignoreOverwrite && artwork.overwrite?.length) {
 				const pageCount = illustInfo.pages.length > artwork.overwrite.length ? illustInfo.pages.length : artwork.overwrite.length;
 
 				for (let i = 0; i < pageCount; i++) {
@@ -252,7 +252,7 @@ const showImages = async () => {
 
 					// If there are old overwrites delete them to avoid messing stuff up
 					if (page?.overwrite?.length) db.transaction('Base64Images', 'readwrite').objectStore('Base64Images').delete(page.overwrite as string).addEventListener('error', (event) => {
-						console.error(`Failed to delete base64 image for url "${illustInfo.pages[i].overwrite}" from indexedDB with error: ${(event.target as IDBRequest<undefined>).error}`);
+						console.error(`Failed to delete base64 image for url "${page.overwrite}" from indexedDB with error: ${(event.target as IDBRequest<undefined>).error}`);
 					});
 
 					if (artwork.overwrite[i]?.length) {
@@ -274,7 +274,7 @@ const showImages = async () => {
 				for (let i = 0; i < illustInfo.pages.length; i++) {
 					const page = illustInfo.pages[i];
 
-					if (page.overwrite?.length) {
+					if (!artwork.ignoreOverwrite && page.overwrite?.length) {
 						urls.push(new URL(page.overwrite));
 					} else if (page.original.length) {
 						urls.push(new URL(page.original));

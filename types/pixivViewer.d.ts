@@ -3,6 +3,7 @@ namespace PixivViewer {
 		pixivId: Pixiv.IllustrationInfo['illustId'];
 		exclude?: number[];
 		overwrite?: (string | null)[];
+		ignoreOverwrite?: boolean;
 	}
 
 	type Artwork = string | PixivArtwork;
