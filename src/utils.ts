@@ -118,5 +118,5 @@ export const isValidUrl = (string: string) => {
 	} catch (error) {
 		return false;
 	}
-	return false;
+	return true;
 }
