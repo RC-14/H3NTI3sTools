@@ -251,7 +251,7 @@ const showImages = async () => {
 					const page = illustInfo.pages[i] as Pixiv.IllustrationInfo['pages'][number] | undefined;
 
 					// If there are old overwrites delete them to avoid messing stuff up
-					if (illustInfo.pages[i].overwrite?.length) db.transaction('Base64Images', 'readwrite').objectStore('Base64Images').delete(illustInfo.pages[i].overwrite as string).addEventListener('error', (event) => {
+					if (page?.overwrite?.length) db.transaction('Base64Images', 'readwrite').objectStore('Base64Images').delete(page.overwrite as string).addEventListener('error', (event) => {
 						console.error(`Failed to delete base64 image for url "${illustInfo.pages[i].overwrite}" from indexedDB with error: ${(event.target as IDBRequest<undefined>).error}`);
 					});
 
