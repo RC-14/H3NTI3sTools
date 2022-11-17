@@ -110,3 +110,12 @@ export const generateIDBGetter = (name: string, version: number, upgradeneededLi
 		request.addEventListener('upgradeneeded', upgradeneededListener);
 	});
 };
+
+export const isValidUrl = (string: string) => {
+	try {
+		new URL(string);
+	} catch (error) {
+		return false;
+	}
+	return false;
+}
