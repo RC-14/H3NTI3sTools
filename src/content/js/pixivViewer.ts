@@ -8,7 +8,7 @@ let isSelecting = await storage.get('isSelecting') as boolean;
  * Helper functions
  */
 const getAllIllustrationElements = () => {
-	const illustrations: HTMLLIElement[] = [];
+	const illustrationElements: HTMLLIElement[] = [];
 	qsa<HTMLElement>('[type="illust"] a').forEach(element => {
 		while (element.parentElement != null) {
 			if (
@@ -18,18 +18,18 @@ const getAllIllustrationElements = () => {
 
 			element = element.parentElement;
 		}
-		if (element.parentElement !== null) illustrations.push(element as HTMLLIElement);
+		if (element.parentElement !== null) illustrationElements.push(element as HTMLLIElement);
 	});
-	return illustrations;
+	return illustrationElements;
 };
 
-const getDataFromIllustrationElement = (liElem: HTMLLIElement): PixivViewer.Illustration => {
+const getPixivIdFromIllustrationElement = (liElem: HTMLLIElement): PixivViewer.PixivArtwork['pixivId'] => {
 	const aElem = qs<HTMLAnchorElement>(`[type="illust"] a`, liElem);
-	const id = parseInt(aElem?.href.match(/\/artworks\/(\d+)/)?.[1] ?? 'NaN', 10);
-	const pageCount = parseInt(aElem?.text.replace(/R-18G?/, '') ?? '1', 10);
+	const id = parseInt(aElem?.href.match(/\/artworks\/(\d+)/)?.[1] ?? 'NaN');
 
 	if (isNaN(id)) throw new Error('[pixivViewer] Illustration ID not found');
-	return { id, pageCount };
+
+	return id;
 };
 
 const isElementSelected = (liElement: HTMLLIElement) => liElement.classList.contains('pixivViewer-selected');
@@ -38,40 +38,35 @@ const selectElement = (liElement: HTMLLIElement) => liElement.classList.add('pix
 
 const unselectElement = (liElement: HTMLLIElement) => liElement.classList.remove('pixivViewer-selected');
 
-const isSelected = async (illustration: PixivViewer.Illustration) => {
-	let selection = await storage.get('selection') as PixivViewer.Illustration[];
+const isSelected = async (pixivId: PixivViewer.PixivArtwork['pixivId']) => {
+	let selection = await storage.get('selection') as PixivViewer.Artwork[];
 	if (!Array.isArray(selection)) selection = [];
 
-	for (let i = 0; i < selection.length; i++) {
-		if (selection[i] == null) continue;
-		if (typeof selection[i]?.id !== 'number') continue;
-
-		if (selection[i].id === illustration.id) return true;
+	for (const selected of selection) {
+		if (typeof selected === 'string') continue;
+		if (selected.pixivId === pixivId) return true;
 	}
-
 	return false;
 };
 
-const select = async (illustration: PixivViewer.Illustration) => {
+const select = async (pixivId: PixivViewer.PixivArtwork['pixivId']) => {
 	getAllIllustrationElements().forEach((element) => {
-		if (getDataFromIllustrationElement(element).id === illustration.id)
-			selectElement(element);
+		if (getPixivIdFromIllustrationElement(element) === pixivId) selectElement(element);
 	});
-	if (await isSelected(illustration)) return;
+	if (await isSelected(pixivId)) return;
 
-	let selection = await storage.get('selection') as PixivViewer.Illustration[];
+	let selection = await storage.get('selection') as PixivViewer.Artwork[];
 	if (!Array.isArray(selection)) selection = [];
 
-	selection.push(illustration);
+	selection.push({ pixivId });
 	storage.set({ selection });
 };
 
-const unselect = async (illustration: PixivViewer.Illustration) => {
+const unselect = async (pixivId: PixivViewer.PixivArtwork['pixivId']) => {
 	getAllIllustrationElements().forEach((element) => {
-		if (getDataFromIllustrationElement(element).id === illustration.id)
-			unselectElement(element);
+		if (getPixivIdFromIllustrationElement(element) === pixivId) unselectElement(element);
 	});
-	let selection = await storage.get('selection') as PixivViewer.Illustration[];
+	let selection = await storage.get('selection') as PixivViewer.Artwork[];
 	if (!Array.isArray(selection)) {
 		storage.set({ selection: [] });
 		return;
@@ -79,10 +74,10 @@ const unselect = async (illustration: PixivViewer.Illustration) => {
 	let didChange = false;
 
 	for (let i = selection.length - 1; i >= 0; i--) {
-		if (selection[i] == null) continue;
-		if (typeof selection[i]?.id !== 'number') continue;
+		const entry = selection[i];
+		if (typeof entry === 'string') continue;
 
-		if (selection[i].id === illustration.id) {
+		if (entry.pixivId === pixivId) {
 			selection.splice(i, 1);
 			didChange = true;
 		}
@@ -92,7 +87,7 @@ const unselect = async (illustration: PixivViewer.Illustration) => {
 };
 
 const toggle = (liElement: HTMLLIElement) => {
-	const illustration = getDataFromIllustrationElement(liElement);
+	const illustration = getPixivIdFromIllustrationElement(liElement);
 
 	if (isElementSelected(liElement)) {
 		unselect(illustration);
@@ -107,7 +102,7 @@ const updateSelectedElements = async () => {
 	for (let i = 0; i < elements.length; i++) {
 		const element = elements[i];
 
-		if (await isSelected(getDataFromIllustrationElement(element))) {
+		if (await isSelected(getPixivIdFromIllustrationElement(element))) {
 			selectElement(element);
 		} else {
 			unselectElement(element);

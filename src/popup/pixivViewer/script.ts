@@ -19,37 +19,17 @@ const setElementInactive = (element: HTMLElement) => element.classList.add('inac
 const isElementInactive = (element: HTMLElement) => element.classList.contains('inactive');
 const setElementActive = (element: HTMLElement) => element.classList.remove('inactive');
 
-const getImageUrlsFromSelection = (selection: unknown[]) => {
-	if (selection.length < 1) return [];
-
-	const images: PixivViewer.Image[] = [];
-
-	for (let i = 0; i < selection.length; i++) {
-		const illustration = selection[i] as PixivViewer.Illustration;
-
-		if (typeof illustration?.id !== 'number') continue;
-
-		if (typeof illustration.pageCount === 'number' && illustration.pageCount > 1) {
-			for (let j = 1; j <= illustration.pageCount; j++)
-				images.push({ id: illustration.id, page: j });
-		} else {
-			images.push({ id: illustration.id });
-		}
-	}
-	return images;
-};
-
 /*
  * UI update functions
  */
-const updateShowLink = (images: PixivViewer.Image[]) => {
-	if (images.length < 1) {
+const updateShowLink = (artworks: PixivViewer.Artwork[]) => {
+	if (artworks.length < 1) {
 		showLink.href = '#';
 		setElementInactive(showLink);
 		return;
 	}
 	const url = new URL(link.href);
-	url.search = btoa(JSON.stringify(images));
+	url.search = btoa(JSON.stringify(artworks));
 	showLink.href = url.href;
 	setElementActive(showLink);
 };
@@ -59,30 +39,28 @@ const updateSelectButton = (isSelecting: boolean) => {
 	setElementActive(selectButton);
 };
 
-const updateClearButton = (images: PixivViewer.Image[]) => {
-	if (images.length > 0) {
-		setElementActive(clearButton);
-		return;
+const updateClearButton = (artworks: PixivViewer.Artwork[]) => {
+	if (artworks.length === 0) {
+		setElementInactive(clearButton);
+		return
 	}
-	setElementInactive(clearButton);
+	setElementActive(clearButton);
 };
 
 /*
  * Listener
  */
 storage.addChangeListener((changes) => {
-	if (changes.isSelecting !== undefined) {
+	if (typeof changes.isSelecting?.newValue === 'boolean') {
 		updateSelectButton(changes.isSelecting.newValue);
 	}
 
-	if (changes.selection !== undefined) {
+	if (typeof changes.selection === 'object' && changes.selection !== null) {
 		const selection: unknown = changes.selection.newValue;
 
 		if (Array.isArray(selection)) {
-			let images = getImageUrlsFromSelection(selection);
-
-			updateShowLink(images);
-			updateClearButton(images);
+			updateShowLink(selection);
+			updateClearButton(selection);
 		} else {
 			storage.set({ selection: [] });
 		}
@@ -123,11 +101,9 @@ storage.get('isSelecting').then((isSelecting) => updateSelectButton(isSelecting 
 
 storage.get('selection').then((selection) => {
 	if (!Array.isArray(selection)) {
-		storage.set({ selection: [] });
+		storage.set({ selection: [] as PixivViewer.Artwork[] });
 		return;
 	}
-	const images = getImageUrlsFromSelection(selection);
-
-	updateClearButton(images);
-	updateShowLink(images);
+	updateClearButton(selection);
+	updateShowLink(selection);
 });

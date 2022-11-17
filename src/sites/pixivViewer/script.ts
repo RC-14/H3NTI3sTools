@@ -1,5 +1,6 @@
-import { qs, useTemplate, showMessage } from '../../utils.js';
+import { qs, useTemplate, showMessage, generateIDBGetter } from '../../utils.js';
 import { addListeners as addHideCursorListeners } from '../../hideCursor.js';
+import { fetchIllustrationInfo as fetchIllustrationInfoFromAPI } from '../../pixivAPI.js';
 
 addHideCursorListeners();
 
@@ -27,47 +28,61 @@ const showError = (title: string, description: string) => {
 	errorDescription.innerText = description;
 };
 
-const pixivArtworkInfoRequestMap = new Map<PixivViewer.Illustration['id'], Promise<PixivViewer.APIResponse>>();
+const getIDB = generateIDBGetter('pixivViewer', 1, (event) => {
+	if (!(event.target instanceof IDBOpenDBRequest)) throw new Error('Event target is not an IDBOpenDBRequest.');
+	if (!(event.target.result instanceof IDBDatabase)) throw new Error("Couldn't get access to the Database");
+	const db = event.target.result;
 
-// Request information about the illustration which contains urls to the image
-const getPixivArtworkInfo = async (id: PixivViewer.Illustration['id']): Promise<PixivViewer.APIResponse> => {
+	const illustrationInfoOS = db.createObjectStore('IllustrationInfo', { keyPath: 'illustId' });
+	illustrationInfoOS.createIndex('tags', 'tags', { unique: false, multiEntry: true });
+	illustrationInfoOS.createIndex('userId', 'userId', { unique: false });
+
+	const userInfoOS = db.createObjectStore('UserInfo', { keyPath: 'userId' });
+	userInfoOS.createIndex('userName', 'userName', { unique: false });
+
+	const base64ImagesOS = db.createObjectStore('Base64Images', { keyPath: 'sourceUrl' });
+	base64ImagesOS.createIndex('date', 'date', { unique: false });
+});
+
+const pixivIllustrationInfoRequestMap = new Map<Pixiv.IllustrationInfo['illustId'], Promise<Pixiv.IllustrationInfo>>();
+
+const getPixivIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId'], db: IDBDatabase): Promise<Pixiv.IllustrationInfo> => {
 	// Prevent sending multiple requests for the same id
-	if (pixivArtworkInfoRequestMap.has(id)) return await pixivArtworkInfoRequestMap.get(id) as PixivViewer.APIResponse;
+	if (pixivIllustrationInfoRequestMap.has(id)) return await pixivIllustrationInfoRequestMap.get(id) as Pixiv.IllustrationInfo;
 
-	const request = new Promise<PixivViewer.APIResponse>(async (resolve, reject) => {
-		// Actually request the information
-		const response = await fetch(`https://www.pixiv.net/ajax/illust/${id}?lang=en`);
-		resolve(await response.json());
+	const promise = new Promise<Pixiv.IllustrationInfo>(async (resolve, reject) => {
+		// Fall back to an api request in case we don't get the illustration info from indexedDB
+		const fallback = async () => {
+			const illustInfo = await fetchIllustrationInfoFromAPI(id);
+
+			const request = db.transaction('IllustrationInfo', 'readwrite').objectStore('IllustrationInfo').put(illustInfo);
+			request.addEventListener('error', (event) => {
+				console.error(`Failed to write illustration info to indexedDB with error: ${request.error}`);
+			});
+
+			resolve(illustInfo);
+		};
+
+		// Try to get the illustration info from indexedDB
+		const request = db.transaction('IllustrationInfo', 'readonly').objectStore('IllustrationInfo').get(id);
+		request.addEventListener('error', (event) => {
+			console.error(`Failed to get illustration info from indexedDB with error: ${request.error}`);
+			fallback();
+		});
+		request.addEventListener('success', (event) => {
+			if (request.result === undefined) {
+				fallback();
+				return;
+			}
+
+			resolve(request.result);
+		});
 	});
-	// Let other function calls find this request
-	pixivArtworkInfoRequestMap.set(id, request);
 
-	return await request;
-};
+	// Let other function calls find this promise
+	pixivIllustrationInfoRequestMap.set(id, promise);
 
-const getPixivImageUrl = async (id: PixivViewer.Illustration['id'], page?: number) => {
-	const info = await getPixivArtworkInfo(id);
-
-	// If an error occured throw it - YEET
-	if (info.error) throw new Error(`API call for ID "${id}" failed with message: ${info.message}`);
-
-	// Check if we got a URL
-	if (typeof info.body.urls !== 'object' || Array.isArray(info.body.urls) || info.body.urls === null) throw new Error(`API response for ID "${id}" didn't contain urls.`);
-	if (typeof info.body.urls.original !== 'string') throw new Error(`API response for ID "${id}" didn't contain url for original.`);
-
-	const url = new URL(info.body.urls.original);
-
-	// Return the url if it doesn't need to be modified
-	if (page === undefined || page === 1) return url;
-
-	// Check if the requestet page esists
-	if (typeof info.body.pageCount !== 'number') throw new Error(`API response for ID "${id}" didn't contain a page count.`);
-	if (page > info.body.pageCount) throw new Error(`API response for ID "${id}" contained a lower page count (${info.body.pageCount}) than requested (${page}).`);
-
-	// Adjust the URL if needed
-	url.pathname = url.pathname.replace('_p0', `_p${page - 1}`);
-
-	return url;
+	return await promise;
 };
 
 const counter = qs('#counter') as HTMLDivElement;
@@ -79,6 +94,8 @@ const updateCounter = () => {
 };
 
 const addImage = (srcUrl: URL, siteUrl?: URL) => {
+	imageUrlList.push(srcUrl);
+
 	// Prevent loading images multiple times
 	if (qs(`[data-src="${srcUrl.href}"]`, imageContainer) !== null) return;
 
@@ -92,26 +109,61 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => {
 	if (!(imgElem instanceof HTMLImageElement)) throw new Error("Img elem isn't an image element.");
 	if (!(aElem instanceof HTMLAnchorElement)) throw new Error("A elem isn't an anchor element.");
 
-	imgElem.addEventListener('error', (event) => {
-		if (!(event.target instanceof HTMLImageElement)) return;
-
-		// Make the image invisable but still clickable if it fails to load
-		event.target.style.opacity = '0';
-	});
-
-	imgElem.addEventListener('load', (event) => {
-		if (!(event.target instanceof HTMLImageElement)) return;
-
-		// If loading of the image previously failed and it gets reloaded make it visible again
-		event.target.style.opacity = '';
-	});
-
-	// Try to accellerate loading of the first image
-	if (imageContainer.childElementCount === 0) imgElem.setAttribute('fetchpriority', 'high');
-
 	// Set URLs
-	wrapper.dataset.src = imgElem.src = srcUrl.href;
+	wrapper.dataset.src = srcUrl.href;
 	aElem.href = siteUrl?.href ?? srcUrl.href;
+
+	// Try to load image from indexedDB
+	getIDB().then((db) => {
+		// Fallback in case we don't get the image from indexedDB
+		const fallback = () => {
+			fetch(srcUrl).then((response) => response.blob()).then((blob) => {
+				const fileReader = new FileReader();
+				fileReader.addEventListener('error', (event) => console.error(`Failed to get data URL for URL "${srcUrl}" with error: ${fileReader.error}`));
+				fileReader.addEventListener('load', async (event) => {
+					if (typeof fileReader.result !== 'string') {
+						console.error(`Failed to get a data URL for URL "${srcUrl}": result is of type "${typeof fileReader.result}"`);
+						return;
+					}
+					imgElem.src = fileReader.result;
+	
+					const entry: PixivViewer.Base64Image = {
+						sourceUrl: srcUrl.href,
+						b64Data: fileReader.result,
+						date: Date.now()
+					};
+	
+					const transaction = db.transaction('Base64Images', 'readwrite');
+					const objectStore = transaction.objectStore('Base64Images');
+					const request = objectStore.put(entry);
+	
+					request.addEventListener('error', (event) => {
+						console.error(`Failed to write data URL for URL "${srcUrl}" to indexedDB with error: ${request.error}`);
+						db.close();
+					});
+					request.addEventListener('success', (event) => db.close());
+				});
+				fileReader.readAsDataURL(blob);
+			});
+		};
+	
+		const transaction = db.transaction('Base64Images', 'readonly');
+		const objectStore = transaction.objectStore('Base64Images');
+		const request: IDBRequest<PixivViewer.Base64Image> = objectStore.get(srcUrl.href);
+	
+		request.addEventListener('error', (event) => {
+			console.error(`Failed to get data URL for URL "${srcUrl}" from indexedDB with error: ${request.error}`);
+			fallback();
+		});
+		request.addEventListener('success', (event) => {
+			if (request.result === undefined) {
+				fallback();
+				return;
+			}
+	
+			imgElem.src = request.result.b64Data;
+		});
+	});
 
 	imageContainer.append(wrapper);
 };
@@ -170,49 +222,85 @@ const showImages = async () => {
 	imageContainer.classList.remove('hidden');
 	counter.classList.remove('hidden');
 
-	// Parse location.search
-	const imageList: (string | PixivViewer.Image)[] = JSON.parse(atob(location.search.substring(1)));
+	const db = await getIDB();
 
-	// Get the image URLs
-	const imageSourcePromiseList: Promise<void>[] = [];
+	// Parse location.search
+	const artworkList: PixivViewer.Artwork[] = JSON.parse(atob(location.search.substring(1)));
 
 	showMessage('Getting the image URLs...');
+	const ArtworkPromiseList: Promise<{ site?: URL; urls: URL[]; }>[] = [];
 
-	for (const image of imageList) {
-		// Handle non pixiv images
-		if (typeof image === 'string') {
-			imageUrlList.push(new URL(image));
-			continue;
-		} else if (image.overwriteUrl !== undefined) {
-			imageUrlList.push(new URL(image.overwriteUrl));
-			continue;
-		}
+	// Get the source URLs
+	for (const artwork of artworkList) {
+		ArtworkPromiseList.push(new Promise(async (resolve, reject) => {
+			// Handle non pixiv images
+			if (typeof artwork === 'string') {
+				resolve({ urls: [new URL(artwork)] });
+				return;
+			}
 
-		// Handle pixiv images
-		const index = imageUrlList.length;
-		// Add a temporary url which gets overwritten later to keep the images in the right order
-		imageUrlList.push(new URL(`pixiv://id=${image.id}` + (image.page === undefined ? '' : `&page=${image.page}`)));
+			const illustInfo = await getPixivIllustrationInfo(artwork.pixivId, db);
+			const urls: URL[] = [];
 
-		imageSourcePromiseList.push(new Promise(async (resolve, reject) => {
-			imageUrlList[index] = await getPixivImageUrl(image.id, image.page);
-			resolve();
+			// If there are overwrites set write them to indexedDB otherwise use the overwrites that are present (if there are any)
+			if (artwork.overwrite?.length) {
+				const pageCount = illustInfo.pages.length > artwork.overwrite.length ? illustInfo.pages.length : artwork.overwrite.length;
+
+				for (let i = 0; i < pageCount; i++) {
+					// Need to use 'as' because otherwise typescript doesn't recognize that page might be undefined
+					const page = illustInfo.pages[i] as Pixiv.IllustrationInfo['pages'][number] | undefined;
+
+					// If there are old overwrites delete them to avoid messing stuff up
+					if (illustInfo.pages[i].overwrite?.length) db.transaction('Base64Images', 'readwrite').objectStore('Base64Images').delete(illustInfo.pages[i].overwrite as string).addEventListener('error', (event) => {
+						console.error(`Failed to delete base64 image for url "${illustInfo.pages[i].overwrite}" from indexedDB with error: ${(event.target as IDBRequest<undefined>).error}`);
+					});
+
+					if (artwork.overwrite[i]?.length) {
+						urls.push(new URL(artwork.overwrite[i] as string));
+
+						if (illustInfo.pages[i] === undefined) illustInfo.pages[i] = { thumb: '', original: '' };
+						illustInfo.pages[i].overwrite = artwork.overwrite[i] as string;
+					} else if (page?.original.length) {
+						urls.push(new URL(page.original));
+
+						delete illustInfo.pages[i].overwrite;
+					}
+				}
+
+				db.transaction('IllustrationInfo', 'readwrite').objectStore('IllustrationInfo').put(illustInfo).addEventListener('error', (event) => {
+					console.error(`Failed to write illustration info for id "${illustInfo.illustId}" to indexedDB with error: ${(event.target as IDBRequest<IDBValidKey>).error}`);
+				});
+			} else {
+				for (let i = 0; i < illustInfo.pages.length; i++) {
+					const page = illustInfo.pages[i];
+
+					if (page.overwrite?.length) {
+						urls.push(new URL(page.overwrite));
+					} else if (page.original.length) {
+						urls.push(new URL(page.original));
+					}
+				}
+			}
+
+			resolve({
+				site: new URL(`https://www.pixiv.net/en/artworks/${illustInfo.illustId}`),
+				urls
+			});
 		}));
 	}
 
-	// Wait for the Promises to resolve (or reject if an error occured)
-	await Promise.allSettled(imageSourcePromiseList);
-	showMessage('Got image URLs');
+	// Wait for the Promises to resolve (or reject if an error occured) and the images beeing added to the list
+	await Promise.allSettled(ArtworkPromiseList).then((results) => {
+		db.close();
 
-	// Add Image Elements
-	showMessage('Start loading images...');
-	for (let i = 0; i < imageList.length; i++) {
-		if (typeof imageList[i] === 'string') {
-			addImage(imageUrlList[i]);
-			continue;
-		}
-		const siteUrl = new URL(`https://www.pixiv.net/en/artworks/${(imageList[i] as PixivViewer.Image).id}`);
-		addImage(imageUrlList[i], siteUrl);
-	}
+		showMessage('Start loading images...');
+
+		results.forEach((result) => {
+			if (result.status === 'rejected') return;
+
+			for (const url of result.value.urls) addImage(url, result.value.site);
+		});
+	});
 
 	// Show first image
 	imageIndex = 0;

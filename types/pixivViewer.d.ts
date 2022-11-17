@@ -1,18 +1,15 @@
 namespace PixivViewer {
-	export interface Illustration {
-		id: number;
-		pageCount?: number;
+	interface PixivArtwork {
+		pixivId: Pixiv.IllustrationInfo['illustId'];
+		exclude?: number[];
+		overwrite?: (string | null)[];
 	}
 
-	export interface Image {
-		id: Illustration['id'];
-		page?: number;
-		overwriteUrl?: string;
-	}
+	type Artwork = string | PixivArtwork;
 
-	export interface APIResponse {
-		error: boolean;
-		message: string;
-		body: jsonObject;
-	}
+	interface Base64Image {
+		sourceUrl: string; // url where the image was downloaded from
+		b64Data: string; // base64 encoded image
+		date: number; // Date.now() when downloaded
+	};
 }
