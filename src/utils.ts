@@ -1,4 +1,5 @@
 export { default as StorageHelper } from './StorageHelper.js';
+export { default as htmlCharRef } from './htmlCharReferences.js';
 
 export const qs = <T extends Element>(selector: string, parent: Document | Element = document) => parent.querySelector<T>(selector);
 export const qsa = <T extends Element>(selector: string, parent: Document | Element = document) => parent.querySelectorAll<T>(selector);
