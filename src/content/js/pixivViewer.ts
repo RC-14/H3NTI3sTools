@@ -2,6 +2,10 @@ import { qs, qsa, StorageHelper } from '../../utils.js';
 
 const storage = new StorageHelper('session', 'pixivViewer');
 
+const selectButton = document.createElement('button');
+selectButton.id = 'h3nti3-selectButton';
+document.documentElement.append(selectButton);
+
 let isSelecting = await storage.get('isSelecting') as boolean;
 
 /*
@@ -110,6 +114,27 @@ const updateSelectedElements = async () => {
 	}
 };
 
+const updateSelectButton = async () => {
+	const illustId = parseInt(location.pathname.match(/^(?:\/\w{2})?\/artworks\/(\d+)/i)?.at(1) ?? 'NaN');
+
+	if (isNaN(illustId)) {
+		delete selectButton.dataset.illustId;
+		delete selectButton.dataset.selected;
+		selectButton.innerText = '';
+		return;
+	}
+
+	selectButton.dataset.illustId = illustId.toString();
+
+	if (await isSelected(illustId)) {
+		selectButton.dataset.selected = '';
+		selectButton.innerText = 'Unselect';
+	} else {
+		delete selectButton.dataset.selected;
+		selectButton.innerText = 'Select';
+	}
+};
+
 /*
  * Listeners
  */
@@ -143,12 +168,27 @@ document.addEventListener('click', (event) => {
 	toggle(element as HTMLLIElement);
 }, { capture: true });
 
+selectButton.addEventListener('click', (event) => {
+	console.log('test', event);
+	if (selectButton.dataset.illustId === undefined) return;
+
+	const illustId = parseInt(selectButton.dataset.illustId);
+
+	if (selectButton.hasAttribute('data-selected')) {
+		unselect(illustId).then(updateSelectButton);
+	} else {
+		select(illustId).then(updateSelectButton);
+	}
+}, { passive: true });
+
 document.addEventListener('readystatechange', () => {
 	if (document.readyState !== 'complete') return;
 
 	updateSelectedElements();
-	new MutationObserver(updateSelectedElements).observe(
-		document,
-		{ childList: true, subtree: true }
-	);
+	updateSelectButton();
+});
+
+addEventListener('historystateupdated', () => {
+	updateSelectedElements();
+	updateSelectButton();
 });
