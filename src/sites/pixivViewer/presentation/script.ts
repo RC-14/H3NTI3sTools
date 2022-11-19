@@ -1,6 +1,6 @@
-import { qs, useTemplate, showMessage, generateIDBGetter } from '../../utils.js';
-import { addListeners as addHideCursorListeners } from '../../hideCursor.js';
-import { fetchIllustrationInfo as fetchIllustrationInfoFromAPI } from '../../pixivAPI.js';
+import { qs, useTemplate, showMessage, generateIDBGetter } from '../../../utils.js';
+import { addListeners as addHideCursorListeners } from '../../../hideCursor.js';
+import { fetchIllustrationInfo as fetchIllustrationInfoFromAPI } from '../../../pixivAPI.js';
 
 addHideCursorListeners();
 

@@ -28,7 +28,7 @@ const updateShowLink = (artworks: PixivViewer.Artwork[]) => {
 		setElementInactive(showLink);
 		return;
 	}
-	const url = new URL(link.href);
+	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
 	url.search = btoa(JSON.stringify(artworks));
 	showLink.href = url.href;
 	setElementActive(showLink);
