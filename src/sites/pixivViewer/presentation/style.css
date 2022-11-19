@@ -43,7 +43,7 @@ body {
 	justify-content: center;
 	width: 100vw;
 	height: 100vh;
-	background-image: url('../../icons/spinner-light.svg');
+	background-image: url('../../../icons/spinner-light.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: auto 15vh;
