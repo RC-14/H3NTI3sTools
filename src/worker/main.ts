@@ -1,3 +1,5 @@
+import { sendMessageToFrame } from './utils.js';
+
 // Set storage access level
 const ACCESS_LEVELS = chrome.storage.AccessLevel;
 
@@ -28,4 +30,9 @@ chrome.runtime.onMessage.addListener((request: RuntimeMessage, sender, sendRespo
 	const response = handler(request.msg, request.data, sender);
 	console.log('[message]', request.handler, request.msg, request.data, '->', response);
 	sendResponse(response);
+});
+
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+	if (details.url.startsWith('chrome')) return;
+	sendMessageToFrame(details.tabId, details.frameId, 'historyEvent', null);
 });

@@ -5,7 +5,8 @@
 		],
 		"js": [
 			"hideCursor.js",
-			"noSpaceScroll.js"
+			"noSpaceScroll.js",
+			"historyEvent.js"
 		],
 		"all_frames": true
 	},
