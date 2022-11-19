@@ -126,17 +126,17 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => {
 						return;
 					}
 					imgElem.src = fileReader.result;
-	
+
 					const entry: PixivViewer.Base64Image = {
 						sourceUrl: srcUrl.href,
 						b64Data: fileReader.result,
 						date: Date.now()
 					};
-	
+
 					const transaction = db.transaction('Base64Images', 'readwrite');
 					const objectStore = transaction.objectStore('Base64Images');
 					const request = objectStore.put(entry);
-	
+
 					request.addEventListener('error', (event) => {
 						console.error(`Failed to write data URL for URL "${srcUrl}" to indexedDB with error: ${request.error}`);
 						db.close();
@@ -146,11 +146,11 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => {
 				fileReader.readAsDataURL(blob);
 			});
 		};
-	
+
 		const transaction = db.transaction('Base64Images', 'readonly');
 		const objectStore = transaction.objectStore('Base64Images');
 		const request: IDBRequest<PixivViewer.Base64Image> = objectStore.get(srcUrl.href);
-	
+
 		request.addEventListener('error', (event) => {
 			console.error(`Failed to get data URL for URL "${srcUrl}" from indexedDB with error: ${request.error}`);
 			fallback();
@@ -160,7 +160,7 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => {
 				fallback();
 				return;
 			}
-	
+
 			imgElem.src = request.result.b64Data;
 		});
 	});
