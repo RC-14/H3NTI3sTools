@@ -12,23 +12,20 @@ let isSelecting = await storage.get('isSelecting') as boolean;
  * Helper functions
  */
 const getAllIllustrationElements = () => {
-	const illustrationElements: HTMLLIElement[] = [];
+	const illustrationElements: HTMLElement[] = [];
 	qsa<HTMLElement>('[type="illust"] a').forEach(element => {
 		while (element.parentElement != null) {
-			if (
-				element.parentElement instanceof HTMLUListElement &&
-				element instanceof HTMLLIElement
-			) break;
+			if (element.parentElement instanceof HTMLUListElement) break;
 
 			element = element.parentElement;
 		}
-		if (element.parentElement !== null) illustrationElements.push(element as HTMLLIElement);
+		if (element.parentElement !== null) illustrationElements.push(element);
 	});
 	return illustrationElements;
 };
 
-const getPixivIdFromIllustrationElement = (liElem: HTMLLIElement): PixivViewer.PixivArtwork['pixivId'] => {
-	const aElem = qs<HTMLAnchorElement>(`[type="illust"] a`, liElem);
+const getPixivIdFromIllustrationElement = (elem: HTMLElement): PixivViewer.PixivArtwork['pixivId'] => {
+	const aElem = qs<HTMLAnchorElement>(`[type="illust"] a`, elem);
 	const id = parseInt(aElem?.href.match(/\/artworks\/(\d+)/)?.[1] ?? 'NaN');
 
 	if (isNaN(id)) throw new Error('[pixivViewer] Illustration ID not found');
@@ -36,11 +33,11 @@ const getPixivIdFromIllustrationElement = (liElem: HTMLLIElement): PixivViewer.P
 	return id;
 };
 
-const isElementSelected = (liElement: HTMLLIElement) => liElement.classList.contains('pixivViewer-selected');
+const isElementSelected = (element: HTMLElement) => element.classList.contains('pixivViewer-selected');
 
-const selectElement = (liElement: HTMLLIElement) => liElement.classList.add('pixivViewer-selected');
+const selectElement = (element: HTMLElement) => element.classList.add('pixivViewer-selected');
 
-const unselectElement = (liElement: HTMLLIElement) => liElement.classList.remove('pixivViewer-selected');
+const unselectElement = (element: HTMLElement) => element.classList.remove('pixivViewer-selected');
 
 const isSelected = async (pixivId: PixivViewer.PixivArtwork['pixivId']) => {
 	let selection = await storage.get('selection') as PixivViewer.Artwork[];
@@ -90,7 +87,7 @@ const unselect = async (pixivId: PixivViewer.PixivArtwork['pixivId']) => {
 	if (didChange) storage.set({ selection });
 };
 
-const toggle = (liElement: HTMLLIElement) => {
+const toggle = (liElement: HTMLElement) => {
 	const illustration = getPixivIdFromIllustrationElement(liElement);
 
 	if (isElementSelected(liElement)) {
@@ -156,16 +153,13 @@ document.addEventListener('click', (event) => {
 	let element = event.target;
 
 	while (element.parentElement != null) {
-		if (
-			element.parentElement instanceof HTMLUListElement &&
-			element instanceof HTMLLIElement
-		) break;
+		if (element.parentElement instanceof HTMLUListElement) break;
 
 		element = element.parentElement;
 	}
 	if (element.parentElement == null) return;
 	event.preventDefault();
-	toggle(element as HTMLLIElement);
+	toggle(element);
 }, { capture: true });
 
 selectButton.addEventListener('click', (event) => {

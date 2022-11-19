@@ -1,3 +1,9 @@
+/* fix outline getting cut off */
+.sc-1kr69jw-0.hkzusx {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
 .pixivViewer-selected {
 	outline-style: ridge;
 	outline-color: rgb(0, 150, 250);
