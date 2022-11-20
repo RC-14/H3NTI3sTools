@@ -92,12 +92,13 @@ export const showMessage = (message: string, options?: { color?: string, duratio
 	}, duration);
 };
 
-export const generateIDBGetter = (name: string, version: number, upgradeneededListener: (event: IDBVersionChangeEvent) => void) => {
+export const generateIDBGetter = (name: string, version: number, upgradeneededListener: (event: IDBVersionChangeEvent) => void, blockedListener?: (event: Event) => void) => {
 	return () => new Promise<IDBDatabase>((resolve, reject) => {
 		const request = indexedDB.open(name, version);
 
 		request.addEventListener('error', (event) => reject(request.error));
-		request.addEventListener('blocked', (event) => reject(new Error('Request was blocked.')));
+
+		if (blockedListener !== undefined) request.addEventListener('blocked', blockedListener);
 
 		request.addEventListener('success', (event) => {
 			if (request.result instanceof IDBDatabase) {
