@@ -19,7 +19,6 @@ export const isElementEditable = (element: HTMLElement) => {
 
 export const sendRuntimeMessage: sendRuntimeMessage = (handler, msg, data) => {
 	return chrome.runtime.sendMessage<RuntimeMessage>({
-		target: 'background',
 		handler,
 		msg,
 		data

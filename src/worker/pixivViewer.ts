@@ -1,5 +1,7 @@
 import { generateIDBGetter } from './utils.js';
 
+const moduleObject: ModuleObject = { id: 'pixivViewer' };
+
 const WEEK_IN_MS = 1000 * 60 * 60 * 24 * 7;
 
 const getIDB = generateIDBGetter('pixivViewer', 2, async (event) => {
@@ -78,7 +80,7 @@ const cleanupIDB = async () => {
 	// Get the keys of all expired entries
 	const expiryDateRange = IDBKeyRange.bound(0, Date.now());
 	const request = objectStore.index('expiryDate').getAllKeys(expiryDateRange);
-	
+
 	request.addEventListener('error', (event) => {
 		throw request.error;
 	});
@@ -88,17 +90,12 @@ const cleanupIDB = async () => {
 	});
 };
 
-const runtimeMessageHandler: RuntimeMessageHandler = async (msg, data, sender) => {
+moduleObject.runtimeMessageHandler = (msg, data, sender) => {
 	switch (msg) {
 		case 'cleanupIDB':
-			return await cleanupIDB();
-
-		default:
-			return;
+			cleanupIDB();
+			break;
 	}
 };
 
-export default {
-	id: 'pixivViewer',
-	runtimeMessageHandler
-};
+export default moduleObject;
