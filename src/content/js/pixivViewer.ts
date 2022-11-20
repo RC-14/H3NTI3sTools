@@ -114,7 +114,7 @@ const updateSelectedElements = async () => {
 const updateSelectButton = async () => {
 	const illustId = parseInt(location.pathname.match(/^(?:\/\w{2})?\/artworks\/(\d+)/i)?.at(1) ?? 'NaN');
 
-	if (isNaN(illustId)) {
+	if (isNaN(illustId) || !isSelecting) {
 		delete selectButton.dataset.illustId;
 		delete selectButton.dataset.selected;
 		selectButton.innerText = '';
@@ -138,6 +138,7 @@ const updateSelectButton = async () => {
 storage.addChangeListener((changes) => {
 	if (changes.isSelecting !== undefined) {
 		isSelecting = changes.isSelecting.newValue;
+		updateSelectButton();
 	}
 
 	if (changes.selection !== undefined) {
