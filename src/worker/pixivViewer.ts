@@ -52,8 +52,7 @@ const cleanupIDB = async () => {
 const runtimeMessageHandler: RuntimeMessageHandler = async (msg, data, sender) => {
 	switch (msg) {
 		case 'cleanupIDB':
-			await cleanupIDB();
-			break;
+			return await cleanupIDB();
 
 		default:
 			return;

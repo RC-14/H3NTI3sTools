@@ -1,4 +1,4 @@
-import { qs, useTemplate, showMessage, generateIDBGetter } from '../../../utils.js';
+import { qs, useTemplate, showMessage, generateIDBGetter, sendRuntimeMessage } from '../../../utils.js';
 import { addListeners as addHideCursorListeners } from '../../../hideCursor.js';
 import { fetchIllustrationInfo as fetchIllustrationInfoFromAPI } from '../../../pixivAPI.js';
 
@@ -93,11 +93,14 @@ const updateCounter = () => {
 	counter.innerText = `${imageIndex + 1}/${imageUrlList.length}`;
 };
 
-const addImage = (srcUrl: URL, siteUrl?: URL) => {
+const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolve, reject) => {
 	imageUrlList.push(srcUrl);
 
 	// Prevent loading images multiple times
-	if (qs(`[data-src="${srcUrl.href}"]`, imageContainer) !== null) return;
+	if (qs(`[data-src="${srcUrl.href}"]`, imageContainer) !== null) {
+		resolve();
+		return;
+	}
 
 	const wrapper = useTemplate(imageTemplate);
 
@@ -113,71 +116,106 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => {
 	wrapper.dataset.src = srcUrl.href;
 	aElem.href = siteUrl?.href ?? srcUrl.href;
 
-	// Try to load image from indexedDB
-	getIDB().then((db) => {
-		// Fallback in case we don't get the image from indexedDB
-		const fallback = () => {
-			fetch(srcUrl).then((response) => response.blob()).then((blob) => {
-				const fileReader = new FileReader();
-				fileReader.addEventListener('error', (event) => console.error(`Failed to get data URL for URL "${srcUrl}" with error: ${fileReader.error}`));
-				fileReader.addEventListener('load', async (event) => {
-					if (typeof fileReader.result !== 'string') {
-						console.error(`Failed to get a data URL for URL "${srcUrl}": result is of type "${typeof fileReader.result}"`);
-						return;
-					}
-					imgElem.src = fileReader.result;
-
-					const entry: PixivViewer.Base64Image = {
-						sourceUrl: srcUrl.href,
-						b64Data: fileReader.result,
-						date: Date.now()
-					};
-
-					const transaction = db.transaction('Base64Images', 'readwrite');
-					const objectStore = transaction.objectStore('Base64Images');
-					const request = objectStore.put(entry);
-
-					request.addEventListener('error', (event) => {
-						console.error(`Failed to write data URL for URL "${srcUrl}" to indexedDB with error: ${request.error}`);
-						db.close();
-					});
-					request.addEventListener('success', (event) => db.close());
-				});
-				fileReader.readAsDataURL(blob);
-			});
-		};
-
-		const transaction = db.transaction('Base64Images', 'readonly');
-		const objectStore = transaction.objectStore('Base64Images');
-		const request: IDBRequest<PixivViewer.Base64Image> = objectStore.get(srcUrl.href);
-
-		request.addEventListener('error', (event) => {
-			console.error(`Failed to get data URL for URL "${srcUrl}" from indexedDB with error: ${request.error}`);
-			fallback();
-		});
-		request.addEventListener('success', (event) => {
-			if (request.result === undefined) {
-				fallback();
-				return;
-			}
-
-			imgElem.src = request.result.b64Data;
-		});
-	});
-
 	imageContainer.append(wrapper);
-};
+
+	// Try to load image from indexedDB
+	const db = await getIDB();
+
+	const closeDB = () => {
+		db.close();
+		resolve();
+	};
+
+	// Fallback in case we don't get the image from indexedDB
+	const fallback = () => {
+		fetch(srcUrl).then((response) => response.blob()).then((blob) => {
+			const fileReader = new FileReader();
+			fileReader.addEventListener('error', (event) => {
+				closeDB();
+				console.error(`Failed to get data URL for URL "${srcUrl}" with error: ${fileReader.error}`);
+			});
+			fileReader.addEventListener('load', async (event) => {
+				if (typeof fileReader.result !== 'string') {
+					closeDB();
+					console.error(`Failed to get a data URL for URL "${srcUrl}": result is of type "${typeof fileReader.result}"`);
+					return;
+				}
+				imgElem.src = fileReader.result;
+
+				const entry: PixivViewer.Base64Image = {
+					sourceUrl: srcUrl.href,
+					b64Data: fileReader.result,
+					date: Date.now()
+				};
+
+				const transaction = db.transaction('Base64Images', 'readwrite');
+				const objectStore = transaction.objectStore('Base64Images');
+				const request = objectStore.put(entry);
+
+				request.addEventListener('error', (event) => {
+					closeDB();
+					console.error(`Failed to write data URL for URL "${srcUrl}" to indexedDB with error: ${request.error}`);
+				});
+				request.addEventListener('success', (event) => closeDB());
+			});
+			fileReader.readAsDataURL(blob);
+		}).catch((reason) => {
+			closeDB();
+			console.error(reason);
+		});
+	};
+
+	const objectStore = db.transaction('Base64Images', 'readonly').objectStore('Base64Images');
+	const request: IDBRequest<PixivViewer.Base64Image> = objectStore.get(srcUrl.href);
+
+	request.addEventListener('error', (event) => {
+		console.error(`Failed to get data URL for URL "${srcUrl}" from indexedDB with error: ${request.error}`);
+		fallback();
+	});
+	request.addEventListener('success', (event) => {
+		if (request.result === undefined) {
+			fallback();
+			return;
+		}
+
+		imgElem.src = request.result.b64Data;
+		closeDB();
+	});
+});
+
+const updateBase64ImagesDates = () => new Promise<void>(async (resolve, reject) => {
+	const db = await getIDB();
+	const objectStore = db.transaction('Base64Images', 'readwrite').objectStore('Base64Imges');
+	const promises: Promise<void>[] = [];
+
+	// Create an deduplicated array with every image URL
+	const keys = imageUrlList.map((url) => url.href).filter((url, index, array) => index === array.indexOf(url));
+
+	for (const key of keys) {
+		promises.push(new Promise<void>((resolve, reject) => {
+			const getRequest = objectStore.get(key);
+			getRequest.addEventListener('error', (event) => reject(getRequest.error));
+			getRequest.addEventListener('success', (event) => {
+				const entry = getRequest.result;
+				entry.date = Date.now();
+
+				const writeRequest = objectStore.put(entry);
+				writeRequest.addEventListener('error', (event) => reject(writeRequest.error));
+				writeRequest.addEventListener('success', (event) => resolve());
+			});
+		}));
+	}
+
+	await Promise.allSettled(promises);
+	db.close();
+	resolve();
+});
 
 const hideCurrentImage = () => {
 	const wrapper = qs(`[data-src="${imageUrlList[imageIndex].href}"]`, imageContainer);
 	if (wrapper === null) return;
 
 	wrapper.classList.add('hidden');
-
-	const imgElem = qs<HTMLImageElement>('img', wrapper);
-	if (imgElem === null) return;
-
-	imgElem.setAttribute('fetchpriority', 'low');
 };
 
 const showCurrentImage = () => {
@@ -185,11 +223,6 @@ const showCurrentImage = () => {
 	if (wrapper === null) return;
 
 	wrapper.classList.remove('hidden');
-
-	const imgElem = qs<HTMLImageElement>('img', wrapper);
-	if (imgElem === null) return;
-
-	imgElem.setAttribute('fetchpriority', 'high');
 };
 
 // Show previous image
@@ -215,6 +248,43 @@ const next = () => {
 	imageIndex = (imageIndex + 1) % imageUrlList.length;
 	showCurrentImage();
 	updateCounter();
+};
+
+const addControls = () => {
+	document.addEventListener('keydown', (event) => {
+		switch (event.code) {
+			case 'ArrowLeft':
+			case 'KeyA':
+				previous();
+				break;
+
+			case 'ArrowRight':
+			case 'KeyD':
+				next();
+				break;
+
+			case 'Space':
+				next();
+				break;
+		}
+	});
+
+	document.addEventListener('mouseup', (event) => {
+		// Return if it's neither the back nor the forward button (usually at the side of the mouse)
+		if (event.button < 3 || event.button > 4) return;
+
+		event.preventDefault();
+
+		switch (event.button) {
+			case 3:
+				previous();
+				break;
+
+			case 4:
+				next();
+				break;
+		}
+	});
 };
 
 const showImages = async () => {
@@ -289,6 +359,8 @@ const showImages = async () => {
 		}));
 	}
 
+	const imageLoadPromises: Promise<void>[] = [];
+
 	// Wait for the Promises to resolve (or reject if an error occured) and the images beeing added to the list
 	await Promise.allSettled(ArtworkPromiseList).then((results) => {
 		db.close();
@@ -298,7 +370,7 @@ const showImages = async () => {
 		results.forEach((result) => {
 			if (result.status === 'rejected') return;
 
-			for (const url of result.value.urls) addImage(url, result.value.site);
+			for (const url of result.value.urls) imageLoadPromises.push(addImage(url, result.value.site));
 		});
 	});
 
@@ -307,41 +379,17 @@ const showImages = async () => {
 	showCurrentImage();
 	updateCounter();
 
-	// Add controls
-	document.addEventListener('keydown', (event) => {
-		switch (event.code) {
-			case 'ArrowLeft':
-			case 'KeyA':
-				previous();
-				break;
+	addControls();
 
-			case 'ArrowRight':
-			case 'KeyD':
-				next();
-				break;
+	// Wait for all images to load
+	await Promise.allSettled(imageLoadPromises);
 
-			case 'Space':
-				next();
-				break;
-		}
-	});
+	await updateBase64ImagesDates();
+	sendRuntimeMessage('pixivViewer', 'cleanupIDB');
 
-	document.addEventListener('mouseup', (event) => {
-		// Return if it's neither the back nor the forward button (usually at the side of the mouse)
-		if (event.button < 3 || event.button > 4) return;
-
-		event.preventDefault();
-
-		switch (event.button) {
-			case 3:
-				previous();
-				break;
-
-			case 4:
-				next();
-				break;
-		}
-	});
+	// Load additional data
+	// TODO: Load thumb versions if not present
+	// TODO: Load user info if not present or to old
 };
 
 if (location.search) {
