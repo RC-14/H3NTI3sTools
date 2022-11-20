@@ -1,3 +1,12 @@
+:root {
+	--pixiv-blue: rgb(0, 150, 250);
+	--pixiv-blue-highlight: rgb(0, 160, 250);
+	--dark-grey: rgb(48, 48, 48);
+	--dark-grey-highlight: rgb(58, 58, 58);
+	--dark-white: rgb(214, 214, 214);
+	--dark-white-faded: rgb(127, 127, 127);
+}
+
 /* fix outline getting cut off */
 .sc-1kr69jw-0.hkzusx {
 	padding-top: 10px;
@@ -6,40 +15,76 @@
 
 .pixivViewer-selected {
 	outline-style: ridge;
-	outline-color: rgb(0, 150, 250);
+	outline-color: var(--pixiv-blue);
 	outline-width: 4px;
 	outline-offset: 4px;
 	border-radius: 1em;
 }
 
-#h3nti3-selectButton {
-	display: none;
-	padding: 0.2rem 1rem;
+#h3nti3-tool-box {
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: flex-start;
+	padding: 0px;
 	border: none;
-	border-radius: 2.4rem;
+	margin: 0px;
 	position: fixed;
 	left: 10px;
 	bottom: 10px;
 	z-index: 1;
-	background-color: rgba(255, 255, 255, 0.12);
-	color: rgb(214, 214, 214);
+	background-color: transparent;
+}
+
+#h3nti3-tool-box button {
+	padding: 0.2rem 1rem;
+	border: none;
+	border-radius: 2.4rem;
+	margin: 2px;
+	background-color: var(--dark-grey);
+	color: var(--dark-white);
 	font-size: 2rem;
 	font-family: sans-serif;
 	font-weight: bold;
 }
 
-#h3nti3-selectButton[data-illust-id] {
+#h3nti3-tool-box button:hover:not(:disabled) {
+	background-color: var(--dark-grey-highlight);
+	cursor: pointer;
+}
+
+#h3nti3-open-button {
+	display: none;
+}
+
+:is(#h3nti3-tool-box[data-illust-id], #h3nti3-tool-box[data-selecting]) #h3nti3-open-button {
 	display: block;
 }
 
-#h3nti3-selectButton:hover {
-	background-color: rgba(255, 255, 255, 0.2256);
+#h3nti3-open-button:disabled {
+	text-decoration: line-through;
+	color: var(--dark-white-faded);
 }
 
-#h3nti3-selectButton[data-selected] {
-	background-color: rgb(0, 150, 250);
+#h3nti3-tool-box[data-selecting] #h3nti3-open-button:not(:disabled) {
+	background-color: var(--pixiv-blue);
 }
 
-#h3nti3-selectButton[data-selected]:hover {
-	background-color: rgb(0, 160, 250);
+#h3nti3-tool-box[data-selecting] #h3nti3-open-button:hover:not(:disabled) {
+	background-color: var(--pixiv-blue-highlight);
+}
+
+#h3nti3-select-button {
+	display: none;
+}
+
+#h3nti3-tool-box[data-illust-id][data-selecting] #h3nti3-select-button {
+	display: block;
+}
+
+#h3nti3-tool-box[data-selected] #h3nti3-select-button {
+	background-color: var(--pixiv-blue);
+}
+
+#h3nti3-tool-box[data-selected] #h3nti3-select-button:hover {
+	background-color: var(--pixiv-blue-highlight);
 }

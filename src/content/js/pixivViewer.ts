@@ -2,15 +2,31 @@ import { qs, qsa, StorageHelper } from '../../utils.js';
 
 const storage = new StorageHelper('session', 'pixivViewer');
 
+const toolBox = document.createElement('div');
+toolBox.id = 'h3nti3-tool-box';
+
+const openButton = document.createElement('button');
+openButton.id = 'h3nti3-open-button';
+toolBox.append(openButton);
+
 const selectButton = document.createElement('button');
-selectButton.id = 'h3nti3-selectButton';
-document.documentElement.append(selectButton);
+selectButton.id = 'h3nti3-select-button';
+toolBox.append(selectButton);
+
+document.documentElement.append(toolBox);
 
 let isSelecting = await storage.get('isSelecting') as boolean;
 
 /*
  * Helper functions
  */
+const getCurrentIllustrationId = () => {
+	const id: Pixiv.IllustrationInfo['illustId'] = parseInt(location.pathname.match(/^(?:\/\w{2})?\/artworks\/(\d+)/i)?.at(1) ?? 'NaN');
+
+	if (isNaN(id)) return null;
+	return id;
+};
+
 const getAllIllustrationElements = () => {
 	const illustrationElements: HTMLElement[] = [];
 	qsa<HTMLElement>('[type="illust"] a').forEach(element => {
@@ -111,25 +127,64 @@ const updateSelectedElements = async () => {
 	}
 };
 
-const updateSelectButton = async () => {
-	const illustId = parseInt(location.pathname.match(/^(?:\/\w{2})?\/artworks\/(\d+)/i)?.at(1) ?? 'NaN');
+const updateOpenButton = async () => {
+	if (isSelecting) {
+		const selection = await storage.get('selection') as PixivViewer.Artwork[];
 
-	if (isNaN(illustId) || !isSelecting) {
-		delete selectButton.dataset.illustId;
-		delete selectButton.dataset.selected;
+		openButton.innerText = 'Show Selection';
+
+		openButton.disabled = selection.length === 0;
+		return;
+	}
+
+	if (getCurrentIllustrationId() !== null) {
+		openButton.innerText = 'Show in PixivViewer';
+		openButton.disabled = false;
+		return;
+	}
+
+	openButton.innerText = '';
+	openButton.disabled = false;
+};
+
+const updateSelectButton = () => {
+	const illustId = getCurrentIllustrationId();
+
+	if (illustId === null || !isSelecting) {
 		selectButton.innerText = '';
 		return;
 	}
 
-	selectButton.dataset.illustId = illustId.toString();
-
-	if (await isSelected(illustId)) {
-		selectButton.dataset.selected = '';
+	if (toolBox.hasAttribute('data-selected')) {
 		selectButton.innerText = 'Unselect';
 	} else {
-		delete selectButton.dataset.selected;
 		selectButton.innerText = 'Select';
 	}
+};
+
+const updateToolBox = async () => {
+	const illustId = getCurrentIllustrationId();
+
+	if (illustId !== null) {
+		toolBox.dataset.illustId = illustId.toString();
+		if (await isSelected(illustId)) {
+			toolBox.dataset.selected = '';
+		} else {
+			delete toolBox.dataset.selected;
+		}
+	} else {
+		delete toolBox.dataset.illustId;
+		delete toolBox.dataset.selected;
+	}
+
+	if (isSelecting) {
+		toolBox.dataset.selecting = '';
+	} else {
+		delete toolBox.dataset.selecting;
+	}
+
+	updateOpenButton();
+	updateSelectButton();
 };
 
 /*
@@ -138,7 +193,7 @@ const updateSelectButton = async () => {
 storage.addChangeListener((changes) => {
 	if (changes.isSelecting !== undefined) {
 		isSelecting = changes.isSelecting.newValue;
-		updateSelectButton();
+		updateToolBox();
 	}
 
 	if (changes.selection !== undefined) {
@@ -163,16 +218,29 @@ document.addEventListener('click', (event) => {
 	toggle(element);
 }, { capture: true });
 
+openButton.addEventListener('click', async (event) => {
+	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
+	const illustId = getCurrentIllustrationId();
+
+	if (isSelecting) {
+		const artworks = await storage.get('selection') as PixivViewer.Artwork[];
+		url.search = btoa(JSON.stringify(artworks));
+	} else if (illustId !== null) {
+		const artwork: PixivViewer.PixivArtwork = { pixivId: illustId };
+		url.search = btoa(JSON.stringify([artwork]));
+	}
+
+	open(url, '_self');
+}, { passive: true });
+
 selectButton.addEventListener('click', (event) => {
-	console.log('test', event);
-	if (selectButton.dataset.illustId === undefined) return;
+	const illustId = getCurrentIllustrationId();
+	if (illustId === null) return;
 
-	const illustId = parseInt(selectButton.dataset.illustId);
-
-	if (selectButton.hasAttribute('data-selected')) {
-		unselect(illustId).then(updateSelectButton);
+	if (toolBox.hasAttribute('data-selected')) {
+		unselect(illustId).then(updateToolBox);
 	} else {
-		select(illustId).then(updateSelectButton);
+		select(illustId).then(updateToolBox);
 	}
 }, { passive: true });
 
@@ -180,10 +248,12 @@ document.addEventListener('readystatechange', () => {
 	if (document.readyState !== 'complete') return;
 
 	updateSelectedElements();
-	updateSelectButton();
+
+	updateToolBox();
 });
 
 addEventListener('historystateupdated', () => {
 	updateSelectedElements();
-	updateSelectButton();
+
+	updateToolBox();
 });
