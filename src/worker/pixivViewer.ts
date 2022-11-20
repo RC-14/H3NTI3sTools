@@ -1,19 +1,57 @@
 import { generateIDBGetter } from './utils.js';
 
-const getIDB = generateIDBGetter('pixivViewer', 1, (event) => {
+const WEEK_IN_MS = 1000 * 60 * 60 * 24 * 7;
+
+const getIDB = generateIDBGetter('pixivViewer', 1, async (event) => {
 	if (!(event.target instanceof IDBOpenDBRequest)) throw new Error('Event target is not an IDBOpenDBRequest.');
-	if (!(event.target.result instanceof IDBDatabase)) throw new Error("Couldn't get access to the Database");
+	if (!(event.target.result instanceof IDBDatabase)) throw new Error("Couldn't get access to the Database.");
+	if (!(event.target.transaction instanceof IDBTransaction)) throw new Error("Couldn't get access to the Transaction.");
+
 	const db = event.target.result;
+	const transaction = event.target.transaction;
 
-	const illustrationInfoOS = db.createObjectStore('IllustrationInfo', { keyPath: 'illustId' });
-	illustrationInfoOS.createIndex('tags', 'tags', { unique: false, multiEntry: true });
-	illustrationInfoOS.createIndex('userId', 'userId', { unique: false });
+	let illustrationInfoOS: IDBObjectStore;
+	let userInfoOS: IDBObjectStore;
+	let base64ImagesOS: IDBObjectStore;
 
-	const userInfoOS = db.createObjectStore('UserInfo', { keyPath: 'userId' });
-	userInfoOS.createIndex('userName', 'userName', { unique: false });
+	if (event.oldVersion < 1) {
+		illustrationInfoOS = db.createObjectStore('IllustrationInfo', { keyPath: 'illustId' });
+		illustrationInfoOS.createIndex('tags', 'tags', { unique: false, multiEntry: true });
+		illustrationInfoOS.createIndex('userId', 'userId', { unique: false });
 
-	const base64ImagesOS = db.createObjectStore('Base64Images', { keyPath: 'sourceUrl' });
-	base64ImagesOS.createIndex('date', 'date', { unique: false });
+		userInfoOS = db.createObjectStore('UserInfo', { keyPath: 'userId' });
+		userInfoOS.createIndex('userName', 'userName', { unique: false });
+
+		base64ImagesOS = db.createObjectStore('Base64Images', { keyPath: 'sourceUrl' });
+		base64ImagesOS.createIndex('date', 'date', { unique: false });
+	} else {
+		illustrationInfoOS = transaction.objectStore('IllustrationInfo');
+		userInfoOS = transaction.objectStore('UserInfo');
+		base64ImagesOS = transaction.objectStore('Base64Images');
+	}
+
+	if (event.oldVersion < 2) {
+		await new Promise<void>((resolve, reject) => {
+			const cursorRequest = base64ImagesOS.openCursor();
+
+			cursorRequest.addEventListener('error', (event) => reject(cursorRequest.error));
+			cursorRequest.addEventListener('success', (event) => {
+				const cursor = cursorRequest.result;
+
+				if (!(cursor instanceof IDBCursor)) {
+					resolve();
+					return;
+				}
+				const entry: PixivViewer.Base64Image = cursor.value;
+				entry.expiryDate = entry.date + WEEK_IN_MS;
+				cursor.update(entry);
+
+				cursor.continue();
+			});
+
+		});
+		base64ImagesOS.createIndex('expiryDate', 'expiryDate');
+	}
 });
 
 const deleteAllFromObjectStore = (keys: IDBValidKey[], objectStore: IDBObjectStore) => new Promise<PromiseSettledResult<void>[]>((resolve, reject) => {
@@ -37,14 +75,15 @@ const cleanupIDB = async () => {
 	const db = await getIDB();
 	const objectStore = db.transaction('Base64Images', 'readwrite').objectStore('Base64Images');
 
-	// Get all entries with a date older than a week
-	const dateRange = IDBKeyRange.bound(0, Date.now() - 1000 * 60 * 60 * 24 * 7);
-	const request = objectStore.index('date').getAllKeys(dateRange);
+	// Get the keys of all expired entries
+	const expiryDateRange = IDBKeyRange.bound(0, Date.now());
+	const request = objectStore.index('expiryDate').getAllKeys(expiryDateRange);
 	
 	request.addEventListener('error', (event) => {
 		throw request.error;
 	});
 	request.addEventListener('success', async (event) => {
+		// Delete all entries that we got a key of
 		await deleteAllFromObjectStore(request.result, objectStore);
 	});
 };

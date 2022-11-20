@@ -4,6 +4,8 @@ import { fetchIllustrationInfo as fetchIllustrationInfoFromAPI } from '../../../
 
 addHideCursorListeners();
 
+const WEEK_IN_MS = 1000 * 60 * 60 * 24 * 7;
+
 const errorContainer = qs<HTMLDivElement>('div#error-container');
 const imageContainer = qs<HTMLDivElement>('div#image-container');
 
@@ -28,20 +30,56 @@ const showError = (title: string, description: string) => {
 	errorDescription.innerText = description;
 };
 
-const getIDB = generateIDBGetter('pixivViewer', 1, (event) => {
+const getIDB = generateIDBGetter('pixivViewer', 1, async (event) => {
 	if (!(event.target instanceof IDBOpenDBRequest)) throw new Error('Event target is not an IDBOpenDBRequest.');
-	if (!(event.target.result instanceof IDBDatabase)) throw new Error("Couldn't get access to the Database");
+	if (!(event.target.result instanceof IDBDatabase)) throw new Error("Couldn't get access to the Database.");
+	if (!(event.target.transaction instanceof IDBTransaction)) throw new Error("Couldn't get access to the Transaction.");
+
 	const db = event.target.result;
+	const transaction = event.target.transaction;
 
-	const illustrationInfoOS = db.createObjectStore('IllustrationInfo', { keyPath: 'illustId' });
-	illustrationInfoOS.createIndex('tags', 'tags', { unique: false, multiEntry: true });
-	illustrationInfoOS.createIndex('userId', 'userId', { unique: false });
+	let illustrationInfoOS: IDBObjectStore;
+	let userInfoOS: IDBObjectStore;
+	let base64ImagesOS: IDBObjectStore;
 
-	const userInfoOS = db.createObjectStore('UserInfo', { keyPath: 'userId' });
-	userInfoOS.createIndex('userName', 'userName', { unique: false });
+	if (event.oldVersion < 1) {
+		illustrationInfoOS = db.createObjectStore('IllustrationInfo', { keyPath: 'illustId' });
+		illustrationInfoOS.createIndex('tags', 'tags', { unique: false, multiEntry: true });
+		illustrationInfoOS.createIndex('userId', 'userId', { unique: false });
 
-	const base64ImagesOS = db.createObjectStore('Base64Images', { keyPath: 'sourceUrl' });
-	base64ImagesOS.createIndex('date', 'date', { unique: false });
+		userInfoOS = db.createObjectStore('UserInfo', { keyPath: 'userId' });
+		userInfoOS.createIndex('userName', 'userName', { unique: false });
+
+		base64ImagesOS = db.createObjectStore('Base64Images', { keyPath: 'sourceUrl' });
+		base64ImagesOS.createIndex('date', 'date', { unique: false });
+	} else {
+		illustrationInfoOS = transaction.objectStore('IllustrationInfo');
+		userInfoOS = transaction.objectStore('UserInfo');
+		base64ImagesOS = transaction.objectStore('Base64Images');
+	}
+
+	if (event.oldVersion < 2) {
+		await new Promise<void>((resolve, reject) => {
+			const cursorRequest = base64ImagesOS.openCursor();
+
+			cursorRequest.addEventListener('error', (event) => reject(cursorRequest.error));
+			cursorRequest.addEventListener('success', (event) => {
+				const cursor = cursorRequest.result;
+
+				if (!(cursor instanceof IDBCursor)) {
+					resolve();
+					return;
+				}
+				const entry: PixivViewer.Base64Image = cursor.value;
+				entry.expiryDate = entry.date + WEEK_IN_MS;
+				cursor.update(entry);
+
+				cursor.continue();
+			});
+
+		});
+		base64ImagesOS.createIndex('expiryDate', 'expiryDate');
+	}
 });
 
 const pixivIllustrationInfoRequestMap = new Map<Pixiv.IllustrationInfo['illustId'], Promise<Pixiv.IllustrationInfo>>();
@@ -145,7 +183,8 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolv
 				const entry: PixivViewer.Base64Image = {
 					sourceUrl: srcUrl.href,
 					b64Data: fileReader.result,
-					date: Date.now()
+					date: Date.now(),
+					expiryDate: Date.now() + WEEK_IN_MS
 				};
 
 				const transaction = db.transaction('Base64Images', 'readwrite');
@@ -183,7 +222,7 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolv
 	});
 });
 
-const updateBase64ImagesDates = () => new Promise<void>(async (resolve, reject) => {
+const updateBase64ImagesExpiryDates = () => new Promise<void>(async (resolve, reject) => {
 	const db = await getIDB();
 	const objectStore = db.transaction('Base64Images', 'readwrite').objectStore('Base64Images');
 	const promises: Promise<void>[] = [];
@@ -196,8 +235,8 @@ const updateBase64ImagesDates = () => new Promise<void>(async (resolve, reject) 
 			const getRequest = objectStore.get(key);
 			getRequest.addEventListener('error', (event) => reject(getRequest.error));
 			getRequest.addEventListener('success', (event) => {
-				const entry = getRequest.result;
-				entry.date = Date.now();
+				const entry: PixivViewer.Base64Image = getRequest.result;
+				entry.expiryDate = Date.now() + WEEK_IN_MS;
 
 				const writeRequest = objectStore.put(entry);
 				writeRequest.addEventListener('error', (event) => reject(writeRequest.error));
@@ -384,7 +423,7 @@ const showImages = async () => {
 	// Wait for all images to load
 	await Promise.allSettled(imageLoadPromises);
 
-	await updateBase64ImagesDates();
+	await updateBase64ImagesExpiryDates();
 	sendRuntimeMessage('pixivViewer', 'cleanupIDB');
 
 	// Load additional data
