@@ -185,7 +185,7 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolv
 
 const updateBase64ImagesDates = () => new Promise<void>(async (resolve, reject) => {
 	const db = await getIDB();
-	const objectStore = db.transaction('Base64Images', 'readwrite').objectStore('Base64Imges');
+	const objectStore = db.transaction('Base64Images', 'readwrite').objectStore('Base64Images');
 	const promises: Promise<void>[] = [];
 
 	// Create an deduplicated array with every image URL
