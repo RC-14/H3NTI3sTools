@@ -225,6 +225,7 @@ openButton.addEventListener('click', async (event) => {
 	if (isSelecting) {
 		const artworks = await storage.get('selection') as PixivViewer.Artwork[];
 		url.search = btoa(JSON.stringify(artworks));
+		storage.set('selection', []);
 	} else if (illustId !== null) {
 		const artwork: PixivViewer.PixivArtwork = { pixivId: illustId };
 		url.search = btoa(JSON.stringify([artwork]));
