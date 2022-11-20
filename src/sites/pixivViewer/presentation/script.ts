@@ -30,7 +30,7 @@ const showError = (title: string, description: string) => {
 	errorDescription.innerText = description;
 };
 
-const getIDB = generateIDBGetter('pixivViewer', 1, async (event) => {
+const getIDB = generateIDBGetter('pixivViewer', 2, async (event) => {
 	if (!(event.target instanceof IDBOpenDBRequest)) throw new Error('Event target is not an IDBOpenDBRequest.');
 	if (!(event.target.result instanceof IDBDatabase)) throw new Error("Couldn't get access to the Database.");
 	if (!(event.target.transaction instanceof IDBTransaction)) throw new Error("Couldn't get access to the Transaction.");
