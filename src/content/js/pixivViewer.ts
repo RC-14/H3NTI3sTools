@@ -129,11 +129,11 @@ const updateSelectedElements = async () => {
 
 const updateOpenButton = async () => {
 	if (isSelecting) {
-		const selection = await storage.get('selection') as PixivViewer.Artwork[];
+		const selection = await storage.get('selection') as PixivViewer.Artwork[] | undefined;
 
 		openButton.innerText = 'Show Selection';
 
-		openButton.disabled = selection.length === 0;
+		openButton.disabled = (selection?.length ?? 0) === 0;
 		return;
 	}
 
@@ -223,7 +223,9 @@ openButton.addEventListener('click', async (event) => {
 	const illustId = getCurrentIllustrationId();
 
 	if (isSelecting) {
-		const artworks = await storage.get('selection') as PixivViewer.Artwork[];
+		const artworks = await storage.get('selection') as PixivViewer.Artwork[] | undefined;
+		if ((artworks?.length ?? 0) === 0) return;
+
 		url.search = btoa(JSON.stringify(artworks));
 		storage.set('selection', []);
 	} else if (illustId !== null) {
