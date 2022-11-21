@@ -52,6 +52,14 @@
 	cursor: pointer;
 }
 
+#h3nti3-tool-box[data-selecting] #h3nti3-toggle-button {
+	background-color: var(--pixiv-blue);
+}
+
+#h3nti3-tool-box[data-selecting] #h3nti3-toggle-button:hover {
+	background-color: var(--pixiv-blue-highlight);
+}
+
 #h3nti3-open-button {
 	display: none;
 }

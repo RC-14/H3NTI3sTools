@@ -5,6 +5,10 @@ const storage = new StorageHelper('session', 'pixivViewer');
 const toolBox = document.createElement('div');
 toolBox.id = 'h3nti3-tool-box';
 
+const toggleSelectingButton = document.createElement('button');
+toggleSelectingButton.id = 'h3nti3-toggle-button';
+toolBox.append(toggleSelectingButton);
+
 const openButton = document.createElement('button');
 openButton.id = 'h3nti3-open-button';
 toolBox.append(openButton);
@@ -127,6 +131,17 @@ const updateSelectedElements = async () => {
 	}
 };
 
+/*
+ * Toolbox update functions
+ */
+const updateToggleSelectingButton = () => {
+	if (isSelecting) {
+		toggleSelectingButton.innerText = 'Stop Selecting';
+	} else {
+		toggleSelectingButton.innerText = 'Start Selecting';
+	}
+};
+
 const updateOpenButton = async () => {
 	if (isSelecting) {
 		const selection = await storage.get('selection') as PixivViewer.Artwork[] | undefined;
@@ -183,6 +198,7 @@ const updateToolBox = async () => {
 		delete toolBox.dataset.selecting;
 	}
 
+	updateToggleSelectingButton();
 	updateOpenButton();
 	updateSelectButton();
 };
@@ -217,6 +233,10 @@ document.addEventListener('click', (event) => {
 	event.preventDefault();
 	toggle(element);
 }, { capture: true });
+
+toggleSelectingButton.addEventListener('click', (event) => {
+	storage.set('isSelecting', !isSelecting);
+}, { passive: true });
 
 openButton.addEventListener('click', async (event) => {
 	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
