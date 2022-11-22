@@ -238,11 +238,6 @@ toggleSelectingButton.addEventListener('click', (event) => {
 	storage.set('isSelecting', !isSelecting);
 }, { passive: true });
 
-interface test {
-	x: string
-	[key: number]: string
-}
-
 openButton.addEventListener('click', async (event) => {
 	const messageData: PixivViewer.ShowMessageData = { tabId: null };
 	const illustId = getCurrentIllustrationId();
