@@ -75,6 +75,23 @@ const deleteAllFromObjectStore = (keys: IDBValidKey[], objectStore: IDBObjectSto
 	Promise.allSettled(promises).then(resolve);
 });
 
+const show = (artworks: PixivViewer.Artwork[], tabId?: chrome.tabs.Tab['id'] | null) => {
+	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
+	url.search = btoa(JSON.stringify(artworks));
+
+	if (tabId === null) {
+		chrome.tabs.update({ url: url.href });
+	} else if (typeof tabId === 'number') {
+		chrome.tabs.update(tabId, { url: url.href });
+	} else {
+		chrome.tabs.create({ url: url.href });
+	}
+};
+
+/*
+ * msg handlers
+ */
+
 const cleanupIDB = async () => {
 	const db = await getIDB();
 	const objectStore = db.transaction('Base64Images', 'readwrite').objectStore('Base64Images');
@@ -92,19 +109,6 @@ const cleanupIDB = async () => {
 	});
 };
 
-const show = (artworks: PixivViewer.Artwork[], tabId?: chrome.tabs.Tab['id'] | null) => {
-	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
-	url.search = btoa(JSON.stringify(artworks));
-
-	if (tabId === null) {
-		chrome.tabs.update({ url: url.href });
-	} else if (typeof tabId === 'number') {
-		chrome.tabs.update(tabId, { url: url.href });
-	} else {
-		chrome.tabs.create({ url: url.href });
-	}
-};
-
 const showSelection = async (messageData: PixivViewer.ShowMessageData) => {
 	const selection = await storage.get('selection');
 	storage.set({ isSelecting: false, selection: [] });
@@ -114,7 +118,7 @@ const showSelection = async (messageData: PixivViewer.ShowMessageData) => {
 	show(selection, messageData.tabId);
 };
 
-const showArtwork = (messageData: PixivViewer.ShowMessageData) => {
+const showArtwork = async (messageData: PixivViewer.ShowMessageData) => {
 	if (messageData.artwork === undefined) return;
 
 	show([messageData.artwork], messageData.tabId);
@@ -154,16 +158,16 @@ module.runtimeMessageHandler = (msg, data, sender) => {
 
 	switch (msg) {
 		case 'cleanupIDB':
-			cleanupIDB();
-			break;
+			return cleanupIDB();
 
 		case 'showSelection':
-			showSelection(showMessageData);
-			break;
+			return showSelection(showMessageData);
 
 		case 'showArtwork':
-			showArtwork(showMessageData);
-			break;
+			return showArtwork(showMessageData);
+		
+		default:
+			throw new Error(`Can't handle msg: ${msg}`);
 	}
 };
 

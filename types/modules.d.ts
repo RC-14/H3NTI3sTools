@@ -15,5 +15,5 @@ type sendRuntimeMessage = (target: RuntimeMessage['target'], handler: RuntimeMes
 type sendMessageToTab = (tabId: number, handler: RuntimeMessage['handler'], msg: string | null, data?: RuntimeMessage['data']) => Promise<RuntimeMessage['data']>;
 type sendMessageToFrame = (tabId: number, frameId: number, handler: RuntimeMessage['handler'], msg: string | null, data?: RuntimeMessage['data']) => Promise<RuntimeMessage['data']>;
 
-type RuntimeMessageHandler = (msg: RuntimeMessage['msg'], data: RuntimeMessage['data'], sender: chrome.runtime.MessageSender) => RuntimeMessage['data'];
+type RuntimeMessageHandler = (msg: RuntimeMessage['msg'], data: RuntimeMessage['data'], sender: chrome.runtime.MessageSender) => Promise<RuntimeMessage['data']>;
 type HistoryStateUpdatedHandler = (details: chrome.webNavigation.WebNavigationTransitionCallbackDetails) => void;

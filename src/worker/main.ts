@@ -28,18 +28,18 @@ for (const module of moduleList) {
 /*
  * Add listeners
  */
-chrome.runtime.onMessage.addListener((request: RuntimeMessage, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request: RuntimeMessage, sender, sendResponse) => {
 	// Check if the message handler exists
 	const handler = runtimeMessageHandlerMap.get(request.handler);
 	// If it doesn't exist, throw an error
 	if (handler == null) throw new Error(`No handler for "${request.handler}"`);
 
 	// Call the handler and send the result back as the response
-	const response = handler(request.msg, request.data, sender);
+	const response = await handler(request.msg, request.data, sender);
 	console.log('[message]', request.handler, request.msg, request.data, '->', response);
 	sendResponse(response);
 });
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-	historyStateUpdatedHandlerMap.forEach((handler, id) => handler(details));
+	historyStateUpdatedHandlerMap.forEach((handler) => handler(details));
 });
