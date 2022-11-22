@@ -5,14 +5,14 @@ namespace Pixiv {
 		body: jsonObject;
 	}
 
-	interface UserInfo {
+	type UserInfo = {
 		userId: number; // userId
 		userName: string; // name
 		profilePicture: string; // imageBig
 		lastFetch: number; // Date.now() on successfull fetch and try updating when too old and new image from artist gets loaded
 	};
 
-	interface IllustrationInfo {
+	type IllustrationInfo = {
 		illustId: number; // illustId
 		title: string; // illustTitle
 		description: string; // illustComment
