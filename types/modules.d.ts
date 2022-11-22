@@ -8,7 +8,7 @@ interface RuntimeMessage {
 	target: 'content' | 'popup' | 'worker';
 	handler: ModuleObject['id'];
 	msg: string | null;
-	data?: string | number | boolean | void | jsonObject | jsonArray | null;
+	data?: jsonValue;
 }
 
 type sendRuntimeMessage = (target: RuntimeMessage['target'], handler: RuntimeMessage['handler'], msg: RuntimeMessage['msg'], data?: RuntimeMessage['data']) => Promise<RuntimeMessage['data']>;
