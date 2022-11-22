@@ -82,7 +82,7 @@ clearButton.addEventListener('click', (event) => {
 });
 
 showButton.addEventListener('click', (event) => {
-	const messageData: jsonObject = { tabId: null };
+	const messageData: PixivViewer.ShowMessageData = { tabId: null };
 	sendRuntimeMessage('worker', 'pixivViewer', 'showSelection', messageData);
 });
 
