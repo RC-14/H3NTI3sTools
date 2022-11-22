@@ -1,4 +1,4 @@
-import { qs, qsa, StorageHelper } from '../../utils.js';
+import { qs, qsa, sendRuntimeMessage, StorageHelper } from '../../utils.js';
 
 const storage = new StorageHelper('session', 'pixivViewer');
 
@@ -238,22 +238,24 @@ toggleSelectingButton.addEventListener('click', (event) => {
 	storage.set('isSelecting', !isSelecting);
 }, { passive: true });
 
+interface test {
+	x: string
+	[key: number]: string
+}
+
 openButton.addEventListener('click', async (event) => {
-	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
+	const messageData: PixivViewer.ShowMessageData = { tabId: null };
 	const illustId = getCurrentIllustrationId();
 
 	if (isSelecting) {
 		const artworks = await storage.get('selection') as PixivViewer.Artwork[] | undefined;
 		if ((artworks?.length ?? 0) === 0) return;
 
-		url.search = btoa(JSON.stringify(artworks));
-		storage.set('selection', []);
+		sendRuntimeMessage('worker', 'pixivViewer', 'showSelection', messageData);
 	} else if (illustId !== null) {
-		const artwork: PixivViewer.PixivArtwork = { pixivId: illustId };
-		url.search = btoa(JSON.stringify([artwork]));
+		messageData.artwork = { pixivId: illustId };
+		sendRuntimeMessage('worker', 'pixivViewer', 'showArtwork', messageData);
 	}
-
-	open(url, '_self');
 }, { passive: true });
 
 selectButton.addEventListener('click', (event) => {
