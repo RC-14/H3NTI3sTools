@@ -5,12 +5,13 @@ interface ModuleObject {
 }
 
 interface RuntimeMessage {
+	target: 'content' | 'popup' | 'worker';
 	handler: ModuleObject['id'];
 	msg: string | null;
 	data?: string | number | boolean | void | jsonObject | jsonArray | null;
 }
 
-type sendRuntimeMessage = (handler: RuntimeMessage['handler'], msg: RuntimeMessage['msg'], data?: RuntimeMessage['data']) => Promise<RuntimeMessage['data']>;
+type sendRuntimeMessage = (target: RuntimeMessage['target'], handler: RuntimeMessage['handler'], msg: RuntimeMessage['msg'], data?: RuntimeMessage['data']) => Promise<RuntimeMessage['data']>;
 type sendMessageToTab = (tabId: number, handler: RuntimeMessage['handler'], msg: string | null, data?: RuntimeMessage['data']) => Promise<RuntimeMessage['data']>;
 type sendMessageToFrame = (tabId: number, frameId: number, handler: RuntimeMessage['handler'], msg: string | null, data?: RuntimeMessage['data']) => Promise<RuntimeMessage['data']>;
 

@@ -17,8 +17,9 @@ export const isElementEditable = (element: HTMLElement) => {
 	return false;
 };
 
-export const sendRuntimeMessage: sendRuntimeMessage = (handler, msg, data) => {
+export const sendRuntimeMessage: sendRuntimeMessage = (target, handler, msg, data) => {
 	return chrome.runtime.sendMessage<RuntimeMessage>({
+		target,
 		handler,
 		msg,
 		data
