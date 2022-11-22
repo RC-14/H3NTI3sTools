@@ -424,7 +424,7 @@ const showImages = async () => {
 	await Promise.allSettled(imageLoadPromises);
 
 	await updateBase64ImagesExpiryDates();
-	sendRuntimeMessage('pixivViewer', 'cleanupIDB');
+	sendRuntimeMessage('worker', 'pixivViewer', 'cleanupIDB');
 
 	// Load additional data
 	// TODO: Load thumb versions if not present
