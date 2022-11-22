@@ -1,13 +1,13 @@
-import { qs, StorageHelper } from '../../utils.js';
+import { qs, sendRuntimeMessage, StorageHelper } from '../../utils.js';
 
 const storage = new StorageHelper('session', 'pixivViewer');
 
 const link = qs<HTMLAnchorElement>('a#link');
-const showLink = qs<HTMLAnchorElement>('a#showLink');
+const showButton = qs<HTMLButtonElement>('button#showButton');
 const selectButton = qs<HTMLButtonElement>('button#selectButton');
 const clearButton = qs<HTMLButtonElement>('button#clearButton');
 
-if (link == null || showLink == null || selectButton == null || clearButton == null) {
+if (link == null || showButton == null || selectButton == null || clearButton == null) {
 	document.body.innerText = 'Fatal error: required elements not found';
 	throw new Error('[pixivViewer popup] Required elements not found');
 }
@@ -22,16 +22,12 @@ const setElementActive = (element: HTMLElement) => element.classList.remove('ina
 /*
  * UI update functions
  */
-const updateShowLink = (artworks: PixivViewer.Artwork[]) => {
+const updateShowButton = (artworks: PixivViewer.Artwork[]) => {
 	if (artworks.length < 1) {
-		showLink.href = '#';
-		setElementInactive(showLink);
+		setElementInactive(showButton);
 		return;
 	}
-	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
-	url.search = btoa(JSON.stringify(artworks));
-	showLink.href = url.href;
-	setElementActive(showLink);
+	setElementActive(showButton);
 };
 
 const updateSelectButton = (isSelecting: boolean) => {
@@ -59,7 +55,7 @@ storage.addChangeListener((changes) => {
 		const selection: unknown = changes.selection.newValue;
 
 		if (Array.isArray(selection)) {
-			updateShowLink(selection);
+			updateShowButton(selection);
 			updateClearButton(selection);
 		} else {
 			storage.set({ selection: [] });
@@ -85,11 +81,9 @@ clearButton.addEventListener('click', (event) => {
 	storage.set({ selection: [] });
 });
 
-showLink.addEventListener('click', (event) => {
-	event.preventDefault();
-
-	storage.set({ isSelecting: false, selection: [] });
-	chrome.tabs.update({ url: showLink.href });
+showButton.addEventListener('click', (event) => {
+	const messageData: jsonObject = { tabId: null };
+	sendRuntimeMessage('worker', 'pixivViewer', 'showSelection', messageData);
 });
 
 /*
@@ -105,5 +99,5 @@ storage.get('selection').then((selection) => {
 		return;
 	}
 	updateClearButton(selection);
-	updateShowLink(selection);
+	updateShowButton(selection);
 });

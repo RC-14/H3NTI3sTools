@@ -14,4 +14,9 @@ namespace PixivViewer {
 		date: number; // Date.now() when downloaded
 		expiryDate: number; // -1 if it doesn't expire and otherwise Date.now() + 1 week on last access
 	};
+
+	interface ShowMessageData {
+		tabId?: chrome.tabs.Tab['id'] | null;
+		artwork?: Artwork;
+	}
 }

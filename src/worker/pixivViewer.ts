@@ -1,8 +1,10 @@
-import { generateIDBGetter } from './utils.js';
+import { generateIDBGetter, StorageHelper } from './utils.js';
 
-const moduleObject: ModuleObject = { id: 'pixivViewer' };
+const module: ModuleObject = { id: 'pixivViewer' };
 
 const WEEK_IN_MS = 1000 * 60 * 60 * 24 * 7;
+
+const storage = new StorageHelper('session', module.id);
 
 const getIDB = generateIDBGetter('pixivViewer', 2, async (event) => {
 	if (!(event.target instanceof IDBOpenDBRequest)) throw new Error('Event target is not an IDBOpenDBRequest.');
@@ -90,12 +92,79 @@ const cleanupIDB = async () => {
 	});
 };
 
-moduleObject.runtimeMessageHandler = (msg, data, sender) => {
+const show = (artworks: PixivViewer.Artwork[], tabId?: chrome.tabs.Tab['id'] | null) => {
+	const url = new URL(chrome.runtime.getURL('sites/pixivViewer/presentation/index.html'));
+	url.search = btoa(JSON.stringify(artworks));
+
+	if (tabId === null) {
+		chrome.tabs.update({ url: url.href });
+	} else if (typeof tabId === 'number') {
+		chrome.tabs.update(tabId, { url: url.href });
+	} else {
+		chrome.tabs.create({ url: url.href });
+	}
+};
+
+const showSelection = async (messageData: PixivViewer.ShowMessageData) => {
+	const selection = await storage.get('selection');
+	storage.set({ isSelecting: false, selection: [] });
+
+	if (!Array.isArray(selection)) return;
+
+	show(selection, messageData.tabId);
+};
+
+const showArtwork = (messageData: PixivViewer.ShowMessageData) => {
+	if (messageData.artwork === undefined) return;
+
+	show([messageData.artwork], messageData.tabId);
+};
+
+module.runtimeMessageHandler = (msg, data, sender) => {
+	let showMessageData: PixivViewer.ShowMessageData = {};
+
+	// Write data into showMessageData
+	if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
+		if (typeof data.tabId === 'number') {
+			showMessageData.tabId = data.tabId;
+		} else if (data.tabId === null) {
+			showMessageData.tabId = sender.tab?.id;
+		}
+
+		if (typeof data.artwork === 'string') {
+			showMessageData.artwork = data.artwork;
+		} else if (typeof data.artwork === 'object' && data.artwork !== null && !Array.isArray(data.artwork) && typeof data.artwork.pixivId === 'number') {
+			showMessageData.artwork = { pixivId: data.artwork.pixivId };
+
+			// Check if data.artwork.exclude is compatible with type number[]
+			if (Array.isArray(data.artwork.exclude) && !data.artwork.exclude.some((value) => typeof value !== 'number')) {
+				showMessageData.artwork.exclude = data.artwork.exclude as number[];
+			}
+
+			// Check if data.artwork.overwrite is compatible with type (string | null)[]
+			if (Array.isArray(data.artwork.overwrite) && !data.artwork.overwrite.some((value) => typeof value !== 'string' && value !== null)) {
+				showMessageData.artwork.overwrite = data.artwork.overwrite as (string | null)[];
+			}
+
+			if (typeof data.artwork.ignoreOverwrite === 'boolean') {
+				showMessageData.artwork.ignoreOverwrite = data.artwork.ignoreOverwrite;
+			}
+		}
+	}
+
 	switch (msg) {
 		case 'cleanupIDB':
 			cleanupIDB();
 			break;
+
+		case 'showSelection':
+			showSelection(showMessageData);
+			break;
+
+		case 'showArtwork':
+			showArtwork(showMessageData);
+			break;
 	}
 };
 
-export default moduleObject;
+export default module;
