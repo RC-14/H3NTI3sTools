@@ -7,10 +7,10 @@ addHideCursorListeners();
 const WEEK_IN_MS = 1000 * 60 * 60 * 24 * 7;
 
 const errorContainer = qs<HTMLDivElement>('div#error-container');
-const imageContainer = qs<HTMLDivElement>('div#image-container');
+const presentationContainer = qs<HTMLDivElement>('div#presentation-container');
 
 if (!(errorContainer instanceof HTMLDivElement)) throw new Error("Error container isn't a DIV element");
-if (!(imageContainer instanceof HTMLDivElement)) throw new Error("Image container isn't a DIV element");
+if (!(presentationContainer instanceof HTMLDivElement)) throw new Error("Image container isn't a DIV element");
 
 const errorTitle = qs<HTMLParagraphElement>('p.error-title', errorContainer);
 const errorDescription = qs<HTMLParagraphElement>('p.error-description', errorContainer);
@@ -23,7 +23,7 @@ const imageTemplate = qs<HTMLTemplateElement>('template#image-template');
 if (!(imageTemplate instanceof HTMLTemplateElement)) throw new Error("Image template isn't a template element");
 
 const showError = (title: string, description: string) => {
-	imageContainer.classList.add('hidden');
+	presentationContainer.classList.add('hidden');
 	errorContainer.classList.remove('hidden');
 
 	errorTitle.innerText = title;
@@ -135,7 +135,7 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolv
 	imageUrlList.push(srcUrl);
 
 	// Prevent loading images multiple times
-	if (qs(`[data-src="${srcUrl.href}"]`, imageContainer) !== null) {
+	if (qs(`[data-src="${srcUrl.href}"]`, presentationContainer) !== null) {
 		resolve();
 		return;
 	}
@@ -154,7 +154,7 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolv
 	wrapper.dataset.src = srcUrl.href;
 	aElem.href = siteUrl?.href ?? srcUrl.href;
 
-	imageContainer.append(wrapper);
+	presentationContainer.append(wrapper);
 
 	// Try to load image from indexedDB
 	const db = await getIDB();
@@ -251,14 +251,14 @@ const updateBase64ImagesExpiryDates = () => new Promise<void>(async (resolve, re
 });
 
 const hideCurrentImage = () => {
-	const wrapper = qs(`[data-src="${imageUrlList[imageIndex].href}"]`, imageContainer);
+	const wrapper = qs(`[data-src="${imageUrlList[imageIndex].href}"]`, presentationContainer);
 	if (wrapper === null) return;
 
 	wrapper.classList.add('hidden');
 };
 
 const showCurrentImage = () => {
-	const wrapper = qs(`[data-src="${imageUrlList[imageIndex].href}"]`, imageContainer);
+	const wrapper = qs(`[data-src="${imageUrlList[imageIndex].href}"]`, presentationContainer);
 	if (wrapper === null) return;
 
 	wrapper.classList.remove('hidden');
@@ -328,7 +328,7 @@ const addControls = () => {
 
 const showImages = async () => {
 	errorContainer.classList.add('hidden');
-	imageContainer.classList.remove('hidden');
+	presentationContainer.classList.remove('hidden');
 	counter.classList.remove('hidden');
 
 	const db = await getIDB();
