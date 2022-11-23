@@ -1,7 +1,11 @@
 import { qs, isElementEditable } from '../../utils.js';
 
 const isReading = () => {
-	return location.pathname.match(/^\/g\/\d+\/\d+\/?$/gi) !== null;
+	return location.pathname.match(/^\/g\/\d+\/\d+\/?$/i) !== null;
+};
+
+const isLookingAtGalary = () => {
+	return location.pathname.match(/^\/g\/\d+\/?$/i) !== null;
 };
 
 const isSearching = () => {
@@ -26,13 +30,13 @@ if (isSearching() || isBrowsing()) {
 
 		switch (event.code) {
 			case 'ArrowLeft':
-				const previous = qs('.previous');
-				if (previous instanceof HTMLElement) previous?.click();
+				const previous = qs('a.previous');
+				if (previous instanceof HTMLAnchorElement) previous.click();
 				break;
 
 			case 'ArrowRight':
-				const next = qs('.next');
-				if (next instanceof HTMLElement) next?.click();
+				const next = qs('a.next');
+				if (next instanceof HTMLAnchorElement) next.click();
 				break;
 
 			default:
@@ -46,14 +50,28 @@ if (isSearching() || isBrowsing()) {
 		switch (event.code) {
 			case 'Escape':
 				setTimeout(() => {
-					const back = qs('.go-back');
-					if (back instanceof HTMLAnchorElement) open(back?.href, '_self');
+					const back = qs('a.go-back');
+					if (back instanceof HTMLAnchorElement) back.click();
 				}, 100);
 				break;
 
 			case 'Space':
-				const next = qs('.next');
-				if (next instanceof HTMLElement) next?.click();
+				const next = qs('a.next');
+				if (next instanceof HTMLAnchorElement) next.click();
+				break;
+
+			default:
+				break;
+		}
+	});
+} else if (isLookingAtGalary()) {
+	document.addEventListener('keydown', (event) => {
+		if (isElementEditable(event.target as HTMLElement)) return;
+
+		switch (event.code) {
+			case 'Space':
+				const firstPageLink = qs('#cover a');
+				if (firstPageLink instanceof HTMLAnchorElement) firstPageLink.click();
 				break;
 
 			default:
