@@ -1,19 +1,4 @@
-* {
-	color: whitesmoke;
-	margin: 0px;
-	border: none;
-	padding: 0px;
-}
-
-body {
-	background: rgb(14, 14, 14);
-	overflow: hidden;
-}
-
-.hidden {
-	visibility: hidden !important;
-	display: none !important;
-}
+@import '../../base.css';
 
 #error-container {
 	display: flex;
