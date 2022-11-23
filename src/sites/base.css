@@ -12,6 +12,11 @@ body {
 	overflow: hidden;
 }
 
+/* Prevent the browser from showing a placeholder when the src attribute isn't set */
+img:is(:not([src]), [src=""]) {
+	visibility: hidden;
+}
+
 .hidden {
 	visibility: hidden !important;
 	display: none !important;
