@@ -10,14 +10,14 @@
 	height: 100vh;
 }
 
-.error-title {
+#error-container .error-title {
 	color: rgb(255, 0, 0);
 	font-size: 4rem;
 	font-weight: bold;
-	max-width: 40%;
+	max-width: 50%;
 }
 
-.error-description {
+#error-container .error-description {
 	font-size: 1.5rem;
 	max-width: 50%;
 }
