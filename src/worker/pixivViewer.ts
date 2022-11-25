@@ -129,10 +129,8 @@ module.runtimeMessageHandler = (msg, data, sender) => {
 
 	// Write data into showMessageData
 	if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
-		if (typeof data.tabId === 'number') {
+		if (typeof data.tabId === 'number' || data.tabId === null) {
 			showMessageData.tabId = data.tabId;
-		} else if (data.tabId === null) {
-			showMessageData.tabId = sender.tab?.id;
 		}
 
 		if (typeof data.artwork === 'string') {
