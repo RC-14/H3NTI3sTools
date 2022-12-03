@@ -36,10 +36,10 @@ export const fetchIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId
 		if (typeof tag.userId !== 'string') continue;
 		if (parseInt(tag.userId) !== userId) continue;
 
-		if (typeof tag.romanji === 'string') {
-			if (tags.includes(tag.romanji)) continue;
+		if (typeof tag.romaji === 'string') {
+			if (tags.includes(tag.romaji)) continue;
 
-			tags.push(tag.romanji);
+			tags.push(tag.romaji);
 			continue;
 		}
 
