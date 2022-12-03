@@ -13,6 +13,12 @@ export const fetchIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId
 
 	// Check if we got a description
 	if (typeof apiResponse.body.illustComment !== 'string') throw new Error(`API response for illstId "${id}" doesn't contain a description.`);
+	let description = apiResponse.body.illustComment;
+	// Convert HTML to normal text
+	description = description.replaceAll(/<br\s*\/>/gi, '\n');
+	description = description.replaceAll(/<a[^>]*>([^<]*)<\/a\s*>/gi, '$1');
+	description = description.replaceAll(/<strong\s*>([^<]+)<\/strong\s*>/gi, '$1');
+	description = htmlCharRef.decode(description);
 
 	// Check if we got an upload date
 	if (typeof apiResponse.body.uploadDate !== 'string') throw new Error(`API response for illstId "${id}" doesn't contain an upload date.`);
@@ -85,7 +91,7 @@ export const fetchIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId
 	return {
 		illustId: id,
 		title: htmlCharRef.decode(apiResponse.body.illustTitle),
-		description: htmlCharRef.decode(apiResponse.body.illustComment),
+		description,
 		tags,
 		uploadDate,
 		userId,
