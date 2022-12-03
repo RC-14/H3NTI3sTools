@@ -36,6 +36,15 @@ export const fetchIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId
 		if (typeof tag.userId !== 'string') continue;
 		if (parseInt(tag.userId) !== userId) continue;
 
+		if (typeof tag.translation === 'object' && tag.translation !== null && !Array.isArray(tag.translation)) {
+			if (typeof tag.translation.en === 'string') {
+				if (tags.includes(tag.translation.en)) continue;
+
+				tags.push(tag.translation.en);
+				continue;
+			}
+		}
+
 		if (typeof tag.romaji === 'string') {
 			if (tags.includes(tag.romaji)) continue;
 
@@ -96,7 +105,7 @@ export const fetchUserInfo = async (id: Pixiv.UserInfo['userId']): Promise<Pixiv
 
 	if (typeof apiResponse.body.imageBig !== 'string') throw new Error(`API response for userId "${id}" doesn't contain a string for imageBig.`);
 	if (!isValidUrl(apiResponse.body.imageBig)) throw new Error(`API response for userId "${id}" doesn't contain a valid URL for imageBig.`);
-	
+
 	return {
 		userId: id,
 		userName: htmlCharRef.decode(apiResponse.body.name),
