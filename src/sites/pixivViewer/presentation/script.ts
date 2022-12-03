@@ -90,7 +90,7 @@ const getPixivIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId'], 
 
 	const promise = new Promise<Pixiv.IllustrationInfo>(async (resolve, reject) => {
 		// Fall back to an api request in case we don't get the illustration info from indexedDB
-		const fallback = async () => {
+		const fallbackToAPI = async () => {
 			const illustInfo = await fetchIllustrationInfoFromAPI(id);
 
 			const request = db.transaction('IllustrationInfo', 'readwrite').objectStore('IllustrationInfo').put(illustInfo);
@@ -105,11 +105,11 @@ const getPixivIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId'], 
 		const request = db.transaction('IllustrationInfo', 'readonly').objectStore('IllustrationInfo').get(id);
 		request.addEventListener('error', (event) => {
 			console.error(`Failed to get illustration info from indexedDB with error: ${request.error}`);
-			fallback();
+			fallbackToAPI();
 		});
 		request.addEventListener('success', (event) => {
 			if (request.result === undefined) {
-				fallback();
+				fallbackToAPI();
 				return;
 			}
 
@@ -222,23 +222,55 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolv
 	});
 });
 
-const updateBase64ImagesExpiryDates = () => new Promise<void>(async (resolve, reject) => {
+const updateExpiryDates = (artworkList: PixivViewer.Artwork[]) => new Promise<void>(async (resolve, reject) => {
 	const db = await getIDB();
-	const objectStore = db.transaction('Base64Images', 'readwrite').objectStore('Base64Images');
+	const illustrationInfoOS = db.transaction('IllustrationInfo', 'readonly').objectStore('IllustrationInfo');
 	const promises: Promise<void>[] = [];
 
-	// Create an deduplicated array with every image URL
-	const keys = imageUrlList.map((url) => url.href).filter((url, index, array) => index === array.indexOf(url));
+	// Create an array with every image URL related to the artworks
+	const keys: string[] = [];
+
+	for (const artwork of artworkList) {
+		if (typeof artwork === 'string') {
+			if (!keys.includes(artwork)) keys.push(artwork);
+			continue;
+		}
+		promises.push(new Promise<void>((resolve, reject) => {
+			const request = illustrationInfoOS.get(artwork.pixivId);
+			request.addEventListener('error', (event) => reject(request.error));
+			request.addEventListener('success', (event) => {
+				const illustInfo: Pixiv.IllustrationInfo = request.result;
+
+				for (const page of illustInfo.pages) {
+					if (page.thumb.length && !keys.includes(page.thumb)) keys.push(page.thumb);
+					if (page.original.length && !keys.includes(page.original)) keys.push(page.original);
+					if (page.overwrite?.length && !keys.includes(page.overwrite)) keys.push(page.overwrite);
+				}
+
+				resolve();
+			});
+		}));
+	}
+
+	await Promise.allSettled(promises);
+
+	const base64ImagesOS = db.transaction('Base64Images', 'readwrite').objectStore('Base64Images');
 
 	for (const key of keys) {
 		promises.push(new Promise<void>((resolve, reject) => {
-			const getRequest = objectStore.get(key);
+			const getRequest = base64ImagesOS.get(key);
 			getRequest.addEventListener('error', (event) => reject(getRequest.error));
 			getRequest.addEventListener('success', (event) => {
 				const entry: PixivViewer.Base64Image = getRequest.result;
+				// Don't update the expiryDate when it doesn't expire
+				if (entry.expiryDate < 0) {
+					resolve();
+					return;
+				}
+
 				entry.expiryDate = Date.now() + WEEK_IN_MS;
 
-				const writeRequest = objectStore.put(entry);
+				const writeRequest = base64ImagesOS.put(entry);
 				writeRequest.addEventListener('error', (event) => reject(writeRequest.error));
 				writeRequest.addEventListener('success', (event) => resolve());
 			});
@@ -423,11 +455,12 @@ const showImages = async () => {
 	// Wait for all images to load
 	await Promise.allSettled(imageLoadPromises);
 
-	await updateBase64ImagesExpiryDates();
+	await updateExpiryDates(artworkList);
 	sendRuntimeMessage('worker', 'pixivViewer', 'cleanupIDB');
 
 	// Load additional data
-	// TODO: Load thumb versions if not present
+	// TODO: Load thumbs if not present
+	// TODO: Load originals if not present
 	// TODO: Load user info if not present or to old
 };
 
