@@ -1,3 +1,10 @@
+/* __TODO__
+ * - Load thumb images
+ * - Load original images if using overwrite
+ * - Load/Update user info if neccessary
+ * - Show Artist for image (if known)
+ */
+
 import { qs, useTemplate, showMessage, generateIDBGetter, sendRuntimeMessage } from '../../../utils.js';
 import { addListeners as addHideCursorListeners } from '../../../hideCursor.js';
 import { fetchIllustrationInfo as fetchIllustrationInfoFromAPI } from '../../../pixivAPI.js';
@@ -457,11 +464,6 @@ const showImages = async () => {
 
 	await updateExpiryDates(artworkList);
 	sendRuntimeMessage('worker', 'pixivViewer', 'cleanupIDB');
-
-	// Load additional data
-	// TODO: Load thumbs if not present
-	// TODO: Load originals if not present
-	// TODO: Load user info if not present or to old
 };
 
 if (location.search) {
