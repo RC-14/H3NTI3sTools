@@ -365,6 +365,80 @@ const addControls = () => {
 	});
 };
 
+const getArtworkInfo = (artwork: PixivViewer.Artwork, db: IDBDatabase) => new Promise<{ urls: URL[], site?: URL}>(async (resolve, reject) => {
+	// Handle non pixiv images
+	if (typeof artwork === 'string') {
+		resolve({ urls: [new URL(artwork)] });
+		return;
+	}
+
+	const illustInfo = await getPixivIllustrationInfo(artwork.pixivId, db);
+	const site = new URL(`https://www.pixiv.net/en/artworks/${illustInfo.illustId}`);
+	const urls: URL[] = [];
+
+	// Ignore overwrites if requested or use old overwrites if there are no new overwrites
+	if (artwork.ignoreOverwrite) {
+		for (const page of illustInfo.pages) {
+			if (!page.original.length) continue;
+			
+			urls.push(new URL(page.original));
+		}
+
+		resolve({site, urls});
+		return;
+	} else if (!artwork.overwrite?.length) {
+		for (const page of illustInfo.pages) {
+			if (page.overwrite?.length) {
+				urls.push(new URL(page.overwrite));
+				continue;
+			}
+
+			if (!page.original.length) continue;
+
+			urls.push(new URL(page.original));
+		}
+
+		resolve({site, urls});
+		return;
+	}
+
+	// Use new overwrites and write them to indexedDB
+	const pageCount = illustInfo.pages.length > artwork.overwrite.length ? illustInfo.pages.length : artwork.overwrite.length;
+
+	for (let i = 0; i < pageCount; i++) {
+		// Need to use 'as' because otherwise typescript doesn't recognize that page might be undefined
+		const page = illustInfo.pages[i] as Pixiv.IllustrationInfo['pages'][number] | undefined;
+
+		// If there are old overwrites delete them to avoid messing stuff up
+		if (page?.overwrite?.length) db.transaction('Base64Images', 'readwrite').objectStore('Base64Images').delete(page.overwrite as string).addEventListener('error', (event) => {
+			console.error(`Failed to delete base64 image for url "${page.overwrite}" from indexedDB with error: ${(event.target as IDBRequest<undefined>).error}`);
+		});
+		delete illustInfo.pages[i].overwrite;
+
+		// If there is an overwrite use it
+		if (artwork.overwrite[i]?.length) {
+			urls.push(new URL(artwork.overwrite[i] as string));
+
+			if (illustInfo.pages[i] === undefined) illustInfo.pages[i] = { thumb: '', original: '' };
+			illustInfo.pages[i].overwrite = artwork.overwrite[i] as string;
+
+			continue;
+		}
+		
+		// Use the original if there is no overwrite
+		if (!page?.original.length) continue;
+
+		urls.push(new URL(page.original));
+	}
+
+	// Write illustInfo to indexedDB
+	db.transaction('IllustrationInfo', 'readwrite').objectStore('IllustrationInfo').put(illustInfo).addEventListener('error', (event) => {
+		console.error(`Failed to write illustration info for id "${illustInfo.illustId}" to indexedDB with error: ${(event.target as IDBRequest<IDBValidKey>).error}`);
+	});
+
+	resolve({site, urls});
+});
+
 const showImages = async () => {
 	errorContainer.classList.add('hidden');
 	presentationContainer.classList.remove('hidden');
@@ -380,61 +454,7 @@ const showImages = async () => {
 
 	// Get the source URLs
 	for (const artwork of artworkList) {
-		ArtworkPromiseList.push(new Promise(async (resolve, reject) => {
-			// Handle non pixiv images
-			if (typeof artwork === 'string') {
-				resolve({ urls: [new URL(artwork)] });
-				return;
-			}
-
-			const illustInfo = await getPixivIllustrationInfo(artwork.pixivId, db);
-			const urls: URL[] = [];
-
-			// If there are overwrites set write them to indexedDB otherwise use the overwrites that are present (if there are any)
-			if (!artwork.ignoreOverwrite && artwork.overwrite?.length) {
-				const pageCount = illustInfo.pages.length > artwork.overwrite.length ? illustInfo.pages.length : artwork.overwrite.length;
-
-				for (let i = 0; i < pageCount; i++) {
-					// Need to use 'as' because otherwise typescript doesn't recognize that page might be undefined
-					const page = illustInfo.pages[i] as Pixiv.IllustrationInfo['pages'][number] | undefined;
-
-					// If there are old overwrites delete them to avoid messing stuff up
-					if (page?.overwrite?.length) db.transaction('Base64Images', 'readwrite').objectStore('Base64Images').delete(page.overwrite as string).addEventListener('error', (event) => {
-						console.error(`Failed to delete base64 image for url "${page.overwrite}" from indexedDB with error: ${(event.target as IDBRequest<undefined>).error}`);
-					});
-
-					if (artwork.overwrite[i]?.length) {
-						urls.push(new URL(artwork.overwrite[i] as string));
-
-						if (illustInfo.pages[i] === undefined) illustInfo.pages[i] = { thumb: '', original: '' };
-						illustInfo.pages[i].overwrite = artwork.overwrite[i] as string;
-					} else if (page?.original.length) {
-						urls.push(new URL(page.original));
-
-						delete illustInfo.pages[i].overwrite;
-					}
-				}
-
-				db.transaction('IllustrationInfo', 'readwrite').objectStore('IllustrationInfo').put(illustInfo).addEventListener('error', (event) => {
-					console.error(`Failed to write illustration info for id "${illustInfo.illustId}" to indexedDB with error: ${(event.target as IDBRequest<IDBValidKey>).error}`);
-				});
-			} else {
-				for (let i = 0; i < illustInfo.pages.length; i++) {
-					const page = illustInfo.pages[i];
-
-					if (!artwork.ignoreOverwrite && page.overwrite?.length) {
-						urls.push(new URL(page.overwrite));
-					} else if (page.original.length) {
-						urls.push(new URL(page.original));
-					}
-				}
-			}
-
-			resolve({
-				site: new URL(`https://www.pixiv.net/en/artworks/${illustInfo.illustId}`),
-				urls
-			});
-		}));
+		ArtworkPromiseList.push(getArtworkInfo(artwork, db));
 	}
 
 	const imageLoadPromises: Promise<void>[] = [];
