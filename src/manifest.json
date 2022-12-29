@@ -74,7 +74,8 @@
 		},
 		{
 			"matches": [
-				"*://*.asura.gg/*"
+				"*://*.asura.gg/*",
+				"*://*.asurascans.com/*"
 			],
 			"css": [
 				"content/css/asurascans.css"
