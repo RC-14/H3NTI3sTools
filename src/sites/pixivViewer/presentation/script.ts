@@ -268,9 +268,9 @@ const updateExpiryDates = (artworkList: PixivViewer.Artwork[]) => new Promise<vo
 			const getRequest = base64ImagesOS.get(key);
 			getRequest.addEventListener('error', (event) => reject(getRequest.error));
 			getRequest.addEventListener('success', (event) => {
-				const entry: PixivViewer.Base64Image = getRequest.result;
-				// Don't update the expiryDate when it doesn't expire
-				if (entry.expiryDate < 0) {
+				const entry: PixivViewer.Base64Image | undefined = getRequest.result;
+				// Don't update the expiryDate when it doesn't expire or if the entry doesn't exist
+				if (entry === undefined || entry.expiryDate < 0) {
 					resolve();
 					return;
 				}
