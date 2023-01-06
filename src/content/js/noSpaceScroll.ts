@@ -1,6 +1,6 @@
 import { isElementEditable } from '../../utils.js';
 
-document.addEventListener('keypress', (event) => {
+document.addEventListener('keydown', (event) => {
 	// Make sure that it's possible to write text
 	if (event.target instanceof HTMLElement && isElementEditable(event.target)) return;
 
