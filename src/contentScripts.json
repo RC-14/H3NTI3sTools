@@ -88,5 +88,13 @@
 		"js": [
 			"webtoon.js"
 		]
+	},
+	{
+		"matches": [
+			"kemono.party"
+		],
+		"js": [
+			"kemono.js"
+		]
 	}
 ]

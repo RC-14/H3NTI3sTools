@@ -1,3 +1,12 @@
+#h3nti3-load-high-res-button {
+	margin: 0px;
+	padding: 0.1rem 0.5rem;
+	border-width: 0px;
+	border-radius: 1rem;
+	background-color: rgb(69, 69, 69);
+	color: rgb(245, 245, 245);
+}
+
 /* Limit image sizes to something reasonable */
 .post__files > .post__thumbnail > .fileThumb > img {
 	max-height: 95vh;
