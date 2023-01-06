@@ -17,8 +17,6 @@ const selectButton = document.createElement('button');
 selectButton.id = 'h3nti3-select-button';
 toolBox.append(selectButton);
 
-document.documentElement.append(toolBox);
-
 let isSelecting = await storage.get('isSelecting') as boolean;
 
 /*
@@ -270,6 +268,8 @@ document.addEventListener('readystatechange', () => {
 	updateSelectedElements();
 
 	updateToolBox();
+
+	document.documentElement.append(toolBox);
 });
 
 addEventListener('historystateupdated', () => {
