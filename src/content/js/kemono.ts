@@ -3,7 +3,7 @@ import { qs, qsa } from '../../utils.js';
 // For some reason the first image is shown twice but it won't hurt to remove other duplicates as well.
 const removeDuplicateImages = () => {
 	const imgWrappers = Array.from(qsa<HTMLDivElement>('.post__files > div.post__thumbnail'));
-	const imgSrcs = imgWrappers.map(wrapper => qs<HTMLImageElement>('img[data-src]', wrapper)?.dataset.src)
+	const imgSrcs = imgWrappers.map(wrapper => qs<HTMLAnchorElement>('a.image-link', wrapper)?.href)
 
 	imgSrcs.forEach((src, i) => {
 		if (src === undefined) return;
