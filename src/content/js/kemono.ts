@@ -1,4 +1,4 @@
-import { qs, qsa, showMessage } from '../../utils.js';
+import { qs, qsa, showMessage, isElementEditable } from '../../utils.js';
 
 const loadHighResButton = document.createElement('button');
 loadHighResButton.id = 'h3nti3-load-high-res-button';
@@ -22,7 +22,16 @@ loadHighResButton.addEventListener('click', (event) => {
 	loadHighResButton.remove();
 });
 
-const appendButton = () => {
+document.addEventListener('keydown', (event) => {
+	if (event.target instanceof HTMLElement && isElementEditable(event.target)) return;
+	if (event.code !== 'Space') return;
+	// Don't press the button if it's not in the DOM
+	if (loadHighResButton.parentElement === null) return;
+
+	loadHighResButton.click();
+});
+
+const addLoadHighResButton = () => {
 	const postFilesContainer = qs<HTMLDivElement>('div.post__files');
 
 	if (!(postFilesContainer instanceof HTMLDivElement)) throw new Error("Can't find post files container.");
@@ -34,13 +43,13 @@ const appendButton = () => {
 if (location.pathname.match(/^\/\w+\/user\/\d+\/post\/\d+/i)) {
 	// Depending on the internet connection appending the button might fail.
 	try {
-		appendButton();
+		addLoadHighResButton();
 	} catch (error) {
 		// In that case we wait for the page to load and retry.
 		document.addEventListener('readystatechange', () => {
 			if (document.readyState === 'loading') return;
 
-			appendButton();
+			addLoadHighResButton();
 		}, { once: true });
 	}
 }
