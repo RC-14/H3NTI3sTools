@@ -104,6 +104,14 @@
 			"css": [
 				"content/css/webtoon.css"
 			]
+		},
+		{
+			"matches": [
+				"*://*.kemono.party/*"
+			],
+			"css": [
+				"content/css/kemono.css"
+			]
 		}
 	],
 	"action": {
