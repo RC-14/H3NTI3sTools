@@ -54,18 +54,18 @@ export const getOS = () => {
 };
 
 // function that shows customizable messages in the web page without hiding/deleting content or using alert
-export const showMessage = (message: string, options?: { color?: string, duration?: number, size?: 'small' | 'medium' | 'large'; }) => {
+export const showMessage = (message: string, options?: { color?: string, duration?: number, size?: 'xx-small' | 'x-small' | 'smaller' | 'small' | 'medium' | 'large' | 'larger' | 'x-large' | 'xx-large' | 'xxx-large' }) => {
 	// Default options
 	const color = options?.color ?? 'darkgrey';
 	const duration = options?.duration ?? 3000;
 	const size = options?.size ?? 'large';
 
 	// Get the wrapper element
-	let wrapper = qs<HTMLDivElement>('div#h3nti3Messages');
+	let wrapper = qs<HTMLDivElement>('div#h3nti3-messages');
 	if (wrapper === null) {
 		// If the wrapper element doesn't exist, create it
 		wrapper = document.createElement('div');
-		wrapper.id = 'h3nti3Messages';
+		wrapper.id = 'h3nti3-messages';
 
 		wrapper.style.position = 'fixed';
 		wrapper.style.top = '0';
@@ -79,6 +79,7 @@ export const showMessage = (message: string, options?: { color?: string, duratio
 	msgElement.innerText = message;
 	msgElement.style.color = color;
 	msgElement.style.fontSize = size;
+	msgElement.style.margin = '0.3rem';
 
 	if (wrapper.firstElementChild == null) {
 		wrapper.append(msgElement);
