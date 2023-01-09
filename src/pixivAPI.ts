@@ -121,7 +121,10 @@ export const getUserInfo = async (id: Pixiv.UserInfo['userId']): Promise<Pixiv.U
 };
 
 export const hasFanbox = async (id: Pixiv.UserInfo['userId']): Promise<boolean> => {
-	return fetch(`https://www.pixiv.net/fanbox/creator/${id}`)
-		.then(response => false)
-		.catch(error => true);
+	// This url redirects to the fanbox for the given user id if there is one
+	return fetch(`https://www.pixiv.net/fanbox/creator/${id}`, {redirect: 'error'})
+		.then(response => {
+			if (response.ok) throw new Error("Request was successfull but didn't redirect.");
+			return false;
+		}).catch(error => true);
 }
