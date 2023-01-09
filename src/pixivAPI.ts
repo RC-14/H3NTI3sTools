@@ -119,3 +119,9 @@ export const getUserInfo = async (id: Pixiv.UserInfo['userId']): Promise<Pixiv.U
 		lastFetch: Date.now()
 	};
 };
+
+export const hasFanbox = async (id: Pixiv.UserInfo['userId']): Promise<boolean> => {
+	return fetch(`https://www.pixiv.net/fanbox/creator/${id}`)
+		.then(response => false)
+		.catch(error => true);
+}
