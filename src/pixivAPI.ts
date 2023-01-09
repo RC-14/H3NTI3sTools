@@ -1,6 +1,6 @@
 import { isValidUrl, htmlCharRef } from './utils.js';
 
-export const fetchIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId']): Promise<Pixiv.IllustrationInfo> => {
+export const getIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId']): Promise<Pixiv.IllustrationInfo> => {
 	// Actually request the information
 	const response = await fetch(`https://www.pixiv.net/ajax/illust/${id}?lang=en`);
 	const apiResponse: Pixiv.APIResponse = await response.json();
@@ -99,7 +99,7 @@ export const fetchIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId
 	};
 };
 
-export const fetchUserInfo = async (id: Pixiv.UserInfo['userId']): Promise<Pixiv.UserInfo> => {
+export const getUserInfo = async (id: Pixiv.UserInfo['userId']): Promise<Pixiv.UserInfo> => {
 	// Actually request the information
 	const response = await fetch(`https://www.pixiv.net/ajax/user/${id}?lang=en`);
 	const apiResponse: Pixiv.APIResponse = await response.json();
