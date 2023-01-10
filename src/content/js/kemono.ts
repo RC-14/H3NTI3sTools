@@ -59,14 +59,14 @@ const loadHighResImages = () => {
 
 // Make sure the page shows a post
 if (location.pathname.match(/^\/\w+\/user\/\d+\/post\/\d+/i)) {
-	// Add keyboard shortcuts to go to the next/previous post
+	// Add keyboard shortcuts to go to the next/previous post (arrows are handled by the website)
 	document.addEventListener('keydown', (event) => {
-		if (event.code !== 'Space' && event.code !== 'ArrowLeft' && event.code !== 'ArrowRight') return;
+		if (event.code !== 'Space') return;
 
 		const nextButton = qs<HTMLAnchorElement>('a.post__nav-link.prev');
 		const previousButton = qs<HTMLAnchorElement>('a.post__nav-link.next');
 
-		if ((event.code === 'Space' && event.shiftKey) || event.code === 'ArrowLeft') {
+		if (event.shiftKey) {
 			previousButton?.click();
 			return;
 		}
