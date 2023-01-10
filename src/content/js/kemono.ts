@@ -46,10 +46,10 @@ const loadHighResImages = () => {
 
 		imgElement.addEventListener('load', (event) => {
 			console.log(`Loaded img ${i + 1}/${imgElements.length}`);
-		});
 
-		// Remove data-src attribute to prevent mistaking it for a low res image
-		delete imgElement.dataset.src;
+			// Remove data-src attribute to prevent mistaking it for a low res image
+			delete imgElement.dataset.src;
+		});
 
 		// The src for the high res version is in the href attribute of the parent a element
 		const imgLink = imgElement.parentElement as HTMLAnchorElement;
