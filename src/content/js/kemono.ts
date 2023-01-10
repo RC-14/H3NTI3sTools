@@ -61,17 +61,22 @@ const loadHighResImages = () => {
 if (location.pathname.match(/^\/\w+\/user\/\d+\/post\/\d+/i)) {
 	// Add keyboard shortcuts to go to the next/previous post (arrows are handled by the website)
 	document.addEventListener('keydown', (event) => {
-		if (event.code !== 'Space') return;
+		const nextLink = qs<HTMLAnchorElement>('a.post__nav-link.prev');
+		const previousLink = qs<HTMLAnchorElement>('a.post__nav-link.next');
+		const creatorLink = qs<HTMLAnchorElement>('a.post__user-name');
 
-		const nextButton = qs<HTMLAnchorElement>('a.post__nav-link.prev');
-		const previousButton = qs<HTMLAnchorElement>('a.post__nav-link.next');
+		switch (event.code) {
+			case 'Space':
+				if (event.shiftKey) {
+					previousLink?.click();
+					return;
+				}
+				nextLink?.click();
+				return;
 
-		if (event.shiftKey) {
-			previousButton?.click();
-			return;
+			case 'Escape':
+				setTimeout(() => creatorLink?.click, 100);
 		}
-
-		nextButton?.click();
 	});
 
 	// Remove duplicates
