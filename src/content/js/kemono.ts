@@ -75,7 +75,10 @@ if (location.pathname.match(/^\/\w+\/user\/\d+\/post\/\d+/i)) {
 				return;
 
 			case 'Escape':
-				setTimeout(() => creatorLink?.click, 100);
+				setTimeout(() => {
+					creatorLink?.click();
+				}, 100);
+				return;
 		}
 	});
 
