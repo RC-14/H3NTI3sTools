@@ -60,7 +60,10 @@ const imageLoader = () => {
 	images[0].src = imageSrcs[0];
 };
 
-locationManager();
+// Detect cloudflare and prevent spamming requests
+if (document.title !== 'Just a moment...') {
+	locationManager();
+}
 
 document.addEventListener('click', (event) => {
 	// Check if the element clicked on is the "Sign In" button
