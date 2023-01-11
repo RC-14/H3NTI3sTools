@@ -76,7 +76,7 @@ document.addEventListener('click', (event) => {
 });
 
 if (document.readyState !== 'loading') {
-	imageLoader();
+	if (isReading) imageLoader();
 } else {
 	document.addEventListener('readystatechange', () => {
 		if (document.readyState === 'loading') return;
