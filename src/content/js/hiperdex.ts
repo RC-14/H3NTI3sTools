@@ -72,10 +72,14 @@ document.addEventListener('click', (event) => {
 	if (rememberme instanceof HTMLInputElement) rememberme.checked = true;
 });
 
-document.addEventListener('readystatechange', () => {
-	if (document.readyState === 'loading') return;
-	if (document.readyState === 'interactive') {
-		if (isReading) imageLoader();
-		return;
-	}
-});
+if (document.readyState !== 'loading') {
+	imageLoader();
+} else {
+	document.addEventListener('readystatechange', () => {
+		if (document.readyState === 'loading') return;
+		if (document.readyState === 'interactive') {
+			if (isReading) imageLoader();
+			return;
+		}
+	});
+}
