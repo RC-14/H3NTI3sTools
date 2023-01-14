@@ -342,7 +342,11 @@ const addControls = () => {
 				break;
 
 			case 'Space':
-				next();
+				if (event.shiftKey) {
+					previous();
+				} else {
+					next();
+				}
 				break;
 		}
 	});
@@ -365,7 +369,7 @@ const addControls = () => {
 	});
 };
 
-const getArtworkInfo = (artwork: PixivViewer.Artwork, db: IDBDatabase) => new Promise<{ urls: URL[], site?: URL}>(async (resolve, reject) => {
+const getArtworkInfo = (artwork: PixivViewer.Artwork, db: IDBDatabase) => new Promise<{ urls: URL[], site?: URL; }>(async (resolve, reject) => {
 	// Handle non pixiv images
 	if (typeof artwork === 'string') {
 		resolve({ urls: [new URL(artwork)] });
@@ -380,11 +384,11 @@ const getArtworkInfo = (artwork: PixivViewer.Artwork, db: IDBDatabase) => new Pr
 	if (artwork.ignoreOverwrite) {
 		for (const page of illustInfo.pages) {
 			if (!page.original.length) continue;
-			
+
 			urls.push(new URL(page.original));
 		}
 
-		resolve({site, urls});
+		resolve({ site, urls });
 		return;
 	} else if (!artwork.overwrite?.length) {
 		for (const page of illustInfo.pages) {
@@ -398,7 +402,7 @@ const getArtworkInfo = (artwork: PixivViewer.Artwork, db: IDBDatabase) => new Pr
 			urls.push(new URL(page.original));
 		}
 
-		resolve({site, urls});
+		resolve({ site, urls });
 		return;
 	}
 
@@ -424,7 +428,7 @@ const getArtworkInfo = (artwork: PixivViewer.Artwork, db: IDBDatabase) => new Pr
 
 			continue;
 		}
-		
+
 		// Use the original if there is no overwrite
 		if (!page?.original.length) continue;
 
@@ -436,7 +440,7 @@ const getArtworkInfo = (artwork: PixivViewer.Artwork, db: IDBDatabase) => new Pr
 		console.error(`Failed to write illustration info for id "${illustInfo.illustId}" to indexedDB with error: ${(event.target as IDBRequest<IDBValidKey>).error}`);
 	});
 
-	resolve({site, urls});
+	resolve({ site, urls });
 });
 
 const showImages = async () => {
