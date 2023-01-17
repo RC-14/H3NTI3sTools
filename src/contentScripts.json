@@ -40,7 +40,8 @@
 	},
 	{
 		"matches": [
-			"hiperdex.com"
+			"hiperdex.com",
+			"1sthiperdex.com"
 		],
 		"js": [
 			"hiperdex.js"
