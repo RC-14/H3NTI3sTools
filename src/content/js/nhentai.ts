@@ -56,8 +56,8 @@ if (isSearching() || isBrowsing()) {
 				break;
 
 			case 'Space':
-				const next = qs('a.next');
-				if (next instanceof HTMLAnchorElement) next.click();
+				const button = qs(`a.${event.shiftKey ? 'previous' : 'next'}`);
+				if (button instanceof HTMLAnchorElement) button.click();
 				break;
 
 			default:
