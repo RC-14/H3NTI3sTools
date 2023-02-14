@@ -31,29 +31,34 @@ const loadHighResImages = () => {
 			event.preventDefault();
 		});
 
+		const newImageElement = document.createElement('img');
+		newImageElement.decoding = 'async';
+		newImageElement.loading = 'eager';
+
 		// Images sometimes fail to load the first time so we try multiple times.
 		let failCounter = 0;
-		imgElement.addEventListener('error', (event) => {
+		newImageElement.addEventListener('error', (event) => {
 			if (failCounter === 5) return;
 			failCounter++;
 
 			setTimeout(() => {
 				const imgLink = imgElement.parentElement as HTMLAnchorElement;
-				imgElement.src = '';
-				imgElement.src = imgLink.href;
+				newImageElement.src = '';
+				newImageElement.src = imgLink.href;
 			}, 100);
 		});
 
-		imgElement.addEventListener('load', (event) => {
+		newImageElement.addEventListener('load', (event) => {
 			console.log(`Loaded img ${i + 1}/${imgElements.length}`);
 
-			// Remove data-src attribute to prevent mistaking it for a low res image
-			delete imgElement.dataset.src;
+			newImageElement.decode().then(() => {
+				imgElement.replaceWith(newImageElement);
+			});
 		});
 
 		// The src for the high res version is in the href attribute of the parent a element
 		const imgLink = imgElement.parentElement as HTMLAnchorElement;
-		imgElement.src = imgLink.href;
+		newImageElement.src = imgLink.href;
 	});
 };
 
