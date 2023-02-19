@@ -24,7 +24,7 @@ const removeDuplicateImages = () => {
 const loadHighResImages = () => {
 	const imgElements = qsa<HTMLImageElement>('.post__files > .post__thumbnail > a.fileThumb.image-link > img[data-src]');
 
-	imgElements.forEach((imgElement, i) => {
+	imgElements.forEach((imgElement, i) => setTimeout(() => {
 		// Prevent triggering other event listeners and redirects
 		imgElement.addEventListener('click', (event) => {
 			event.stopImmediatePropagation();
@@ -59,7 +59,7 @@ const loadHighResImages = () => {
 		// The src for the high res version is in the href attribute of the parent a element
 		const imgLink = imgElement.parentElement as HTMLAnchorElement;
 		newImageElement.src = imgLink.href;
-	});
+	}, i * 100));
 };
 
 // Make sure the page shows a post
