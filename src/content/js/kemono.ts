@@ -1,14 +1,36 @@
 import { qs, qsa } from '../../utils.js';
 
+// Most of the time I don't want to see the content but the files instead, so I just hide the content
+const hideContent = () => {
+	// If there are no files I probably want to see the content
+	if (qs('.post__files') === null) return;
+
+	const content = qs<HTMLDivElement>('div.post__content');
+
+	// There may be no content
+	if (!(content instanceof HTMLDivElement)) return;
+
+	qsa<HTMLImageElement>('img', content).forEach((img) => {
+		img.loading = 'lazy';
+		img.decoding = 'async';
+	});
+	
+	const showContentButton = document.createElement('button');
+	showContentButton.innerText = '...';
+
+	showContentButton.addEventListener('click', (event) => {
+		showContentButton.replaceWith(content);
+	}, { once: true, passive: true });
+
+	content.replaceWith(showContentButton);
+}
+
 // For some reason the first image is shown twice (sometimes the first image is a cropped version of the second image)
 // but it won't hurt to remove other duplicates as well.
 const removeDuplicateImages = () => {
 	const imgWrappers = Array.from(qsa<HTMLDivElement>('.post__files > div.post__thumbnail'));
 
 	if (imgWrappers.length < 2) return;
-
-	// Remove the first image
-	imgWrappers.splice(0, 1)[0].remove();
 
 	const imgSrcs = imgWrappers.map(wrapper => qs<HTMLAnchorElement>('a.image-link', wrapper)?.href);
 
@@ -88,12 +110,15 @@ if (location.pathname.match(/^\/\w+\/user\/\d+\/post\/\d+/i)) {
 	});
 
 	// Remove duplicates
-	if (document.readyState !== 'loading') {
+	if (document.readyState === 'interactive' || document.readyState === 'complete') {
+
+		hideContent();
 		removeDuplicateImages();
 	} else {
 		document.addEventListener('readystatechange', () => {
 			if (document.readyState !== 'interactive') return;
 
+			hideContent();
 			removeDuplicateImages();
 		});
 	}
