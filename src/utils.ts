@@ -54,7 +54,7 @@ export const getOS = () => {
 };
 
 // function that shows customizable messages in the web page without hiding/deleting content or using alert
-export const showMessage = (message: string, options?: { color?: string, duration?: number, size?: 'xx-small' | 'x-small' | 'smaller' | 'small' | 'medium' | 'large' | 'larger' | 'x-large' | 'xx-large' | 'xxx-large' }) => {
+export const showMessage = (message: string, options?: { color?: string, duration?: number, size?: 'xx-small' | 'x-small' | 'smaller' | 'small' | 'medium' | 'large' | 'larger' | 'x-large' | 'xx-large' | 'xxx-large'; }) => {
 	// Default options
 	const color = options?.color ?? 'darkgrey';
 	const duration = options?.duration ?? 3000;
@@ -121,4 +121,15 @@ export const isValidUrl = (string: string) => {
 		return false;
 	}
 	return true;
-}
+};
+
+export const siteIsCloudflareCheck = () => {
+	const scriptElements = Array.from(document.scripts);
+
+	for (const scriptElement of scriptElements) {
+		// Check if the script is a Cloudflare challenge
+		if (scriptElement.src.startsWith('https://challenges.cloudflare.com/')) return true;
+	}
+
+	return false;
+};

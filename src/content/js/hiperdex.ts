@@ -1,4 +1,4 @@
-import { qs, qsa } from '../../utils.js';
+import { qs, qsa, siteIsCloudflareCheck } from '../../utils.js';
 
 const cloudflareSearchArgName = '__cf_chl_rt_tk';
 const timestamp = Math.round(Date.now() / 1000);
@@ -8,6 +8,9 @@ const wildcardPath = location.pathname.replace(/\/[^\/]*/g, '/*');
 const isReading = wildcardPath.split('/').length === 5 && location.pathname.startsWith('/manga/');
 
 const locationManager = () => {
+	// Don't spam request and avoid messing up cloudflares check
+	if (siteIsCloudflareCheck()) return;
+
 	let url = new URL(location.href);
 
 	url.searchParams.forEach((value, key) => {
