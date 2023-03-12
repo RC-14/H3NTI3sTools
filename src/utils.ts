@@ -123,7 +123,7 @@ export const isValidUrl = (string: string) => {
 	return true;
 };
 
-export const siteIsCloudflareCheck = () => {
+export const checkIfSiteIsCloudflareCheck = () => {
 	const scriptElements = Array.from(document.scripts);
 
 	for (const scriptElement of scriptElements) {

@@ -1,4 +1,4 @@
-import { qs, qsa, siteIsCloudflareCheck } from '../../utils.js';
+import { qs, qsa, checkIfSiteIsCloudflareCheck } from '../../utils.js';
 
 const cloudflareSearchArgName = '__cf_chl_rt_tk';
 const timestamp = Math.round(Date.now() / 1000);
@@ -9,7 +9,7 @@ const isReading = wildcardPath.split('/').length === 5 && location.pathname.star
 
 const locationManager = () => {
 	// Don't spam request and avoid messing up cloudflares check
-	if (siteIsCloudflareCheck()) return;
+	if (checkIfSiteIsCloudflareCheck()) return;
 
 	let url = new URL(location.href);
 
