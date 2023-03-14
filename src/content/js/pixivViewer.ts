@@ -266,18 +266,35 @@ selectButton.addEventListener('click', (event) => {
 	}
 }, { passive: true });
 
+addEventListener('historystateupdated', () => {
+	updateToolBox();
+});
+
+/*
+ * Stuff to execute when the page finished loading
+ */
 document.addEventListener('readystatechange', () => {
 	if (document.readyState !== 'complete') return;
-
-	updateSelectedElements();
 
 	updateToolBox();
 
 	document.documentElement.append(toolBox);
-});
 
-addEventListener('historystateupdated', () => {
-	updateSelectedElements();
+	// Using a MutationObserver is necessary because historystateupdated fires before the new elements are on the page
+	const rootMutationObserver = new MutationObserver((mutations, observer) => {
+		// If Nodes were added
+		if (mutations.some((mutation) => mutation.addedNodes.length > 0)) {
+			updateSelectedElements();
+		}
 
-	updateToolBox();
+		// If Nodes were removed
+		if (mutations.some((mutation) => mutation.removedNodes.length > 0)) {
+		}
+	});
+
+	// If qs() fails nothing else can be done and making an extra variable and check seems unnecessary
+	rootMutationObserver.observe(qs('#root')!, {
+		childList: true,
+		subtree: true
+	});
 });
