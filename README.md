@@ -7,13 +7,14 @@ If you have a question or think something could be improved feel free to create 
 
 ## Installation
 
-Because I will not provide releases for this extension because I change stuff too often you'll have to build it yourself and can't install it from a website.
+I will not provide releases for this extension because I change stuff too often and am too lazy to automate it.
+This means that you can't install it from a website and have to build it yourself. (just a quick `npm run build` - nothing fancy)
 
 ### Prerequisites
 
 [Node.js](https://nodejs.org/) to for npm to install the dependencies.
 
-A programm to run commands. (`cmd` or `powershell` on Windows, `Terminal` on Mac and I Linux users will know what to use - I'll call this terminal from now on)
+A programm to run commands. (`cmd` or `powershell` on Windows, `Terminal` on Mac and Linux users will know what to use - I'll call this terminal from now on)
 
 You downloaded this repo and unpacked it if you downloaded it as an archive. (don't just leave it in your downloads and put it in a special folder in your documents or something like that)
 
