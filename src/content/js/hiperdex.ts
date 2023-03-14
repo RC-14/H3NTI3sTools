@@ -1,7 +1,7 @@
 import { qs, qsa, checkIfSiteIsCloudflareCheck } from '../../utils.js';
 
 const cloudflareSearchArgName = '__cf_chl_rt_tk';
-const timestamp = Math.round(Date.now() / 1000);
+const timestamp = Math.round(Date.now() / 10000);
 
 const wildcardPath = location.pathname.replace(/\/[^\/]*/g, '/*');
 
@@ -25,7 +25,7 @@ const locationManager = () => {
 	});
 
 	// If not isReading set timestamp (don't want cached pages)
-	if (!isReading) url.searchParams.set('timestamp', '' + timestamp);
+	if (!isReading) url.searchParams.set('timestamp', timestamp.toString());
 
 	if (location.search !== url.search) location.replace(url);
 };
