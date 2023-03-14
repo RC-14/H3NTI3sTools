@@ -41,6 +41,36 @@ const removeDuplicateImages = () => {
 
 		imgWrappers[i].remove();
 	});
+
+	// Check if the first image is a completely unnecessary crop of the second image
+
+	// We'll search for the post title to avoid having to request multiple pages
+	const titleElement = qs('.post__title > span');
+	if (!(titleElement instanceof HTMLSpanElement)) throw new Error("[kemono] Couldn't find the title");
+
+	// Constructing the url of the site we want to request
+	const searchURL = new URL(location.href);
+	searchURL.pathname = searchURL.pathname.split('/post/')[0];
+	searchURL.searchParams.append('q', titleElement.innerText);
+
+	// Request the page (it's text because it's a website)
+	fetch(searchURL).then(response => response.text()).then((html) => {
+		// The title might have been used multiple times so we have to filter the results
+		const chunks = html.split(/ attachments?/g);
+		const chunkForCurrentPost = chunks.filter(t => t.includes(location.pathname))[0];
+
+		const attachmentCount = parseInt(chunkForCurrentPost.match(/\d+$/)?.[0] ?? 'NaN');
+		if (isNaN(attachmentCount)) throw new Error(`[kemono] attachmentCount is NaN (got ${chunks.length} chunk(s) and type after filter is ${typeof chunkForCurrentPost})`);
+		if (attachmentCount > imgWrappers.length) throw new Error('[kemono] We somehow got an attachmentCount higher then the amount of images on the page.');
+		if (attachmentCount < imgWrappers.length - 1) throw new Error("[kemono] We somehow got an attachment count that's too little.");
+
+
+		// Everything is normal and this request was useless
+		if (attachmentCount === imgWrappers.length) return;
+
+		// This check was - sadly - worth it and the cropped version gets now removed
+		imgWrappers[0].remove();
+	});
 };
 
 // Images are in a lower resolution until you click on them.
