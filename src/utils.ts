@@ -64,22 +64,27 @@ export const showMessage = (message: string, options?: { color?: string, duratio
 	let wrapper = qs<HTMLDivElement>('div#h3nti3-messages');
 	if (wrapper === null) {
 		// If the wrapper element doesn't exist, create it
-		wrapper = document.createElement('div');
-		wrapper.id = 'h3nti3-messages';
-
-		wrapper.style.position = 'fixed';
-		wrapper.style.top = '0';
-		wrapper.style.right = '0';
+		wrapper = Object.assign(document.createElement('div'), {
+			id: 'h3nti3-messages',
+			style: {
+				position: 'fixed',
+				top: '0',
+				right: '0'
+			}
+		});
 
 		document.documentElement.append(wrapper);
 	}
 
 	// Create the message element
-	const msgElement = document.createElement('p');
-	msgElement.innerText = message;
-	msgElement.style.color = color;
-	msgElement.style.fontSize = size;
-	msgElement.style.margin = '0.3rem';
+	const msgElement = Object.assign(document.createElement('p'), {
+		innerText: message,
+		style: {
+			color: color,
+			fontSize: size,
+			margin: '0.3rem'
+		}
+	});
 
 	if (wrapper.firstElementChild == null) {
 		wrapper.append(msgElement);

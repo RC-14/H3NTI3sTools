@@ -3,12 +3,12 @@ import { sendRuntimeMessage, StorageHelper } from './utils.js';
 const storage = new StorageHelper('session', 'hideCursor');
 let isCursorHidden = false;
 
-const styleElement = document.createElement('style');
 /* 
  * Sadly I can't get rid of this innerHTML because innerText might encode
  * characters and adoptedStyleSheets gets shared with the website JS.
  */
-styleElement.innerHTML = `
+const styleElement = Object.assign(document.createElement('style'), {
+	innerHTML: `
 * {
 	/* Hide the cursor */
 	cursor: none !important;
@@ -17,7 +17,7 @@ styleElement.innerHTML = `
 	pointer-events: none !important;
 	user-select: none !important;
 }
-`;
+`});
 
 const hideCursor = () => {
 	document.documentElement.append(styleElement);

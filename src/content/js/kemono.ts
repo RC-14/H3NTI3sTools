@@ -14,16 +14,17 @@ const hideContent = () => {
 		img.loading = 'lazy';
 		img.decoding = 'async';
 	});
-	
-	const showContentButton = document.createElement('button');
-	showContentButton.innerText = '...';
+
+	const showContentButton = Object.assign(document.createElement('button'), {
+		innerText: '...'
+	});
 
 	showContentButton.addEventListener('click', (event) => {
 		showContentButton.replaceWith(content);
 	}, { once: true, passive: true });
 
 	content.replaceWith(showContentButton);
-}
+};
 
 // For some reason the first image is shown twice (sometimes the first image is a cropped version of the second image)
 // but it won't hurt to remove other duplicates as well.
@@ -53,9 +54,10 @@ const loadHighResImages = () => {
 			event.preventDefault();
 		});
 
-		const newImageElement = document.createElement('img');
-		newImageElement.decoding = 'async';
-		newImageElement.loading = 'eager';
+		const newImageElement = Object.assign(document.createElement('img'), {
+			decoding: 'async',
+			loading: 'eager'
+		});
 
 		// Images sometimes fail to load the first time so we try multiple times.
 		let failCounter = 0;

@@ -2,19 +2,23 @@ import { qs, qsa, sendRuntimeMessage, StorageHelper } from '../../utils.js';
 
 const storage = new StorageHelper('session', 'pixivViewer');
 
-const toolBox = document.createElement('div');
-toolBox.id = 'h3nti3-tool-box';
+const toolBox = Object.assign(document.createElement('div'), {
+	id: 'h3nti3-tool-box'
+});
 
-const toggleSelectingButton = document.createElement('button');
-toggleSelectingButton.id = 'h3nti3-toggle-button';
+const toggleSelectingButton = Object.assign(document.createElement('button'), {
+	id: 'h3nti3-toggle-button'
+});
 toolBox.append(toggleSelectingButton);
 
-const openButton = document.createElement('button');
-openButton.id = 'h3nti3-open-button';
+const openButton = Object.assign(document.createElement('button'), {
+	id: 'h3nti3-open-button'
+});
 toolBox.append(openButton);
 
-const selectButton = document.createElement('button');
-selectButton.id = 'h3nti3-select-button';
+const selectButton = Object.assign(document.createElement('button'), {
+	id: 'h3nti3-select-button'
+});
 toolBox.append(selectButton);
 
 let isSelecting = await storage.get('isSelecting') as boolean;
