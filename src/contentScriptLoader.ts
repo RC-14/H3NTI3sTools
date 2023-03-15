@@ -1,6 +1,6 @@
 // The only purpose of the next two lines is to allow compilation of this file even though it isn't a module
 // @ts-ignore
-const _not_a_module_;
+const _not_a_module_ = 0;
 
 const isFrame = window.self !== window.top;
 
