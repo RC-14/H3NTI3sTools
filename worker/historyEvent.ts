@@ -1,5 +1,3 @@
-import { sendMessageToFrame } from './utils.js';
-
 const module: ModuleObject = { id: 'historyEvent' };
 
 module.historyStateUpdatedHandler = (details) => {
@@ -14,7 +12,7 @@ module.historyStateUpdatedHandler = (details) => {
 		func: () => {
 			dispatchEvent(new Event('historystateupdated'));
 		},
-	});
+	}).catch((error) => { /* Tabs may get removed before executeScript() gets called. For some reason a real world problem. */ });
 };
 
 export default module;
