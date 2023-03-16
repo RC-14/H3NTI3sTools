@@ -10,6 +10,8 @@
 body {
 	background: rgb(14, 14, 14);
 	overflow: hidden;
+	min-height: 100vh;
+	width: 100vw;
 }
 
 /* Prevent the browser from showing a placeholder when the src attribute isn't set */
