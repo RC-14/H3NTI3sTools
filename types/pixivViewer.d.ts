@@ -1,4 +1,4 @@
-namespace PixivViewer {
+declare namespace PixivViewer {
 	type PixivArtwork = {
 		pixivId: Pixiv.IllustrationInfo['illustId'];
 		exclude?: number[];

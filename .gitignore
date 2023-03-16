@@ -6,7 +6,7 @@
 *.js.map
 
 # Chrome created metadata
-src/_metadata
+_metadata
 
 # Logs
 logs

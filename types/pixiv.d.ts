@@ -1,4 +1,4 @@
-namespace Pixiv {
+declare namespace Pixiv {
 	interface APIResponse {
 		error: boolean;
 		message: string;
