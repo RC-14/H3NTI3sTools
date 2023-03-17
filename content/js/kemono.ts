@@ -33,13 +33,13 @@ const removeDuplicateImages = () => {
 
 	if (imgWrappers.length < 2) return;
 
-	const imgSrcs = imgWrappers.map(wrapper => qs<HTMLAnchorElement>('a.image-link', wrapper)?.href);
+	const imgSrcs = imgWrappers.map(wrapper => qs<HTMLAnchorElement>('a.image-link', wrapper)?.href).filter((src, i, srcs) => srcs.indexOf(src) === i);
 
 	imgSrcs.forEach((src, i) => {
 		if (src === undefined) return;
 		if (imgSrcs.indexOf(src) === i) return;
 
-		imgWrappers[i].remove();
+		imgWrappers.splice(i, 1)[0].remove();
 	});
 
 	// Check if the first image is a completely unnecessary crop of the second image
