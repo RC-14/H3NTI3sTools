@@ -10,7 +10,7 @@
 		"url": "git+https://github.com/RC-14/H3NTI3sTools.git"
 	},
 	"devDependencies": {
-		"@types/chrome": ">=0.0.224",
+		"@types/chrome": ">=0.0.226",
 		"typescript": "^5.0.2"
 	},
 	"dependencies": {
