@@ -37,7 +37,10 @@ const imageLoader = () => {
 
 	for (let i = 0; i < images.length; i++) {
 		const image = images[i];
-		const src = image.dataset.src;
+		const src = image.dataset.src?.trim();
+
+		delete image.dataset.src;
+		image.classList.remove('img-responsive', 'lazyload', 'effect-fade');
 
 		if (typeof src !== 'string' || image.src.length > 0 && image.complete) {
 			images.splice(i, 1);
