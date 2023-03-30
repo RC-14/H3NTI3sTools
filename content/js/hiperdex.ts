@@ -31,16 +31,23 @@ const locationManager = () => {
 };
 
 const imageLoader = () => {
-	let images = Array.from(qsa<HTMLImageElement>('img.wp-manga-chapter-img'));
-
-	// Filter out already loaded images and return if there are no images to load
-	images = images.filter(image => !image.complete);
-	if (images.length === 0) return;
+	const images = Array.from(qsa<HTMLImageElement>('img.wp-manga-chapter-img'));
 
 	const imageSrcs: string[] = [];
 
-	images.forEach((image, i, images) => {
-		imageSrcs.push(image.src);
+	for (let i = 0; i < images.length; i++) {
+		const image = images[i];
+		const src = image.dataset.src;
+
+		if (typeof src !== 'string' || image.src.length > 0 && image.complete) {
+			images.splice(i, 1);
+			continue;
+		}
+
+		imageSrcs.push(src);
+	}
+
+	images.forEach((image, i) => {
 		image.src = '';
 
 		image.addEventListener('load', (event) => {
