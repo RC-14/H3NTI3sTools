@@ -1,14 +1,5 @@
 # imageViewer Concept
 
-## Types
-
-```TS
-interface Gallery {
-	type: 'pages' | 'scrolled'
-	sources: string[]
-}
-```
-
 ## Sources
 
 This has to account for more than just URLs, for example images from zip files downloaded from a website.
@@ -68,7 +59,7 @@ type indexedDB = {
 			info: string
 			favorite: boolean
 			sources: source[]
-			type: Gallery.type
+			type: Gallery['type']
 			tags: nnlString[]
 			authorUuid: uuid
 			creationDate: date
@@ -97,27 +88,23 @@ type indexedDB = {
 
 ```TS
 const url = new URL(chrome.runtime.getURL('path/to/index.html'))
-url.search = JSON.stringify(galleries).replaceAll('%', '%25')
+url.search = JSON.stringify(galleries.map(gallery => gallery.uuid))
 ```
 
 ## Reader
 
-### Getting the Sources
+### Getting the Galleries
 
 ```TS
-const galleries: Gallery[] = JSON.parse(decodeURIComponent(location.search.substring(1)))
+const galleryUUIDs: Gallery['uuid'][] = JSON.parse(decodeURIComponent(location.search.substring(1)))
+
+const galleries: Gallery[]
+
+for (const galleryUuid of galleryUUIDs) {
+	const gallery = getGalleryForUUID(galleryUuid)
+
+	if (!isGallery(gallery)) continue;
+
+	galleries.push(gallery)
+}
 ```
-
-### Getting the images
-
-```TS
-galleries.forEach((gallery) => {
-	for (const source of gallery.sources) {
-		const imgUuid = getImgUuidForSource(source)
-		const b64Img = getBase64ForImgUuid(imgUuid)
-		addImg(b64Img)
-	}
-})
-```
-
-Obviously this needs to be optimized.
