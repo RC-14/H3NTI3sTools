@@ -50,6 +50,8 @@ const imageLoader = () => {
 		imageSrcs.push(src);
 	}
 
+	if (images.length === 0) return;
+
 	images.forEach((image, i) => {
 		image.src = '';
 
