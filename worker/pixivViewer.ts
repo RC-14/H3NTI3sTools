@@ -110,7 +110,7 @@ const cleanupIDB = async () => {
 };
 
 const showSelection = async (messageData: PixivViewer.ShowMessageData) => {
-	const selection = await storage.get('selection');
+	const selection = await storage.get('selection') as PixivViewer.Artwork[];
 	storage.set({ isSelecting: false, selection: [] });
 
 	if (!Array.isArray(selection)) return;

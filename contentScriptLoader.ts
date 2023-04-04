@@ -4,9 +4,41 @@ const _not_a_module_ = 0;
 
 const isFrame = window.self !== window.top;
 
+const isValidContentScriptEntry = (entry: unknown): entry is { matches: string[], js: string[], all_frames?: boolean; } => {
+	if (typeof entry !== 'object' || entry === null) return false;
+
+	if (!('matches' in entry && Array.isArray(entry.matches))) return false;
+
+	for (let i = 0; i < entry.matches.length; i++) {
+		if (typeof entry.matches[i] !== 'string') return false;
+	}
+
+	if (!('js' in entry && Array.isArray(entry.js))) return false;
+
+	for (let i = 0; i < entry.js.length; i++) {
+		if (typeof entry.js[i] !== 'string') return false;
+	}
+
+	if ('all_frames' in entry && typeof entry.all_frames !== 'boolean') return false;
+
+	return true;
+};
+
 fetch(chrome.runtime.getURL('contentScripts.json'))
 	.then(response => response.json())
-	.then((contentScripts: { matches: string[], js: string[], all_frames?: boolean; }[]) => {
+	.then((jsonResult) => {
+		if (!Array.isArray(jsonResult)) throw new Error('Error when parsing contentScripts.json: contentScripts.json is not an Array.');
+
+		const contentScripts: { matches: string[], js: string[], all_frames?: boolean; }[] = [];
+
+		for (let i = 0; i < jsonResult.length; i++) {
+			const entry = jsonResult[i];
+
+			if (!isValidContentScriptEntry(entry)) throw new Error(`Error when parsing contentScripts.json: the ${i}th entry is malformed.`);
+
+			contentScripts.push(entry);
+		}
+
 		for (let i = 0; i < contentScripts.length; i++) {
 			const entry = contentScripts[i];
 

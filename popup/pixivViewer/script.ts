@@ -52,7 +52,7 @@ storage.addChangeListener((changes) => {
 	}
 
 	if (typeof changes.selection === 'object' && changes.selection !== null) {
-		const selection: unknown = changes.selection.newValue;
+		const selection = changes.selection.newValue as PixivViewer.Artwork[];
 
 		if (Array.isArray(selection)) {
 			updateShowButton(selection);
@@ -98,6 +98,6 @@ storage.get('selection').then((selection) => {
 		storage.set({ selection: [] as PixivViewer.Artwork[] });
 		return;
 	}
-	updateClearButton(selection);
-	updateShowButton(selection);
+	updateClearButton(selection as PixivViewer.Artwork[]);
+	updateShowButton(selection as PixivViewer.Artwork[]);
 });
