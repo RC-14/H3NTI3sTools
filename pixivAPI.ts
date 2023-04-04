@@ -3,7 +3,7 @@ import { isValidUrl, htmlCharRef } from './utils.js';
 export const getIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId']): Promise<Pixiv.IllustrationInfo> => {
 	// Actually request the information
 	const response = await fetch(`https://www.pixiv.net/ajax/illust/${id}?lang=en`);
-	const apiResponse: Pixiv.APIResponse = await response.json();
+	const apiResponse = await response.json() as Pixiv.APIResponse;
 
 	// If an error occured throw it - YEET
 	if (apiResponse.error) throw new Error(`API call for illustId "${id}" failed with message: ${apiResponse.message}`);
@@ -102,7 +102,7 @@ export const getIllustrationInfo = async (id: Pixiv.IllustrationInfo['illustId']
 export const getUserInfo = async (id: Pixiv.UserInfo['userId']): Promise<Pixiv.UserInfo> => {
 	// Actually request the information
 	const response = await fetch(`https://www.pixiv.net/ajax/user/${id}?lang=en`);
-	const apiResponse: Pixiv.APIResponse = await response.json();
+	const apiResponse = await response.json() as Pixiv.APIResponse;
 
 	// If an error occured throw it - YEET
 	if (apiResponse.error) throw new Error(`API call for userId "${id}" failed with message: ${apiResponse.message}`);
