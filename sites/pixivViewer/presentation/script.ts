@@ -451,7 +451,7 @@ const showImages = async () => {
 	const db = await getIDB();
 
 	// Parse location.search
-	const artworkList: PixivViewer.Artwork[] = JSON.parse(atob(location.search.substring(1)));
+	const artworkList = JSON.parse(atob(location.search.substring(1))) as PixivViewer.Artwork[];
 
 	showMessage('Getting the image URLs...');
 	const ArtworkPromiseList: Promise<{ site?: URL; urls: URL[]; }>[] = [];
