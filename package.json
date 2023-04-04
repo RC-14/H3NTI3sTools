@@ -12,7 +12,7 @@
 	"devDependencies": {
 		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/chrome": ">=0.0.228",
-		"typescript": "^5.0.2"
+		"typescript": "^5.0.3"
 	},
 	"dependencies": {
 		"@zip.js/zip.js": "^2.6.83"
