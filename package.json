@@ -15,6 +15,6 @@
 		"typescript": "^5.0.2"
 	},
 	"dependencies": {
-		"@zip.js/zip.js": "^2.6.81"
+		"@zip.js/zip.js": "^2.6.83"
 	}
 }
