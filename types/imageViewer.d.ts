@@ -7,7 +7,7 @@ declare namespace ImageViewer {
 		sources: string[];
 		type: 'paged' | 'scrolled';
 		tags: string[];
-		authorUuid: Author['uuid'];
+		authorUuid?: Author['uuid'];
 		creationDate: ReturnType<DateConstructor['now']>;
 		lastViewed: ReturnType<DateConstructor['now']>;
 	};
