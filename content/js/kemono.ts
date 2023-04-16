@@ -107,6 +107,11 @@ const loadHighResImages = () => {
 
 			newImageElement.decode().then(() => {
 				imgElement.replaceWith(newImageElement);
+			}).catch((reason) => {
+				// Dirty fix in case decoding fails
+				const imgLink = imgElement.parentElement as HTMLAnchorElement;
+				newImageElement.src = '';
+				newImageElement.src = imgLink.href;
 			});
 		});
 
