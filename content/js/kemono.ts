@@ -92,7 +92,10 @@ const loadHighResImages = () => {
 		// Images sometimes fail to load the first time so we try multiple times.
 		let failCounter = 0;
 		newImageElement.addEventListener('error', (event) => {
-			if (failCounter === 5) return;
+			if (failCounter === 5) {
+				console.warn(`Loading image ${i} (${newImageElement.src}) failed: ${event.message}`);
+				return;
+			}
 			failCounter++;
 
 			setTimeout(() => {
