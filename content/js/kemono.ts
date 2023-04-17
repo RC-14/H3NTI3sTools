@@ -1,4 +1,6 @@
-import { qs, qsa } from '../../utils.js';
+import { qs, qsa, showMessage } from '../../utils.js';
+
+const showWarning = (message: string) => showMessage(message, { color: 'yellow', duration: 10_000 });
 
 // Most of the time I don't want to see the content but the files instead, so I just hide the content
 const hideContent = () => {
@@ -94,6 +96,7 @@ const loadHighResImages = () => {
 		newImageElement.addEventListener('error', (event) => {
 			if (failCounter === 5) {
 				console.warn(`Loading image ${i} (${newImageElement.src}) failed: ${event.message}`);
+				showWarning(`Image ${i} failed to load`);
 				return;
 			}
 			failCounter++;
@@ -111,7 +114,8 @@ const loadHighResImages = () => {
 			newImageElement.decode().then(() => {
 				imgElement.replaceWith(newImageElement);
 			}).catch((reason) => {
-				console.warn(`Decoding image ${i} ("${newImageElement.src}") failed: ${reason}`)
+				showWarning(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
+				showWarning(`Image ${i} failed to decode`);
 
 				// Dirty fix in case decoding fails
 				const imgLink = imgElement.parentElement as HTMLAnchorElement;
