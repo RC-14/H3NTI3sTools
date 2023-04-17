@@ -93,7 +93,7 @@ const loadHighResImages = () => {
 		let failCounter = 0;
 		newImageElement.addEventListener('error', (event) => {
 			if (failCounter === 5) {
-				console.warn(`Loading image ${i} (${newImageElement.src}) failed: ${event.message}`);
+				console.log(`Loading image ${i} (${newImageElement.src}) failed: ${event.message}`);
 				showWarning(`Image ${i} failed to load`);
 				return;
 			}
@@ -112,7 +112,7 @@ const loadHighResImages = () => {
 			newImageElement.decode().then(() => {
 				imgElement.replaceWith(newImageElement);
 			}).catch((reason) => {
-				console.warn(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
+				console.log(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
 				showWarning(`Image ${i} failed to decode`);
 
 				// Dirty fix in case decoding fails
