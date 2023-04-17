@@ -108,6 +108,8 @@ const loadHighResImages = () => {
 			newImageElement.decode().then(() => {
 				imgElement.replaceWith(newImageElement);
 			}).catch((reason) => {
+				console.warn(`Decoding image ${i} ("${newImageElement.src}") failed: ${reason}`)
+
 				// Dirty fix in case decoding fails
 				const imgLink = imgElement.parentElement as HTMLAnchorElement;
 				newImageElement.src = '';
