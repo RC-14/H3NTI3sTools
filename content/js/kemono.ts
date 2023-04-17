@@ -112,7 +112,7 @@ const loadHighResImages = () => {
 			newImageElement.decode().then(() => {
 				imgElement.replaceWith(newImageElement);
 			}).catch((reason) => {
-				showWarning(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
+				console.warn(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
 				showWarning(`Image ${i} failed to decode`);
 
 				// Dirty fix in case decoding fails
