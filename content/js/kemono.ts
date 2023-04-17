@@ -17,9 +17,8 @@ const hideContent = () => {
 		img.decoding = 'async';
 	});
 
-	const showContentButton = Object.assign(document.createElement('button'), {
-		innerText: '...'
-	});
+	const showContentButton = document.createElement('button');
+	showContentButton.innerText = '...';
 
 	showContentButton.addEventListener('click', (event) => {
 		showContentButton.replaceWith(content);
@@ -86,10 +85,9 @@ const loadHighResImages = () => {
 			event.preventDefault();
 		});
 
-		const newImageElement = Object.assign(document.createElement('img'), {
-			decoding: 'async',
-			loading: 'eager'
-		});
+		const newImageElement = document.createElement('img');
+		newImageElement.decoding = 'async';
+		newImageElement.loading = 'eager';
 
 		// Images sometimes fail to load the first time so we try multiple times.
 		let failCounter = 0;

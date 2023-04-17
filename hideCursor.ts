@@ -7,8 +7,8 @@ let isCursorHidden = false;
  * Sadly I can't get rid of this innerHTML because innerText might encode
  * characters and adoptedStyleSheets gets shared with the website JS.
  */
-const styleElement = Object.assign(document.createElement('style'), {
-	innerHTML: `
+const styleElement = document.createElement('style');
+styleElement.innerHTML = `
 * {
 	/* Hide the cursor */
 	cursor: none !important;
@@ -17,7 +17,7 @@ const styleElement = Object.assign(document.createElement('style'), {
 	pointer-events: none !important;
 	user-select: none !important;
 }
-`});
+`;
 
 const hideCursor = () => {
 	document.documentElement.append(styleElement);

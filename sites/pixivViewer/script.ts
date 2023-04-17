@@ -101,10 +101,9 @@ const addIllustrationElements = () => new Promise<void>(async (resolve, reject) 
 		// Get user name and image from idb and set them
 
 		// Add images to imageContainer
-		const imgElem = Object.assign(document.createElement('img'), {
-			loading: 'lazy',
-			decoding: 'async'
-		});
+		const imgElem = document.createElement('img');
+		imgElem.loading = 'lazy';
+		imgElem.decoding = 'async';
 
 		const url = illustInfo.pages[0].overwrite ?? illustInfo.pages[0].original;
 
