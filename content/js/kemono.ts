@@ -74,7 +74,7 @@ const removeDuplicateImages = () => {
 	});
 };
 
-const loadHighResImage = (imgElement: HTMLImageElement): Promise<void> => new Promise((resolve, reject) => {
+const loadHighResImage = (imgElement: HTMLImageElement, retryDelay?: number): Promise<void> => new Promise((resolve, reject) => {
 	// Prevent triggering other event listeners and redirects
 	imgElement.addEventListener('click', (event) => {
 		event.stopImmediatePropagation();
@@ -98,7 +98,7 @@ const loadHighResImage = (imgElement: HTMLImageElement): Promise<void> => new Pr
 			const imgLink = imgElement.parentElement as HTMLAnchorElement;
 			newImageElement.src = '';
 			newImageElement.src = imgLink.href;
-		}, 100);
+		}, retryDelay ?? 1000);
 	});
 
 	newImageElement.addEventListener('load', (event) => {
@@ -142,7 +142,7 @@ const loadHighResImages = () => {
 			if (i !== 0) await imgFinishedPromises[i - 1];
 
 			setTimeout(() => {
-				loadHighResImage(imgElement)
+				loadHighResImage(imgElement, WAIT_TIME)
 					.then(() => console.log(`Loaded img ${i + 1}/${imgElements.length}`))
 					.catch((reason) => {
 						console.log(`Loading image ${i + 1} failed: ${reason}`);
