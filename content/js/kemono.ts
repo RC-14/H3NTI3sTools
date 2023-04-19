@@ -101,8 +101,8 @@ const loadHighResImages = () => {
 			let failCounter = 0;
 			newImageElement.addEventListener('error', (event) => {
 				if (failCounter === 5) {
-					console.log(`Loading image ${i} (${newImageElement.src}) failed: ${event.error}`);
-					showWarning(`Image ${i} failed to load`);
+					console.log(`Loading image ${i + 1} (${newImageElement.src}) failed: ${event.error}`);
+					showWarning(`Image ${i + 1} failed to load`);
 					return;
 				}
 				failCounter++;
@@ -120,8 +120,8 @@ const loadHighResImages = () => {
 				newImageElement.decode().then(() => {
 					imgElement.replaceWith(newImageElement);
 				}).catch((reason) => {
-					console.log(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
-					showWarning(`Image ${i} failed to decode`);
+					console.log(`Decoding image ${i + 1} (${newImageElement.src}) failed: ${reason}`);
+					showWarning(`Image ${i + 1} failed to decode`);
 
 					// Dirty fix in case decoding fails
 					const imgLink = imgElement.parentElement as HTMLAnchorElement;
