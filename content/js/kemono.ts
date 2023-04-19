@@ -84,7 +84,7 @@ const loadHighResImages = () => {
 		const EXTRA_WAIT_TIME = WAIT_TIME * 2;
 		const EXTRA_GROUP_SIZE = 10;
 
-		const timeout = WAIT_TIME * i + EXTRA_WAIT_TIME * (i % EXTRA_GROUP_SIZE);
+		const timeout = WAIT_TIME * i + EXTRA_WAIT_TIME * Math.floor(i / EXTRA_GROUP_SIZE);
 
 		setTimeout(() => {
 			// Prevent triggering other event listeners and redirects
