@@ -78,54 +78,63 @@ const removeDuplicateImages = () => {
 const loadHighResImages = () => {
 	const imgElements = qsa<HTMLImageElement>('.post__files > .post__thumbnail > a.fileThumb.image-link > img[data-src]');
 
-	imgElements.forEach((imgElement, i) => setTimeout(() => {
-		// Prevent triggering other event listeners and redirects
-		imgElement.addEventListener('click', (event) => {
-			event.stopImmediatePropagation();
-			event.preventDefault();
-		});
+	imgElements.forEach((imgElement, i) => {
+		const SECOND = 1000;
+		const WAIT_TIME = SECOND;
+		const EXTRA_WAIT_TIME = WAIT_TIME * 2;
+		const EXTRA_GROUP_SIZE = 10;
 
-		const newImageElement = document.createElement('img');
-		newImageElement.decoding = 'async';
-		newImageElement.loading = 'eager';
+		const timeout = WAIT_TIME * i + EXTRA_WAIT_TIME * (i % EXTRA_GROUP_SIZE);
 
-		// Images sometimes fail to load the first time so we try multiple times.
-		let failCounter = 0;
-		newImageElement.addEventListener('error', (event) => {
-			if (failCounter === 5) {
-				console.log(`Loading image ${i} (${newImageElement.src}) failed: ${event.error}`);
-				showWarning(`Image ${i} failed to load`);
-				return;
-			}
-			failCounter++;
-
-			setTimeout(() => {
-				const imgLink = imgElement.parentElement as HTMLAnchorElement;
-				newImageElement.src = '';
-				newImageElement.src = imgLink.href;
-			}, 100);
-		});
-
-		newImageElement.addEventListener('load', (event) => {
-			console.log(`Loaded img ${i + 1}/${imgElements.length}`);
-
-			newImageElement.decode().then(() => {
-				imgElement.replaceWith(newImageElement);
-			}).catch((reason) => {
-				console.log(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
-				showWarning(`Image ${i} failed to decode`);
-
-				// Dirty fix in case decoding fails
-				const imgLink = imgElement.parentElement as HTMLAnchorElement;
-				newImageElement.src = '';
-				newImageElement.src = imgLink.href;
+		setTimeout(() => {
+			// Prevent triggering other event listeners and redirects
+			imgElement.addEventListener('click', (event) => {
+				event.stopImmediatePropagation();
+				event.preventDefault();
 			});
-		});
 
-		// The src for the high res version is in the href attribute of the parent a element
-		const imgLink = imgElement.parentElement as HTMLAnchorElement;
-		newImageElement.src = imgLink.href;
-	}, i * 1000));
+			const newImageElement = document.createElement('img');
+			newImageElement.decoding = 'async';
+			newImageElement.loading = 'eager';
+
+			// Images sometimes fail to load the first time so we try multiple times.
+			let failCounter = 0;
+			newImageElement.addEventListener('error', (event) => {
+				if (failCounter === 5) {
+					console.log(`Loading image ${i} (${newImageElement.src}) failed: ${event.error}`);
+					showWarning(`Image ${i} failed to load`);
+					return;
+				}
+				failCounter++;
+
+				setTimeout(() => {
+					const imgLink = imgElement.parentElement as HTMLAnchorElement;
+					newImageElement.src = '';
+					newImageElement.src = imgLink.href;
+				}, 100);
+			});
+
+			newImageElement.addEventListener('load', (event) => {
+				console.log(`Loaded img ${i + 1}/${imgElements.length}`);
+
+				newImageElement.decode().then(() => {
+					imgElement.replaceWith(newImageElement);
+				}).catch((reason) => {
+					console.log(`Decoding image ${i} (${newImageElement.src}) failed: ${reason}`);
+					showWarning(`Image ${i} failed to decode`);
+
+					// Dirty fix in case decoding fails
+					const imgLink = imgElement.parentElement as HTMLAnchorElement;
+					newImageElement.src = '';
+					newImageElement.src = imgLink.href;
+				});
+			});
+
+			// The src for the high res version is in the href attribute of the parent a element
+			const imgLink = imgElement.parentElement as HTMLAnchorElement;
+			newImageElement.src = imgLink.href;
+		}, timeout);
+	});
 };
 
 // Make sure the page shows a post
