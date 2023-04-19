@@ -93,7 +93,7 @@ const loadHighResImages = () => {
 		let failCounter = 0;
 		newImageElement.addEventListener('error', (event) => {
 			if (failCounter === 5) {
-				console.log(`Loading image ${i} (${newImageElement.src}) failed: ${event.message}`);
+				console.log(`Loading image ${i} (${newImageElement.src}) failed: ${event.error}`);
 				showWarning(`Image ${i} failed to load`);
 				return;
 			}
