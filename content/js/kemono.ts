@@ -125,7 +125,7 @@ const loadHighResImages = () => {
 		// The src for the high res version is in the href attribute of the parent a element
 		const imgLink = imgElement.parentElement as HTMLAnchorElement;
 		newImageElement.src = imgLink.href;
-	}, i * 100));
+	}, i * 1000));
 };
 
 // Make sure the page shows a post
