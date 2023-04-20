@@ -125,6 +125,7 @@ const loadHighResImages = () => {
 
 	const SECOND = 1000;
 	const WAIT_TIME = SECOND;
+	const RETRY_DELAY = WAIT_TIME * 3;
 	const EXTRA_WAIT_TIME = WAIT_TIME * 2;
 	const EXTRA_GROUP_SIZE = 10;
 
@@ -142,7 +143,7 @@ const loadHighResImages = () => {
 			if (i !== 0) await imgFinishedPromises[i - 1];
 
 			setTimeout(() => {
-				loadHighResImage(imgElement, WAIT_TIME)
+				loadHighResImage(imgElement, RETRY_DELAY)
 					.then(() => console.log(`Loaded img ${i + 1}/${imgElements.length}`))
 					.catch((reason) => {
 						console.log(`Loading image ${i + 1} failed: ${reason}`);
