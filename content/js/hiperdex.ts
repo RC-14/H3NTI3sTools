@@ -8,9 +8,6 @@ const wildcardPath = location.pathname.replace(/\/[^\/]*/g, '/*');
 const isReading = wildcardPath.split('/').length === 5 && location.pathname.startsWith('/manga/');
 
 const locationManager = () => {
-	// Don't spam request and avoid messing up cloudflares check
-	if (checkIfSiteIsCloudflareCheck()) return;
-
 	let url = new URL(location.href);
 
 	url.searchParams.forEach((value, key) => {
@@ -76,28 +73,29 @@ const imageLoader = () => {
 };
 
 // Detect cloudflare and prevent spamming requests
-if (document.title !== 'Just a moment...') {
+if (!checkIfSiteIsCloudflareCheck()) {
 	locationManager();
-}
 
-document.addEventListener('click', (event) => {
-	// Check if the element clicked on is the "Sign In" button
-	if (!(event.target instanceof HTMLAnchorElement)) return;
-	if (event.target.dataset.target !== '#form-login') return;
+	document.addEventListener('click', (event) => {
+		if (!(event.target instanceof HTMLAnchorElement)) return;
 
-	// Check remember me checkbox for login
-	const rememberme = qs('input#rememberme');
-	if (rememberme instanceof HTMLInputElement) rememberme.checked = true;
-});
-
-if (document.readyState !== 'loading') {
-	if (isReading) imageLoader();
-} else {
-	document.addEventListener('readystatechange', () => {
-		if (document.readyState === 'loading') return;
-		if (document.readyState === 'interactive') {
-			if (isReading) imageLoader();
-			return;
+		// Check if the element clicked on is the "Sign In" button
+		if (event.target.dataset.target === '#form-login') {
+			// Check remember me checkbox for login
+			const rememberme = qs('input#rememberme');
+			if (rememberme instanceof HTMLInputElement) rememberme.checked = true;
 		}
 	});
+
+	if (document.readyState !== 'loading') {
+		if (isReading) imageLoader();
+	} else {
+		document.addEventListener('readystatechange', () => {
+			if (document.readyState === 'loading') return;
+			if (document.readyState === 'interactive') {
+				if (isReading) imageLoader();
+				return;
+			}
+		});
+	}
 }
