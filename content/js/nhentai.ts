@@ -24,6 +24,31 @@ const isBrowsing = () => {
 	return false;
 };
 
+const setReaderSettings = () => {
+	const READER_KEY = 'reader';
+
+	const defaultSettings = {
+		version: 2,
+		preload: 5,
+		turning_behavior: 'right',
+		image_scaling: 'fit-both',
+		jump_on_turn: 'image',
+		scroll_speed: 5,
+		zoom: 100
+	};
+
+	const readerSettings = JSON.parse(localStorage.getItem(READER_KEY) ?? 'null');
+
+	if (
+		typeof readerSettings === 'object' &&
+		readerSettings !== null &&
+		'version' in readerSettings &&
+		readerSettings.version !== defaultSettings.version
+	) throw new Error(`New version (${readerSettings.version}) for nhentai reader settings.`);
+
+	localStorage.setItem(READER_KEY, JSON.stringify(defaultSettings));
+};
+
 if (isSearching() || isBrowsing()) {
 	document.addEventListener('keydown', (event) => {
 		if (event.target instanceof HTMLElement && isElementEditable(event.target)) return;
@@ -44,6 +69,8 @@ if (isSearching() || isBrowsing()) {
 		}
 	});
 } else if (isReading()) {
+	setReaderSettings();
+
 	document.addEventListener('keydown', (event) => {
 		if (isElementEditable(event.target as HTMLElement)) return;
 
