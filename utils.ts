@@ -124,6 +124,8 @@ export const isValidUrl = (string: string) => {
 };
 
 export const checkIfSiteIsCloudflareCheck = () => {
+	if (document.title === 'Just a moment...') return true;
+
 	const scriptElements = Array.from(document.scripts);
 
 	for (const scriptElement of scriptElements) {
