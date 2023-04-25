@@ -1,5 +1,18 @@
 import { qs, isElementEditable } from '../../utils.js';
 
+const CUSTOM_READER_SETTINGS: Nhentai.ReaderSettings = {
+	version: 2,
+	preload: 5,
+	turning_behavior: 'right',
+	image_scaling: 'fit-both',
+	jump_on_turn: 'image',
+	scroll_speed: 5,
+	zoom: 100
+};
+const READER_SETTINGS_STORAGE_KEY = 'reader';
+const READER_SETTING_VERSION: Nhentai.ReaderSettings['version'] = CUSTOM_READER_SETTINGS.version;
+const READER_SETTINGS_KEYS = Object.keys(CUSTOM_READER_SETTINGS) as readonly (keyof Nhentai.ReaderSettings)[];
+
 const isReading = () => {
 	return location.pathname.match(/^\/g\/\d+\/\d+\/?$/i) !== null;
 };
@@ -24,29 +37,44 @@ const isBrowsing = () => {
 	return false;
 };
 
-const setReaderSettings = () => {
-	const READER_KEY = 'reader';
+const getReaderSettings = (): Nhentai.ReaderSettings | null => {
+	const readerSettings = JSON.parse(localStorage.getItem(READER_SETTINGS_STORAGE_KEY) ?? 'null');
 
-	const defaultSettings = {
-		version: 2,
-		preload: 5,
-		turning_behavior: 'right',
-		image_scaling: 'fit-both',
-		jump_on_turn: 'image',
-		scroll_speed: 5,
-		zoom: 100
-	};
+	if (readerSettings === null) return readerSettings;
 
-	const readerSettings = JSON.parse(localStorage.getItem(READER_KEY) ?? 'null');
+	if (typeof readerSettings !== 'object') throw new Error("Got something for reader settings that isn't an object.");
+	if (!('version' in readerSettings)) throw new Error("Reader settings object doesn't have a version.");
+	if (READER_SETTING_VERSION !== readerSettings.version) throw new Error(`New version (${readerSettings.version}) for nhentai reader settings.`);
 
-	if (
-		typeof readerSettings === 'object' &&
-		readerSettings !== null &&
-		'version' in readerSettings &&
-		readerSettings.version !== defaultSettings.version
-	) throw new Error(`New version (${readerSettings.version}) for nhentai reader settings.`);
+	for (const key of Object.keys(readerSettings)) {
+		if (!READER_SETTINGS_KEYS.includes(key)) throw new Error("Unknown setting for nhentai reader settings.");
+	}
 
-	localStorage.setItem(READER_KEY, JSON.stringify(defaultSettings));
+	return readerSettings as Nhentai.ReaderSettings; // using `as` because I'm too lazy to check properly and - you know - what's the worst that could happen?
+};
+
+const setReaderSettings = (settings: Nhentai.ReaderSettings) => {
+	localStorage.setItem(READER_SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+};
+
+const applyCustomReaderSettings = () => {
+	const readerSettings = getReaderSettings();
+
+	if (readerSettings !== null) {
+		let alreadySet = true;
+
+		for (const key of Object.keys(readerSettings) as (keyof typeof readerSettings)[]) {
+			if (readerSettings[key] === CUSTOM_READER_SETTINGS[key]) continue;
+
+			alreadySet = false;
+			break;
+		}
+
+		if (alreadySet) return;
+	}
+
+	setReaderSettings(CUSTOM_READER_SETTINGS);
+	location.reload();
 };
 
 if (isSearching() || isBrowsing()) {
@@ -69,7 +97,7 @@ if (isSearching() || isBrowsing()) {
 		}
 	});
 } else if (isReading()) {
-	setReaderSettings();
+	applyCustomReaderSettings();
 
 	document.addEventListener('keydown', (event) => {
 		if (isElementEditable(event.target as HTMLElement)) return;
