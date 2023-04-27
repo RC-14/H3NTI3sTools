@@ -16,6 +16,20 @@ h1 {
 	margin: 5vh;
 }
 
+#presentation-button {
+	margin-bottom: 1.5rem;
+	padding: 10px;
+	border-style: outset;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: rgb(192, 192, 192);
+	background-color: rgb(0, 150, 250);
+	font-weight: bold;
+	font-size: 1rem;
+	display: inline-block;
+	cursor: pointer;
+}
+
 main {
 	display: flex;
 	flex-wrap: wrap;

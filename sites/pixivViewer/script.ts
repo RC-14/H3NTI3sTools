@@ -1,12 +1,14 @@
-import { qs, generateIDBGetter, useTemplate } from '../../utils.js';
+import { qs, qsa, generateIDBGetter, useTemplate } from '../../utils.js';
 import { addListeners as addHideCursorListeners } from '../../hideCursor.js';
 
 addHideCursorListeners();
 
 const WEEK_IN_MS = 1000 * 60 * 60 * 24 * 7;
 
+const presentationButton = qs('button#presentation-button');
 const illustrationElementTemplate = qs('template#illustration-template');
 
+if (!(presentationButton instanceof HTMLButtonElement)) throw new Error('Presentation button is not an HTML Button element');
 if (!(illustrationElementTemplate instanceof HTMLTemplateElement)) throw new Error('Illustration template is not an HTML Template element.');
 
 const getIDB = generateIDBGetter('pixivViewer', 2, async (event) => {
@@ -96,6 +98,7 @@ const addIllustrationElements = () => new Promise<void>(async (resolve, reject) 
 		if (!(userImage instanceof HTMLImageElement)) throw new Error("Illustration user image isn't an image element.");
 		if (!(userNameElem instanceof HTMLParagraphElement)) throw new Error("Illustration user nane element isn't a p element.");
 
+		illustElem.id = `${illustInfo.illustId}`;
 		titleElem.innerText = illustInfo.title;
 
 		// Get user name and image from idb and set them
@@ -107,20 +110,38 @@ const addIllustrationElements = () => new Promise<void>(async (resolve, reject) 
 
 		const url = illustInfo.pages[0].overwrite ?? illustInfo.pages[0].original;
 
-		const imgRequest: IDBRequest<PixivViewer.Base64Image> = idb.transaction('Base64Images', 'readonly').objectStore('Base64Images').get(url);
+		const imgRequest: IDBRequest<PixivViewer.Base64Image | undefined> = idb.transaction('Base64Images', 'readonly').objectStore('Base64Images').get(url);
 
 		imgRequest.addEventListener('error', (event) => { });
 		imgRequest.addEventListener('success', (event) => {
+			if (imgRequest.result === undefined) {
+				illustElem.remove();
+				return;
+			}
+
 			imgElem.src = imgRequest.result.b64Data;
 
-			imgElem.decode().then(() => imageContainer.append(imgElem));
+			imgElem.decode().finally(() => imageContainer.append(imgElem)).catch((reason) => { });
 		});
 
 		// Show element
-		qs('main')?.append(illustElem); // temporary
+		qs('main')?.append(illustElem);
 
 		cursor.continue();
 	});
 });
 
+const presentationButtonHandler = (event: MouseEvent) => {
+	const illustElements = Array.from(qsa<HTMLDivElement>('div.illustration'));
+	const artworks = illustElements.map((elem) => ({ pixivId: elem.id }));
+
+	const url = new URL(location.href);
+	url.pathname = url.pathname.substring(0, url.pathname.length - 'index.html'.length) + 'presentation/index.html';
+	url.search = btoa(JSON.stringify(artworks));
+
+	open(url.href, '_self');
+};
+
 addIllustrationElements();
+
+presentationButton.addEventListener('click', presentationButtonHandler);
