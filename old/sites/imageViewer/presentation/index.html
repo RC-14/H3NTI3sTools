@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Presentation | Image Viewer</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" type="module"></script>
+</head>
+
+<body>
+	<main>
+		<div id="presentation-container" class="hidden"></div>
+		<div id="error-container">
+			<p id="error-title">If you see this something went horribly wrong.</p>
+			<p id="error-description">Check if JavaScript is enabled and if it is, there's probably a more detailed
+				error in the dev tools console of your browser.</p>
+		</div>
+	</main>
+	<p id="gallery-counter" class="hidden"></p>
+	<template id="gallery-template">
+		<div class="gallery hidden" data-uuid="">
+			<div class="img-container"></div>
+			<div class="info-container">
+				<p class="gallery-name"></p>
+				<!-- favorite button (star svg that gets filled if favorite?) -->
+				<!-- open in new tab link -->
+				<div class="author-container">
+					<img class="avatar">
+					<p class="author-name"></p>
+				</div>
+			</div>
+		</div>
+	</template>
+</body>
+
+</html>

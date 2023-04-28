@@ -173,7 +173,10 @@ const addImage = (srcUrl: URL, siteUrl?: URL) => new Promise<void>(async (resolv
 
 	// Fallback in case we don't get the image from indexedDB
 	const fallback = () => {
-		fetch(srcUrl).then((response) => response.blob()).then((blob) => {
+		fetch(srcUrl).then((response) => {
+			if (response.ok) return response.blob();
+			throw new Error(`Response was an error: ${response.status} ${response.statusText}`);
+		}).then((blob) => {
 			const fileReader = new FileReader();
 			fileReader.addEventListener('error', (event) => {
 				closeDB();
