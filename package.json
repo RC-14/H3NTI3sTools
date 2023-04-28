@@ -1,0 +1,19 @@
+{
+	"private": true,
+	"name": "h3nti3stools",
+	"browserlist": "last 1 firefox version",
+	"scripts": {
+		"start": "parcel build src/manifest.json && web-ext run",
+		"build": "parcel build src/manifest.json && web-ext build",
+		"clean": "rm -rf build dist .parcel-cache"
+	},
+	"devDependencies": {
+		"@parcel/config-webextension": "^2.8.3",
+		"@total-typescript/ts-reset": "^0.4.2",
+		"@types/webextension-polyfill": "^0.10.0",
+		"parcel": "^2.8.3",
+		"typescript": "^5.0.4",
+		"web-ext": "^7.6.2",
+		"webextension-polyfill": "^0.10.0"
+	}
+}

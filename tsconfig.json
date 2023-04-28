@@ -1,0 +1,29 @@
+{
+	"exclude": [
+		"web-ext-config.js"
+	],
+	"compilerOptions": {
+		"incremental": true,
+		"target": "ES2022",
+		"module": "ES2022",
+		"lib": [
+			"ESNext",
+			"DOM"
+		],
+		// "typeRoots": [],
+		// "types": [],
+		"removeComments": true,
+		"importsNotUsedAsValues": "remove",
+		"inlineSourceMap": true,
+		"inlineSources": true,
+		"noEmitOnError": true,
+		"isolatedModules": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"skipDefaultLibCheck": true,
+		"skipLibCheck": false
+	},
+	"typeAcquisition": {
+		"disableFilenameBasedTypeAcquisition": true
+	}
+}
