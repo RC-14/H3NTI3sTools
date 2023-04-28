@@ -1,0 +1,21 @@
+{
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{8c59cf1a-8d7e-4e3e-bb53-781a3e29b3ea}"
+		}
+	},
+	"manifest_version": 2,
+	"name": "H3NTI3's Tools",
+	"short_name": "H3NTI3sTools",
+	"version": "0",
+	"icons": {
+		"120": "icons/120px.png"
+	},
+	"background": {
+		"page": "background/page.html"
+	},
+	"content_scripts": [],
+	"permissions": [
+		"<all_urls>"
+	]
+}
