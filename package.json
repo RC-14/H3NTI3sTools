@@ -5,7 +5,7 @@
 	"scripts": {
 		"start": "parcel build src/manifest.json && web-ext run",
 		"build": "parcel build src/manifest.json && web-ext build",
-		"clean": "rm -rf build dist .parcel-cache"
+		"clean": "rm -rf dist .parcel-cache"
 	},
 	"devDependencies": {
 		"@parcel/config-webextension": "^2.8.3",
