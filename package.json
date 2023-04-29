@@ -7,16 +7,16 @@
 		"build": "parcel build src/manifest.json && web-ext build",
 		"clean": "rm -rf dist .parcel-cache"
 	},
+	"dependencies": {
+		"webextension-polyfill": "^0.10.0",
+		"zod": "^3.21.4"
+	},
 	"devDependencies": {
 		"@parcel/config-webextension": "^2.8.3",
 		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/webextension-polyfill": "^0.10.0",
 		"parcel": "^2.8.3",
 		"typescript": "^5.0.4",
-		"web-ext": "^7.6.2",
-		"webextension-polyfill": "^0.10.0"
-	},
-	"dependencies": {
-		"zod": "^3.21.4"
+		"web-ext": "^7.6.2"
 	}
 }
