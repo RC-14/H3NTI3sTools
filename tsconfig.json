@@ -1,6 +1,7 @@
 {
 	"exclude": [
-		"web-ext-config.js"
+		"web-ext-config.js",
+		"old"
 	],
 	"compilerOptions": {
 		"incremental": true,
