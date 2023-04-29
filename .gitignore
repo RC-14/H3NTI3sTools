@@ -10,3 +10,6 @@ dist/
 
 # Build output
 build/
+
+# TypeScript
+*.tsbuildinfo
