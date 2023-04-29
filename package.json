@@ -5,6 +5,7 @@
 	"scripts": {
 		"start": "parcel build src/manifest.json && web-ext run",
 		"build": "parcel build src/manifest.json && web-ext build",
+		"check": "tsc --noEmit",
 		"clean": "rm -rf dist .parcel-cache"
 	},
 	"dependencies": {
