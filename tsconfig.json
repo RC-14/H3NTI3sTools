@@ -12,6 +12,7 @@
 			"ESNext",
 			"DOM"
 		],
+		"rootDir": "./src",
 		// "typeRoots": [],
 		// "types": [],
 		"removeComments": true,
