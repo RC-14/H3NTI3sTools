@@ -1,0 +1,17 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	border: none;
+	width: fit-content;
+	height: fit-content;
+}
+
+html {
+	background-color: rgb(32, 32, 32);
+	color: whitesmoke;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+}
