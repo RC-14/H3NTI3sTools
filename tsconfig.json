@@ -13,6 +13,10 @@
 			"DOM"
 		],
 		"rootDir": "./src",
+		"paths": {
+			"/*": ["./*"],
+			"~/*": ["./*"]
+		},
 		// "typeRoots": [],
 		// "types": [],
 		"removeComments": true,
