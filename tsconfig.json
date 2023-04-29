@@ -17,8 +17,6 @@
 			"/*": ["./*"],
 			"~/*": ["./*"]
 		},
-		// "typeRoots": [],
-		// "types": [],
 		"removeComments": true,
 		"importsNotUsedAsValues": "remove",
 		"inlineSourceMap": true,
