@@ -14,7 +14,16 @@
 	"background": {
 		"page": "background/page.html"
 	},
-	"content_scripts": [],
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"./content/noSpaceScroll/main.ts"
+			]
+		}
+	],
 	"permissions": [
 		"<all_urls>"
 	]
