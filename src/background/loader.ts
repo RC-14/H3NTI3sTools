@@ -1,4 +1,4 @@
-import { BackgroundFragment } from '/src/types/fragments';
+import { BackgroundFragment } from '/src/lib/fragments';
 
 // @ts-ignore
 import * as __unsafe_fragments__ from './*/fragment.ts';
