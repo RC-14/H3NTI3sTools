@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import z from 'zod';
 
 export type JSONValue = boolean | number | string | JSONArray | JSONObject | null;
 export type JSONArray = JSONValue[];
