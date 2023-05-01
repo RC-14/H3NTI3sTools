@@ -1,3 +1,6 @@
+import { runtime } from 'webextension-polyfill';
+import { RuntimeMessage } from './fragments';
+
 /**
  * Returns the first Element which matches the given CSS Selector.
  * 
@@ -47,4 +50,30 @@ export const isElementEditable = (element: HTMLElement) => {
 	if (element instanceof HTMLTextAreaElement) return true;
 	if (element.isContentEditable) return true;
 	return false;
+};
+
+/**
+ * Sends a `RuntimeMessage` via `browser.runtime.sendMessage()` and returns the reply.
+ * 
+ * Can't send messages to content scripts. 
+ * 
+ * @param target Where to send the `RuntimeMessage` to.
+ * 
+ * @param fragmentId The id of the receiving fragment.
+ * 
+ * @param msg The actual message.
+ * 
+ * @param data The data to send along, if any.
+ * 
+ * @returns A Promise resolving to the reply.
+ */
+export const sendRuntimeMessage = (target: Exclude<RuntimeMessage['target'], 'content'>, fragmentId: RuntimeMessage['fragmentId'], msg: RuntimeMessage['msg'], data?: RuntimeMessage['data']) => {
+	const request: RuntimeMessage = {
+		target,
+		fragmentId,
+		msg,
+		data
+	};
+
+	return runtime.sendMessage(request) as Promise<RuntimeMessage['data']>;
 };
