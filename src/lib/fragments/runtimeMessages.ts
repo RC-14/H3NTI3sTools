@@ -6,7 +6,7 @@ export const RuntimeMessageSchema = z.object({
 	target: z.enum(['content', 'popup', 'sidebar', 'page', 'devtools', 'options', 'background']),
 	fragmentId: z.string().min(1),
 	msg: z.string().nullable(),
-	data: JSONValueSchema
+	data: JSONValueSchema.optional()
 });
 
 export type RuntimeMessage = z.infer<typeof RuntimeMessageSchema>;
