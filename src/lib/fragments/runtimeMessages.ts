@@ -11,4 +11,4 @@ export const RuntimeMessageSchema = z.object({
 
 export type RuntimeMessage = z.infer<typeof RuntimeMessageSchema>;
 
-export type RuntimeMessageHandler = (msg: RuntimeMessage['msg'], data: RuntimeMessage['data'], sender: Runtime.MessageSender) => RuntimeMessage['data'] | Promise<RuntimeMessage['data']>;
+export type RuntimeMessageHandler = (msg: RuntimeMessage['msg'], data: RuntimeMessage['data'], sender: Runtime.MessageSender) => void | RuntimeMessage['data'] | Promise<void | RuntimeMessage['data']>;
