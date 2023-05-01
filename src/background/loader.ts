@@ -3,7 +3,7 @@ import { BackgroundFragment, RuntimeMessageHandler, RuntimeMessageSchema } from 
 import { JSONValue } from '/src/lib/json.js';
 
 // @ts-ignore Necessary because typescript doesn't know that parcel does glob imports
-import * as __unsafe_fragments__ from './*/fragment.ts';
+import * as __unsafe_fragments__ from './*/index.ts';
 
 const fragments: Map<string, BackgroundFragment> = new Map(
 	Object.entries(__unsafe_fragments__ as { [key: string]: BackgroundFragment; })
