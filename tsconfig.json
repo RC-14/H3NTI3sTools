@@ -13,10 +13,7 @@
 			"DOM"
 		],
 		"rootDir": "./src",
-		"paths": {
-			"/*": ["./*"],
-			"~/*": ["./*"]
-		},
+		// "paths": {},
 		"removeComments": true,
 		"importsNotUsedAsValues": "remove",
 		"inlineSourceMap": true,
