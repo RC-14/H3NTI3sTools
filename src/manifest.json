@@ -21,7 +21,9 @@
 			],
 			"js": [
 				"./content/noSpaceScroll/main.ts"
-			]
+			],
+			"all_frames": true,
+			"run_at": "document_start"
 		}
 	],
 	"permissions": [
