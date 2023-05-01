@@ -25,7 +25,7 @@ for (const id of fragments.keys()) {
  * Add Listeners
  */
 
-runtime.onMessage.addListener(async (request: JSONValue, sender, sendResponse: (response: JSONValue) => void) => {
+runtime.onMessage.addListener(async (request: JSONValue, sender, sendResponse: (response?: JSONValue) => void) => {
 	const { target, fragmentId, msg, data } = RuntimeMessageSchema.parse(request);
 
 	if (target !== 'background') return;
