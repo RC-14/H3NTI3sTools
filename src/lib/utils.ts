@@ -34,7 +34,7 @@ export const useTemplate = (template: HTMLTemplateElement) => {
 /**
  * Checks if the element is editable by the user. (if the user can write in it)
  * 
- * @param element HTMLElement
+ * @param element The element you want to check.
  * 
  * @returns `true` if the element is editable `false` otherwise.
  */
