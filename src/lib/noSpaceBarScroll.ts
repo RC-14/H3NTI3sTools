@@ -13,11 +13,15 @@ const eventListener = (event: KeyboardEvent) => {
 };
 
 export const preventSpaceBarScroll = () => {
+	if (!spaceBarScrollAllowed) return;
+
 	document.addEventListener('keydown', eventListener, { capture: true });
 	spaceBarScrollAllowed = false;
 };
 
 export const allowSpaceBarScroll = () => {
+	if (spaceBarScrollAllowed) return;
+
 	document.removeEventListener('keydown', eventListener, { capture: true });
 	spaceBarScrollAllowed = true;
 };
