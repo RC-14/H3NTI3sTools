@@ -12,7 +12,7 @@
 		"120": "icons/120px.png"
 	},
 	"background": {
-		"page": "background/page.html"
+		"page": "src/background/page.html"
 	},
 	"content_scripts": [
 		{
@@ -20,13 +20,14 @@
 				"<all_urls>"
 			],
 			"js": [
-				"./content/noSpaceScroll/main.ts"
+				"src/content/noSpaceScroll/main.ts"
 			],
 			"all_frames": true,
 			"run_at": "document_start"
 		}
 	],
 	"permissions": [
-		"<all_urls>"
+		"<all_urls>",
+		"scripting"
 	]
 }

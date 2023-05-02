@@ -4,12 +4,9 @@
 # Node/NPM
 node_modules/
 
-# Parcel
-.parcel-cache/
-dist/
-
 # Build output
 build/
+dist/
 
 # TypeScript
 *.tsbuildinfo
