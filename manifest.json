@@ -20,6 +20,7 @@
 				"<all_urls>"
 			],
 			"js": [
+				"src/content/hideCursor/main.ts",
 				"src/content/noSpaceScroll/main.ts"
 			],
 			"all_frames": true,
@@ -28,6 +29,7 @@
 	],
 	"permissions": [
 		"<all_urls>",
-		"scripting"
+		"scripting",
+		"storage"
 	]
 }

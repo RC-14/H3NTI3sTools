@@ -1,8 +1,11 @@
 import { runtime } from 'webextension-polyfill';
 import { BackgroundFragment, RuntimeMessageHandler, RuntimeMessageSchema } from '/src/lib/fragments';
 import { JSONValue } from '/src/lib/json.js';
+// Background fragments
+import * as hideCursor from './hideCursor';
 
 const fragments: Map<string, BackgroundFragment> = new Map();
+fragments.set('hideCursor', hideCursor);
 
 /*
  * Register Handlers
