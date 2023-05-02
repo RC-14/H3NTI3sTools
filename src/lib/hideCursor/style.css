@@ -1,0 +1,8 @@
+* {
+	/* Hide the cursor */
+	cursor: none !important;
+
+	/* Disable cursor functions */
+	pointer-events: none !important;
+	user-select: none !important;
+}
