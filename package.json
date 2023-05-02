@@ -1,7 +1,11 @@
 {
 	"private": true,
-	"name": "h3nti3stools",
+	"type": "module",
 	"scripts": {
+		"check": "tsc",
+		"start": "vite",
+		"build": "vite build && web-ext --config=web-ext.config.cjs build",
+		"clean": "rm -rf build dist"
 	},
 	"dependencies": {
 		"webextension-polyfill": "^0.10.0",
@@ -11,6 +15,7 @@
 		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/webextension-polyfill": "^0.10.0",
 		"typescript": "^5.0.4",
-		"web-ext": "^7.6.2"
+		"vite": "^4.3.3",
+		"vite-plugin-web-extension": "^3.0.6"
 	}
 }

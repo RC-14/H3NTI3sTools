@@ -1,29 +1,35 @@
 {
-	"exclude": [
-		"web-ext-config.js",
-		"old"
+	"include": [
+		"./src/"
 	],
 	"compilerOptions": {
-		"incremental": true,
-		"target": "ES2022",
-		"module": "ES2022",
-		"moduleResolution": "node16",
+		"target": "ESNext",
+		"module": "ESNext",
 		"lib": [
 			"ESNext",
 			"DOM"
 		],
-		"rootDir": "./src",
-		// "paths": {},
+		"useDefineForClassFields": true,
+		"moduleResolution": "Node",
 		"removeComments": true,
 		"importsNotUsedAsValues": "remove",
 		"inlineSourceMap": true,
 		"inlineSources": true,
-		"noEmitOnError": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"strict": true,
 		"isolatedModules": true,
 		"forceConsistentCasingInFileNames": true,
-		"strict": true,
+		"noEmit": true,
+		"noUnusedLocals": true,
+		"noImplicitReturns": true,
+		"exactOptionalPropertyTypes": true,
 		"skipDefaultLibCheck": true,
-		"skipLibCheck": false
+		"paths": {
+			"/*": [
+				"./*"
+			]
+		}
 	},
 	"typeAcquisition": {
 		"disableFilenameBasedTypeAcquisition": true

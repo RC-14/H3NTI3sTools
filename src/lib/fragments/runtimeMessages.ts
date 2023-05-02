@@ -1,6 +1,6 @@
 import z from 'zod';
 import { Runtime } from 'webextension-polyfill';
-import { JSONValueSchema } from '/src/lib/json';
+import { JSONValueSchema } from '../json';
 
 export const RuntimeMessageSchema = z.object({
 	target: z.enum(['content', 'popup', 'sidebar', 'page', 'devtools', 'options', 'background']),
