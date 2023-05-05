@@ -21,7 +21,8 @@
 			],
 			"js": [
 				"src/content/hideCursor/main.ts",
-				"src/content/noSpaceScroll/main.ts"
+				"src/content/noSpaceScroll/main.ts",
+				"src/content/saucenao/main.ts"
 			],
 			"all_frames": true,
 			"run_at": "document_start"
