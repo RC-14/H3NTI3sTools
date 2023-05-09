@@ -11,7 +11,7 @@
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "^0.4.2",
-		"@types/chrome": ">=0.0.233",
+		"@types/chrome": ">=0.0.235",
 		"typescript": "^5.0.4"
 	},
 	"dependencies": {
