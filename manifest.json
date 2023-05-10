@@ -70,7 +70,7 @@
 		},
 		{
 			"matches": [
-				"*://leviatanscans.com/*"
+				"*://*.leviatanscans.com/*"
 			],
 			"css": [
 				"src/content/leviatanscans/styles.css"
@@ -98,7 +98,7 @@
 		},
 		{
 			"matches": [
-				"*://pixiv.net/*"
+				"*://www.pixiv.net/*"
 			],
 			"js": [
 				"src/content/pixiv/main.ts"
@@ -131,7 +131,7 @@
 		},
 		{
 			"matches": [
-				"*://webtoons.com/*"
+				"*://www.webtoons.com/*"
 			],
 			"js": [
 				"src/content/webtoon/main.ts"
