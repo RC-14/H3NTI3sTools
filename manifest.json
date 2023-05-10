@@ -28,10 +28,65 @@
 		},
 		{
 			"matches": [
+				"*://www.asura.gg/*",
+				"*://www.asurascans.com/*"
+			],
+			"js": [
+				"src/content/asurascans/main.ts"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://flamescans.org/*"
+			],
+			"js": [
+				"src/content/flamescans/main.ts"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://mangahub.io/*"
+			],
+			"js": [
+				"src/content/mangahub/main.ts"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://pixiv.net/*"
+			],
+			"js": [
+				"src/content/pixiv/main.ts"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://reaperscans.com/*"
+			],
+			"js": [
+				"src/content/reaperscans/main.ts"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"*://saucenao.com/*"
 			],
 			"js": [
 				"src/content/saucenao/main.ts"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://webtoons.com/*"
+			],
+			"js": [
+				"src/content/webtoon/main.ts"
 			],
 			"run_at": "document_start"
 		}
