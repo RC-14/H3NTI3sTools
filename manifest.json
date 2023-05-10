@@ -34,6 +34,9 @@
 			"js": [
 				"src/content/asurascans/main.ts"
 			],
+			"css": [
+				"src/content/asurascans/styles.css"
+			],
 			"run_at": "document_start"
 		},
 		{
@@ -43,7 +46,35 @@
 			"js": [
 				"src/content/flamescans/main.ts"
 			],
+			"css": [
+				"src/content/flamescans/styles.css"
+			],
 			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://hiperdex.com/*",
+				"*://1sthiperdex.com/*"
+			],
+			"css": [
+				"src/content/hiperdex/styles.css"
+			]
+		},
+		{
+			"matches": [
+				"*://kemono.party/*"
+			],
+			"css": [
+				"src/content/kemono/styles.css"
+			]
+		},
+		{
+			"matches": [
+				"*://leviatanscans.com/*"
+			],
+			"css": [
+				"src/content/leviatanscans/styles.css"
+			]
 		},
 		{
 			"matches": [
@@ -52,7 +83,18 @@
 			"js": [
 				"src/content/mangahub/main.ts"
 			],
+			"css": [
+				"src/content/mangahub/styles.css"
+			],
 			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"*://mm-scans.org/*"
+			],
+			"css": [
+				"src/content/mm-scans/styles.css"
+			]
 		},
 		{
 			"matches": [
@@ -60,6 +102,9 @@
 			],
 			"js": [
 				"src/content/pixiv/main.ts"
+			],
+			"css": [
+				"src/content/pixiv/styles.css"
 			],
 			"run_at": "document_start"
 		},
@@ -69,6 +114,9 @@
 			],
 			"js": [
 				"src/content/reaperscans/main.ts"
+			],
+			"css": [
+				"src/content/reaperscans/styles.css"
 			],
 			"run_at": "document_start"
 		},
@@ -87,6 +135,9 @@
 			],
 			"js": [
 				"src/content/webtoon/main.ts"
+			],
+			"css": [
+				"src/content/webtoon/styles.css"
 			],
 			"run_at": "document_start"
 		}
