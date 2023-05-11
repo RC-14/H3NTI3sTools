@@ -58,9 +58,13 @@
 				"*://hiperdex.com/*",
 				"*://1sthiperdex.com/*"
 			],
+			"js": [
+				"./content/hiperdex/main.js"
+			],
 			"css": [
 				"./content/hiperdex/styles.css"
-			]
+			],
+			"run_at": "document_start"
 		},
 		{
 			"matches": [
