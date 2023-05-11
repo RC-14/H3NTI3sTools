@@ -26,6 +26,13 @@ const eventListener = (event: KeyboardEvent) => {
 	event.stopImmediatePropagation();
 };
 
+/**
+ * Add the listener for the shortcuts.
+ * 
+ * @param next The function that opens the next page.
+ * 
+ * @param previous The function that opens the previous page.
+ */
 export const addShortcuts = (next: typeof nextHandler, previous: typeof previousHandler) => {
 	if (listenerAttached) return;
 
@@ -37,6 +44,9 @@ export const addShortcuts = (next: typeof nextHandler, previous: typeof previous
 	listenerAttached = true;
 };
 
+/**
+ * Remove the listener for the shortcuts.
+ */
 export const removeShortcuts = () => {
 	if (!listenerAttached) return;
 
@@ -44,3 +54,10 @@ export const removeShortcuts = () => {
 
 	listenerAttached = false;
 };
+
+/**
+ * Check if the shortcuts listener is attached.
+ * 
+ * @returns `true` if the listener to realize the shortcuts is attached and `false` otherwise.
+ */
+export const shortcutListenerAttached = () => listenerAttached;
