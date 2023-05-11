@@ -8,7 +8,7 @@ import { RuntimeMessage } from './fragments';
  * 
  * @param selector The CSS Selector which is used to search for an element.
  * 
- * @param parent The element whose children you want to search. (default: document)
+ * @param parent The element whose children you want to search. (default: `document`)
  * 
  * @returns The first child element of `parent` which matches `selector`.
  */
@@ -20,7 +20,7 @@ export const qs = <T extends Element>(selector: string, parent: Document | Eleme
  * 
  * @param selector The CSS Selector which is used to search for elements.
  * 
- * @param parent The element whose children you want to search. (default: document)
+ * @param parent The element whose children you want to search. (default: `document`)
  * 
  * @returns A NodeList of all child elements of `parent` which match `selector`.
  */
@@ -76,4 +76,15 @@ export const sendRuntimeMessage = (target: Exclude<RuntimeMessage['target'], 'co
 	};
 
 	return runtime.sendMessage(request) as Promise<RuntimeMessage['data']>;
+};
+
+/**
+ * Checks if the site is a cloudflare check.
+ * 
+ * @param site A Window object. (default: `window`)
+ * 
+ * @returns `true` if the site is a cloudflare check `false` otherwise.
+ */
+export const isSiteCloudflareCheck = (site: Window = window) => {
+	return site.document.title === 'Just a moment...';
 };
