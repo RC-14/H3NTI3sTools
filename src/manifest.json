@@ -9,10 +9,12 @@
 	"short_name": "H3NTI3sTools",
 	"version": "0",
 	"icons": {
-		"120": "icons/120px.png"
+		"120": "./images/icon/120.png"
 	},
 	"background": {
-		"page": "src/background/page.html"
+		"scripts": [
+			"./background/loader.js"
+		]
 	},
 	"content_scripts": [
 		{
@@ -20,8 +22,8 @@
 				"<all_urls>"
 			],
 			"js": [
-				"src/content/hideCursor/main.ts",
-				"src/content/noSpaceScroll/main.ts"
+				"./content/hideCursor/main.js",
+				"./content/noSpaceScroll/main.js"
 			],
 			"all_frames": true,
 			"run_at": "document_start"
@@ -32,10 +34,10 @@
 				"*://www.asurascans.com/*"
 			],
 			"js": [
-				"src/content/asurascans/main.ts"
+				"./content/asurascans/main.js"
 			],
 			"css": [
-				"src/content/asurascans/styles.css"
+				"./content/asurascans/styles.css"
 			],
 			"run_at": "document_start"
 		},
@@ -44,10 +46,10 @@
 				"*://flamescans.org/*"
 			],
 			"js": [
-				"src/content/flamescans/main.ts"
+				"./content/flamescans/main.js"
 			],
 			"css": [
-				"src/content/flamescans/styles.css"
+				"./content/flamescans/styles.css"
 			],
 			"run_at": "document_start"
 		},
@@ -57,7 +59,7 @@
 				"*://1sthiperdex.com/*"
 			],
 			"css": [
-				"src/content/hiperdex/styles.css"
+				"./content/hiperdex/styles.css"
 			]
 		},
 		{
@@ -65,7 +67,7 @@
 				"*://kemono.party/*"
 			],
 			"css": [
-				"src/content/kemono/styles.css"
+				"./content/kemono/styles.css"
 			]
 		},
 		{
@@ -73,7 +75,7 @@
 				"*://*.leviatanscans.com/*"
 			],
 			"css": [
-				"src/content/leviatanscans/styles.css"
+				"./content/leviatanscans/styles.css"
 			]
 		},
 		{
@@ -81,10 +83,10 @@
 				"*://mangahub.io/*"
 			],
 			"js": [
-				"src/content/mangahub/main.ts"
+				"./content/mangahub/main.js"
 			],
 			"css": [
-				"src/content/mangahub/styles.css"
+				"./content/mangahub/styles.css"
 			],
 			"run_at": "document_start"
 		},
@@ -93,18 +95,30 @@
 				"*://mm-scans.org/*"
 			],
 			"css": [
-				"src/content/mm-scans/styles.css"
+				"./content/mm-scans/styles.css"
 			]
+		},
+		{
+			"matches": [
+				"*://nhentai.net/*"
+			],
+			"js": [
+				"./content/nhentai/main.js"
+			],
+			"css": [
+				"./content/nhentai/styles.css"
+			],
+			"run_at": "document_start"
 		},
 		{
 			"matches": [
 				"*://www.pixiv.net/*"
 			],
 			"js": [
-				"src/content/pixiv/main.ts"
+				"./content/pixiv/main.js"
 			],
 			"css": [
-				"src/content/pixiv/styles.css"
+				"./content/pixiv/styles.css"
 			],
 			"run_at": "document_start"
 		},
@@ -113,10 +127,10 @@
 				"*://reaperscans.com/*"
 			],
 			"js": [
-				"src/content/reaperscans/main.ts"
+				"./content/reaperscans/main.js"
 			],
 			"css": [
-				"src/content/reaperscans/styles.css"
+				"./content/reaperscans/styles.css"
 			],
 			"run_at": "document_start"
 		},
@@ -125,7 +139,7 @@
 				"*://saucenao.com/*"
 			],
 			"js": [
-				"src/content/saucenao/main.ts"
+				"./content/saucenao/main.js"
 			],
 			"run_at": "document_start"
 		},
@@ -134,10 +148,10 @@
 				"*://www.webtoons.com/*"
 			],
 			"js": [
-				"src/content/webtoon/main.ts"
+				"./content/webtoon/main.js"
 			],
 			"css": [
-				"src/content/webtoon/styles.css"
+				"./content/webtoon/styles.css"
 			],
 			"run_at": "document_start"
 		}
