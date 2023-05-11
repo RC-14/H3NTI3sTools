@@ -1,3 +1,3 @@
-import { addHideCursorListeners } from '/src/lib/hideCursor';
+import { addHideCursorListeners } from '../../lib/hideCursor';
 
 addHideCursorListeners();

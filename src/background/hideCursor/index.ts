@@ -1,7 +1,6 @@
 import { Scripting, scripting } from 'webextension-polyfill';
 import { RuntimeMessageHandler } from '/src/lib/fragments';
 import StorageHelper from '/src/lib/StorageHelper';
-import styles from '/src/lib/hideCursor/style.css';
 
 // Clears the storage every time the extension gets loaded.
 // This is done to prevent unexpectedly hiding the cursor.
@@ -12,7 +11,7 @@ export const runtimeMessageHandler: RuntimeMessageHandler = async (msg, data, se
 	if (sender.tab?.id === undefined) return;
 
 	const injection: Scripting.CSSInjection = {
-		css: styles,
+		files: ['inject/hideCursor.css'],
 		target: {
 			tabId: sender.tab.id,
 			allFrames: true

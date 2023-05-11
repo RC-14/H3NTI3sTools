@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import StorageHelper from '../StorageHelper';
-import { sendRuntimeMessage } from '../utils';
+import StorageHelper from './StorageHelper';
+import { sendRuntimeMessage } from './utils';
 
 const BooleanSchema = z.boolean();
 
