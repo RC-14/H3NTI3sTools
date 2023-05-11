@@ -4,7 +4,7 @@ import { cp as copy, readdir, rm as remove, stat } from 'fs/promises';
 import { join as joinPath } from 'path';
 import manifest from '../src/manifest.json' assert { type: 'json' };
 
-const getAllFiles = async (dirPath) => {
+const getAllTSFiles = async (dirPath) => {
 	const result = [];
 	const directories = [dirPath];
 
@@ -19,17 +19,13 @@ const getAllFiles = async (dirPath) => {
 			if (isDir) {
 				directories.push(filePath);
 				continue;
+			} else if (file.endsWith('.ts')) {
+				result.push(filePath);
 			}
-
-			result.push(filePath);
 		}
 	}
 
 	return result;
-};
-
-const getAllTSFiles = async (dirPath) => {
-	return (await getAllFiles(dirPath)).filter((path) => path.endsWith('.ts'));
 };
 
 const getManifestEntryPoints = () => {
