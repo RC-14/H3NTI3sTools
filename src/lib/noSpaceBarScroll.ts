@@ -12,6 +12,9 @@ const eventListener = (event: KeyboardEvent) => {
 	}
 };
 
+/**
+ * Prevent scrolling by pressing the space bar.
+ */
 export const preventSpaceBarScroll = () => {
 	if (!spaceBarScrollAllowed) return;
 
@@ -19,6 +22,9 @@ export const preventSpaceBarScroll = () => {
 	spaceBarScrollAllowed = false;
 };
 
+/**
+ * Allow scrolling by pressing the space bar.
+ */
 export const allowSpaceBarScroll = () => {
 	if (spaceBarScrollAllowed) return;
 
@@ -26,4 +32,9 @@ export const allowSpaceBarScroll = () => {
 	spaceBarScrollAllowed = true;
 };
 
+/**
+ * Check if scrolling with the space bar is allowed.
+ * 
+ * @returns `true` if scrolling by pressing the space bar is allowed and `false` otherwise.
+ */
 export const isSpaceBarScrollAllowed = () => spaceBarScrollAllowed;
