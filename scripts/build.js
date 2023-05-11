@@ -32,10 +32,6 @@ const getAllTSFiles = async (dirPath) => {
 	return (await getAllFiles(dirPath)).filter((path) => path.endsWith('.ts'));
 };
 
-const getAllNonTSFiles = async (dirPath) => {
-	return (await getAllFiles(dirPath)).filter((path) => !path.endsWith('.ts'));
-};
-
 const getManifestEntryPoints = () => {
 	const content = manifest.content_scripts?.flatMap((cs) => cs.js).filter(Boolean) ?? [];
 	const background = manifest.background?.scripts ?? [];
