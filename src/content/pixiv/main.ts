@@ -1,4 +1,4 @@
-import { addShortcuts } from '/src/lib/nextPreviousShortcuts';
+import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
 import { qsa } from '/src/lib/utils';
 
 const getButtons = () => {
@@ -30,4 +30,4 @@ const next = () => {
 	getButtons()?.next.click();
 };
 
-addShortcuts(next, previous);
+addNextPreviousShortcuts(next, previous);

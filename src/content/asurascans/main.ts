@@ -1,4 +1,4 @@
-import { addShortcuts } from '/src/lib/nextPreviousShortcuts';
+import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
 import { qs } from '/src/lib/utils';
 
 const previousChapter = () => {
@@ -8,4 +8,4 @@ const nextChapter = () => {
 	qs<HTMLAnchorElement>('a.ch-next-btn')?.click();
 };
 
-addShortcuts(nextChapter, previousChapter);
+addNextPreviousShortcuts(nextChapter, previousChapter);

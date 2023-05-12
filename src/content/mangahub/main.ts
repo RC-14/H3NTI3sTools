@@ -1,4 +1,4 @@
-import { addShortcuts } from '/src/lib/nextPreviousShortcuts';
+import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
 import { qs, qsa } from '/src/lib/utils';
 
 // Stop MangaHub from changing the page with JS instead of using a redirect
@@ -25,4 +25,4 @@ const nextChapter = () => {
 	qs<HTMLAnchorElement>('.next > a')?.click();
 };
 
-addShortcuts(nextChapter, previousChapter);
+addNextPreviousShortcuts(nextChapter, previousChapter);

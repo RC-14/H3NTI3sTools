@@ -33,7 +33,7 @@ const eventListener = (event: KeyboardEvent) => {
  * 
  * @param previous The function that opens the previous page.
  */
-export const addShortcuts = (next: typeof nextHandler, previous: typeof previousHandler) => {
+export const addNextPreviousShortcuts = (next: typeof nextHandler, previous: typeof previousHandler) => {
 	if (listenerAttached) return;
 
 	nextHandler = next;
@@ -47,7 +47,7 @@ export const addShortcuts = (next: typeof nextHandler, previous: typeof previous
 /**
  * Remove the listener for the shortcuts.
  */
-export const removeShortcuts = () => {
+export const removeNextPreviousShortcuts = () => {
 	if (!listenerAttached) return;
 
 	document.removeEventListener('keydown', eventListener, { capture: true });
@@ -60,4 +60,4 @@ export const removeShortcuts = () => {
  * 
  * @returns `true` if the listener to realize the shortcuts is attached and `false` otherwise.
  */
-export const shortcutListenerAttached = () => listenerAttached;
+export const isNextPreviousShortcutsListenerAttached = () => listenerAttached;
