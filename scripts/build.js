@@ -78,7 +78,6 @@ build({
 });
 
 copy('src', 'build', {
-	errorOnExist: true,
 	recursive: true,
 	filter: (source, destination) => !source.endsWith('.ts') && !['src/types', 'src/lib'].includes(source)
 });
