@@ -70,9 +70,13 @@
 			"matches": [
 				"*://kemono.party/*"
 			],
+			"js": [
+				"./content/kemono/main.ts"
+			],
 			"css": [
 				"./content/kemono/styles.css"
-			]
+			],
+			"run_at": "document_start"
 		},
 		{
 			"matches": [
