@@ -107,3 +107,83 @@ export const runAfterReadyStateReached = (readystate: Exclude<DocumentReadyState
 
 	document.addEventListener('readystatechange', () => callback(), { once: true });
 };
+
+type showMessageOptions = {
+	/** A CSS color. */color?: string,
+	/** The duration the message will be shown for in ms. */duration?: number,
+	/** The CSS size of the message */ size?: 'xx-small' | 'x-small' | 'smaller' | 'small' | 'medium' | 'large' | 'larger' | 'x-large' | 'xx-large' | 'xxx-large';
+};
+
+/**
+ * Shows a message in the web page.
+ * 
+ * @param message The message to be shown.
+ * 
+ * @param options An object containing customizations for the message.
+ */
+export const showMessage = (message: string, { color = 'darkgrey', duration = 3_000, size = 'large' }: showMessageOptions = {}) => {
+	// Get the wrapper element
+	let wrapper = qs<HTMLDivElement>('div#h3nti3-messages');
+	if (wrapper === null) {
+		// If the wrapper element doesn't exist, create it
+		wrapper = document.createElement('div');
+
+		wrapper.id = 'h3nti3-messages';
+		wrapper.style.position = 'fixed';
+		wrapper.style.top = wrapper.style.right = '0';
+
+		document.documentElement.append(wrapper);
+	}
+
+	// Create the message element
+	const msgElement = document.createElement('p');
+
+	msgElement.innerText = message;
+	msgElement.style.color = color;
+	msgElement.style.fontSize = size;
+	msgElement.style.margin = '0.3rem';
+
+	// Insert the message at the top
+	wrapper.insertAdjacentElement('afterbegin', msgElement);
+
+	// Remove the message after <duration>
+	setTimeout(() => {
+		msgElement.remove();
+	}, duration);
+};
+
+/**
+ * Creates a function that can be used to get an IDBDatabase object to access an indexedDB database.
+ * 
+ * Useful to streamline the use of idb and avoid differing upgradeneeded handler functions.
+ * 
+ * @param name The name of the database.
+ * 
+ * @param version The version at which to open the database.
+ * 
+ * @param upgradeneededListener A callback function that gets called if an attempt was made to open a database with a version number higher than its current version. (copied from MDN)
+ * 
+ * @param blockedListener A callback function that gets called if an open connection to a database is blocking a `versionchange` transaction on the same database. (copied from MDN)
+ * 
+ * @returns A function that returns a Promise that resolves to an IDBDatabase object.
+ */
+export const generateIDBGetter = (name: string, version: number, upgradeneededListener: (event: IDBVersionChangeEvent) => unknown, blockedListener?: (event: Event) => unknown) => {
+	return () => new Promise<IDBDatabase>((resolve, reject) => {
+		const request = indexedDB.open(name, version);
+
+		request.addEventListener('error', (event) => reject(request.error));
+
+		if (blockedListener !== undefined) request.addEventListener('blocked', blockedListener);
+
+		request.addEventListener('success', (event) => {
+			if (request.result instanceof IDBDatabase) {
+				resolve(request.result);
+				return;
+			}
+
+			reject(new Error("Result of the request isn't an instance of IDBDatabase."));
+		});
+
+		request.addEventListener('upgradeneeded', upgradeneededListener);
+	});
+};

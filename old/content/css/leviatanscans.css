@@ -1,9 +1,0 @@
-/* Remove the shadow behind the images */
-.c-blog-post .entry-content .entry-content_wrap .reading-content {
-	box-shadow: none !important;
-}
-
-.reading-content img {
-	width: 25vw;
-	height: auto;
-}

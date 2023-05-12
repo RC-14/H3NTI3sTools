@@ -1,9 +1,0 @@
-/* Limit image sizes to something reasonable */
-.post__files > .post__thumbnail > .fileThumb > img {
-	max-height: 95vh;
-}
-
-/* Make clear when an image isn't high res yet */
-.post__files > .post__thumbnail > .fileThumb > img[data-src] {
-	opacity: 10%;
-}
