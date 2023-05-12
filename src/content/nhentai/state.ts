@@ -1,4 +1,4 @@
-const BROWSING_PATHS = ['artist', 'group', 'parody', 'character', 'tag'];
+const BROWSING_PATHS = ['', 'artist', 'artists', 'category', 'character', 'characters', 'group', 'groups', 'language', 'parodies', 'parody', 'tag', 'tags'];
 
 /**
  * Determines the current state of the website.
