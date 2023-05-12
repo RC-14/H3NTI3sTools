@@ -25,8 +25,8 @@ If applicable, add screenshots to help explain your problem.
 
 **Device info (please complete the following information):**
  - OS: [e.g. MacOS, Linux, Windows] (optional - though it may be necessary in some cases)
- - Browser [e.g. chrome, firefox]
- - Version [e.g. 100] (this issue is invalid if it's not the newest stable release)
+ - Firefox Edition: [e.g. release, developer, nightly]
+ - Firefox Version: [e.g. 100] (this issue is invalid if it's not the newest release of the respective edition)
 
 **Additional context**
 Add any other context about the problem here.
