@@ -1,8 +1,18 @@
 #!/usr/bin/env node
 import { build } from 'esbuild';
-import { cp as copy, readdir, rm as remove, stat } from 'fs/promises';
+import { cp as copy, readdir, rm as remove, stat, readFile } from 'fs/promises';
 import { join as joinPath } from 'path';
-import manifest from '../src/manifest.json' assert { type: 'json' };
+
+const MANIFEST_PATH = 'src/manifest.json';
+
+try {
+	const info = await stat(MANIFEST_PATH);
+	if (!info.isFile()) throw new Error(`Manifest is not a file. (${MANIFEST_PATH})`);
+} catch (error) {
+	throw new Error(`Manifest not found. (${MANIFEST_PATH})`);
+}
+
+const manifest = JSON.parse(await readFile(MANIFEST_PATH, { encoding: 'utf-8' }));
 
 const getAllTSFiles = async (dirPath) => {
 	const result = [];
