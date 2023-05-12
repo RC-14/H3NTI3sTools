@@ -64,7 +64,7 @@ build({
 	outbase: 'src',
 	outdir: 'build',
 	sourcemap: 'inline',
-	target: ['firefox112']
+	target: ['firefox113']
 });
 
 copy('src', 'build', {
