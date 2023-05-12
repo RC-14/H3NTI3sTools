@@ -88,3 +88,22 @@ export const sendRuntimeMessage = (target: Exclude<RuntimeMessage['target'], 'co
 export const isSiteCloudflareCheck = (site: Window = window) => {
 	return site.document.title === 'Just a moment...';
 };
+
+/**
+ * Calls the callback function after the readystate was reached.
+ * 
+ * The callback is guaranteed to be run as long as the page doesn't get closed.
+ * This means if the next readystate is already reached the callback will also be called despite it not being the desired one.
+ * 
+ * @param readystate The desired ready state. (`interactive` or `complete`)
+ * 
+ * @param callback The function to be called when the desired readystate is reached.
+ */
+export const runAfterReadyStateReached = (readystate: Exclude<DocumentReadyState, 'loading'>, callback: () => unknown) => {
+	if (document.readyState === readystate || document.readyState === 'complete') {
+		callback();
+		return;
+	}
+
+	document.addEventListener('readystatechange', () => callback(), { once: true });
+};
