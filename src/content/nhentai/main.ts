@@ -1,5 +1,5 @@
 import { qs, isElementEditable } from '/src/lib/utils';
-import { addShortcuts } from '/src/lib/nextPreviousShortcuts';
+import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
 import state from './state';
 import { applyCustomReaderSettings } from './readerSettingsUtils';
 
@@ -11,7 +11,7 @@ const previous = () => {
 };
 
 if (state === 'browsing' || state === 'searching') {
-	addShortcuts(next, previous);
+	addNextPreviousShortcuts(next, previous);
 } else if (state === 'reading') {
 	applyCustomReaderSettings();
 
