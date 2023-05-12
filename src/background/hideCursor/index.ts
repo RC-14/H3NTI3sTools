@@ -20,11 +20,11 @@ export const runtimeMessageHandler: RuntimeMessageHandler = async (msg, data, se
 
 	switch (msg) {
 		case 'hide':
-			await scripting.insertCSS(injection);
+			scripting.insertCSS(injection);
 			break;
 
 		case 'show':
-			await scripting.removeCSS(injection);
+			scripting.removeCSS(injection);
 			break;
 
 		default:
