@@ -71,7 +71,7 @@
 				"*://kemono.party/*"
 			],
 			"js": [
-				"./content/kemono/main.ts"
+				"./content/kemono/main.js"
 			],
 			"css": [
 				"./content/kemono/styles.css"
