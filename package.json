@@ -4,8 +4,8 @@
 	"scripts": {
 		"check": "tsc",
 		"build": "node scripts/build.js",
-		"start": "npm run build && web-ext --config=web-ext.config.cjs run",
-		"package": "npm run build && web-ext --config=web-ext.config.cjs build",
+		"start": "web-ext --config=web-ext.config.cjs run",
+		"package": "web-ext --config=web-ext.config.cjs build",
 		"clean": "rm -rf build dist"
 	},
 	"dependencies": {
