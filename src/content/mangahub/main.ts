@@ -1,5 +1,5 @@
 import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
-import { qs } from '/src/lib/utils';
+import { qs, runAfterReadyStateReached } from '/src/lib/utils';
 
 const removeUglyWhitBoxAtBottom = () => {
 	qs('._1QUKS')?.remove();
@@ -21,10 +21,6 @@ document.addEventListener('click', (event) => {
 	open(event.target.href, '_self');
 });
 
-addNextPreviousShortcuts(nextChapter, previousChapter);
+runAfterReadyStateReached('interactive', removeUglyWhitBoxAtBottom);
 
-if (document.readyState !== 'loading') {
-	removeUglyWhitBoxAtBottom();
-} else {
-	document.addEventListener('readystatechange', removeUglyWhitBoxAtBottom, { once: true });
-}
+addNextPreviousShortcuts(nextChapter, previousChapter);
