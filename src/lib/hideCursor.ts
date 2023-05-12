@@ -11,8 +11,8 @@ const storage = new StorageHelper('local', 'hideCursor');
 let hidden = false;
 let listenersAttached = false;
 
-const updateGlobalState = () => {
-	if (listenersAttached) storage.set(STORAGE_KEY, hidden);
+const updateGlobalState = async () => {
+	if (listenersAttached) await storage.set(STORAGE_KEY, hidden);
 };
 
 /**
@@ -24,7 +24,7 @@ export const hideCursor = async () => {
 	await sendRuntimeMessage('background', 'hideCursor', 'hide');
 
 	hidden = true;
-	updateGlobalState();
+	await updateGlobalState();
 };
 
 /**
@@ -36,7 +36,7 @@ export const showCursor = async () => {
 	await sendRuntimeMessage('background', 'hideCursor', 'show');
 
 	hidden = false;
-	updateGlobalState();
+	await updateGlobalState();
 };
 
 /**
@@ -50,7 +50,7 @@ export const isCursorHidden = () => hidden;
  * Adjust the local state to be in line with the global state.
  */
 const updateLocalState = async () => {
-	const globalStateParse = BooleanSchema.safeParse(storage.get(STORAGE_KEY));
+	const globalStateParse = BooleanSchema.safeParse(await storage.get(STORAGE_KEY));
 
 	const globalState = globalStateParse.success ? globalStateParse.data : false;
 
