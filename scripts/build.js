@@ -3,6 +3,14 @@ import { build } from 'esbuild';
 import { cp as copy, readdir, rm as remove, stat, readFile } from 'fs/promises';
 import { join as joinPath } from 'path';
 
+// Basically esbuild config for the stuff that's there (only one target allowed instead of an array)
+const BUILD_CONFIG = {
+	minify: true,
+	sourcemap: 'inline',
+	sourcesContent: true,
+	target: 'firefox113'
+};
+
 const MANIFEST_PATH = 'src/manifest.json';
 
 // Check if the manifest exists
@@ -93,11 +101,12 @@ build({
 	bundle: true,
 	entryNames: '[dir]/[name]',
 	entryPoints,
-	minify: true,
+	minify: BUILD_CONFIG.minify,
 	outbase: 'src',
 	outdir: 'build',
-	sourcemap: 'inline',
-	target: ['firefox113']
+	sourcemap: BUILD_CONFIG.sourcemap,
+	sourcesContent: BUILD_CONFIG.sourcesContent,
+	target: [BUILD_CONFIG.target]
 });
 
 // Copy all non ts files to build (src/types and src/lib are also excluded)
