@@ -54,6 +54,10 @@ const getInjectEntryPoints = async () => {
 	return await getAllFiles('src/inject', (path) => path.endsWith('.ts'));
 };
 
+const getPopupEntryPoints = async () => {
+	return await getAllFiles('src/popup', (path) => path.endsWith('/script.ts'));
+};
+
 const getPageEntryPoints = async () => {
 	return await getAllFiles('src/pages', (path) => path.endsWith('/script.ts'));
 };
@@ -61,6 +65,7 @@ const getPageEntryPoints = async () => {
 const entryPoints = [
 	...getManifestEntryPoints(),
 	...await getInjectEntryPoints(),
+	...await getPopupEntryPoints(),
 	...await getPageEntryPoints()
 ];
 
