@@ -14,7 +14,7 @@ try {
 
 const manifest = JSON.parse(await readFile(MANIFEST_PATH, { encoding: 'utf-8' }));
 
-const getAllTSFiles = async (dirPath) => {
+const getAllFiles = async (dirPath, filter) => {
 	const result = [];
 	const directories = [dirPath];
 
@@ -29,7 +29,7 @@ const getAllTSFiles = async (dirPath) => {
 			if (isDir) {
 				directories.push(filePath);
 				continue;
-			} else if (file.endsWith('.ts')) {
+			} else if (filter(filePath)) {
 				result.push(filePath);
 			}
 		}
@@ -51,11 +51,11 @@ const getManifestEntryPoints = () => {
 };
 
 const getInjectEntryPoints = async () => {
-	return await getAllTSFiles('src/inject');
+	return await getAllFiles('src/inject', (path) => path.endsWith('.ts'));
 };
 
 const getPageEntryPoints = async () => {
-	return await getAllTSFiles('src/pages');
+	return await getAllFiles('src/pages', (path) => path.endsWith('/script.ts'));
 };
 
 const entryPoints = [
