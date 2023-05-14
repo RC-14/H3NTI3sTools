@@ -24,12 +24,14 @@ const getAllFiles = async (dirPath, filter) => {
 
 		for (const file of files) {
 			const filePath = joinPath(directory, file);
-			const isDir = (await stat(filePath)).isDirectory();
+			const info = await stat(filePath);
 
-			if (isDir) {
+			if (info.isSymbolicLink()) continue;
+
+			if (info.isDirectory()) {
 				directories.push(filePath);
 				continue;
-			} else if (filter(filePath)) {
+			} else if (!filter || filter(filePath)) {
 				result.push(filePath);
 			}
 		}
