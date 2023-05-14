@@ -16,6 +16,12 @@
 			"./background/loader.js"
 		]
 	},
+	"browser_action": {
+		"default_area": "navbar",
+		"default_icon": "./images/icon/120.png",
+		"default_popup": "./popup/index.html",
+		"default_title": "H3NTI3's Tools"
+	},
 	"content_scripts": [
 		{
 			"matches": [
