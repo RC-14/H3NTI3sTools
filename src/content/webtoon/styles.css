@@ -9,14 +9,14 @@
 
 /* Dark mode for the reader */
 
-.cont_box .viewer_lst {
-	overflow: visible !important;
+#_viewerBox {
+	width: 100vw;
 }
 
 #_imageList {
 	width: 100vw;
 	padding: 50px 0px;
-	translate: -14.288694vw -50px;
+	translate: 0px -50px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
