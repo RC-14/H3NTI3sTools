@@ -39,10 +39,8 @@ export default class StorageHelper {
 	 * @returns The copy of input.
 	 */
 	#safeCopy(input: unknown): unknown {
-		if (input == null) return input;
 		if (['function', 'symbol'].includes(typeof input)) return undefined;
-		if (typeof input !== 'object') return input;
-		return JSON.parse(JSON.stringify(input));
+		return structuredClone(input);
 	}
 
 	/**
