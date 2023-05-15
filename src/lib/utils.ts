@@ -167,7 +167,7 @@ export const showMessage = (message: string, { color = 'darkgrey', duration = 3_
  * 
  * @returns A function that returns a Promise that resolves to an IDBDatabase object.
  */
-export const generateIDBGetter = (name: string, version: number, upgradeneededListener: (event: IDBVersionChangeEvent) => unknown, blockedListener?: (event: Event) => unknown) => {
+export const generateIDBGetter = (name: string, version: number, upgradeneededListener: (event: IDBVersionChangeEvent & Record<'target', IDBOpenDBRequest>) => unknown, blockedListener?: (event: Event) => unknown) => {
 	return () => new Promise<IDBDatabase>((resolve, reject) => {
 		const request = indexedDB.open(name, version);
 
@@ -184,6 +184,6 @@ export const generateIDBGetter = (name: string, version: number, upgradeneededLi
 			reject(new Error("Result of the request isn't an instance of IDBDatabase."));
 		});
 
-		request.addEventListener('upgradeneeded', upgradeneededListener);
+		request.addEventListener('upgradeneeded', upgradeneededListener as (event: IDBVersionChangeEvent) => ReturnType<typeof upgradeneededListener>);
 	});
 };
