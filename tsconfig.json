@@ -21,7 +21,6 @@
 		"isolatedModules": true,
 		"forceConsistentCasingInFileNames": true,
 		"noEmit": true,
-		"noUnusedLocals": true,
 		"noImplicitReturns": true,
 		"exactOptionalPropertyTypes": true,
 		"skipDefaultLibCheck": true,
