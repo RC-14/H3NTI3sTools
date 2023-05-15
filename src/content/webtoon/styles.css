@@ -9,6 +9,10 @@
 
 /* Dark mode for the reader */
 
+html {
+	height: auto;
+}
+
 #_viewerBox {
 	width: 100vw;
 }
