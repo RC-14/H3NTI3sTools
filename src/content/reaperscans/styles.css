@@ -8,3 +8,9 @@ img.max-w-full.mx-auto.display-block {
 	width: 25vw;
 	height: auto;
 }
+
+/* Fix hide cursor not working because the cursor is outside the page */
+.h-screen {
+	min-height: 100vh !important;
+	height: auto !important;
+}

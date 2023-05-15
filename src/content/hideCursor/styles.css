@@ -1,0 +1,11 @@
+/* Make sure the cursor is within the page and can be hidden */
+
+html {
+	min-height: 100vh !important;
+	height: auto !important;
+}
+
+body {
+	min-height: 100vh !important;
+	height: auto !important;
+}
