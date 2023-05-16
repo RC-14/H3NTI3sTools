@@ -20,9 +20,9 @@ if (state === 'browsing' || state === 'searching') {
 
 		switch (event.code) {
 			case 'Escape':
+				event.preventDefault();
 				setTimeout(() => {
-					const back = qs('a.go-back');
-					if (back instanceof HTMLAnchorElement) back.click();
+					qs<HTMLAnchorElement>('a.go-back')?.click();
 				}, 100);
 				break;
 
