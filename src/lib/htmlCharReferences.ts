@@ -11,9 +11,16 @@ const LONGEST_HEX_CHAR_REF_LENGTH = 6; // '10ffff'.length
 const namedCharRefRegEx = new RegExp(`&[a-zA-Z0-9]{1,${LONGEST_NAMED_CHAR_REF_LENGTH}};`, 'g');
 const numericalCharRefRegEx = new RegExp(`&#(?:(?:\d{1,${LONGEST_DEC_CHAR_REF_LENGTH}})|(?:[xX][a-fA-F0-9]{1,${LONGEST_HEX_CHAR_REF_LENGTH}}));`, 'g');
 
-// I can still write these when I need them... (probably never)
 // export const encode = (string: string): string => { };
-// export const encodeAll = (string: string): string => { };
+
+/**
+ * Encodes every character in the string to the hex HTML encoding.
+ * 
+ * @param string The string you want to encode.
+ * 
+ * @returns The encoded string.
+ */
+export const encodeAll = (string: string): string => string.split('').map((char) => `&#x${char.codePointAt(0)!.toString(16)};`).join('');
 
 /**
  * Decodes all HTML character references in a string.
@@ -51,5 +58,3 @@ export const decode = (string: string): string => {
 
 	return string;
 };
-
-export default { decode };
