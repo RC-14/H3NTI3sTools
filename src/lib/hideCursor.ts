@@ -11,6 +11,16 @@ const storage = new StorageHelper('local', 'hideCursor');
 let hidden = false;
 let listenersAttached = false;
 
+/**
+ * Prevents the context menu from appearing and showing the cursor.
+ * 
+ * @param event A mouse event object.
+ */
+const contextmenuListener = (event: MouseEvent) => {
+	event.preventDefault();
+	event.stopImmediatePropagation();
+};
+
 const updateGlobalState = async () => {
 	if (listenersAttached) await storage.set(STORAGE_KEY, hidden);
 };
@@ -23,6 +33,8 @@ export const hideCursor = async () => {
 
 	await sendRuntimeMessage('background', 'hideCursor', 'hide');
 
+	document.addEventListener('contextmenu', contextmenuListener, { capture: true });
+
 	hidden = true;
 	await updateGlobalState();
 };
@@ -34,6 +46,8 @@ export const showCursor = async () => {
 	if (!hidden) return;
 
 	await sendRuntimeMessage('background', 'hideCursor', 'show');
+
+	document.removeEventListener('contextmenu', contextmenuListener, { capture: true });
 
 	hidden = false;
 	await updateGlobalState();
