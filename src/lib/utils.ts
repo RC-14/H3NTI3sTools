@@ -1,5 +1,6 @@
 import { runtime } from 'webextension-polyfill';
 import { RuntimeMessage } from './fragments';
+import { encodeAll as encodeAllAsHTMLCharReference } from './htmlCharReferences';
 
 /**
  * Returns the first Element which matches the given CSS Selector.
@@ -186,4 +187,27 @@ export const generateIDBGetter = (name: string, version: number, upgradeneededLi
 
 		request.addEventListener('upgradeneeded', upgradeneededListener as (event: IDBVersionChangeEvent) => ReturnType<typeof upgradeneededListener>);
 	});
+};
+
+/**
+ * Generates a data:image/svg+xml,... uri from a character that can be used as the src attribute of an img element.
+ * 
+ * @param char A string with a length of 1.
+ * 
+ * @param color The CSS color of the string. (default: black)
+ * 
+ * @returns A data url that can be used as the src of an img element.
+ */
+export const makeImageFromChar = (char: string, color: string = 'black') => {
+	if (char.length !== 1) throw new Error("String longer than 1 character.");
+
+	const encodedChar = encodeURIComponent(encodeAllAsHTMLCharReference(char));
+	const encodedColor = encodeURIComponent(encodeAllAsHTMLCharReference(color));
+
+	const charPlaceholder = 'replaceWithChar';
+	const colorPlaceholder = 'replaceWithColor';
+
+	const uriString = encodeURI(`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="${colorPlaceholder}"><text y=".9em" font-size="90">${charPlaceholder}</text></svg>`);
+
+	return uriString.replace(charPlaceholder, encodedChar).replace(colorPlaceholder, encodedColor);
 };
