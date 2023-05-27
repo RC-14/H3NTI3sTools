@@ -1,10 +1,20 @@
 /**
+ * CSS class that hides an element.
+ */
+export const HIDDEN_CLASS = 'hidden';
+
+/**
+ * CSS class that makes an element invisible.
+ */
+export const INVISIBLE_CLASS = 'invisible';
+
+/**
  * Adds the CSS hidden class to the elements class list.
  * 
  * @param element The element you want to hide.
  */
 export const hideElement = (element: HTMLElement) => {
-	element.classList.add('hidden');
+	element.classList.add(HIDDEN_CLASS);
 };
 
 /**
@@ -13,7 +23,7 @@ export const hideElement = (element: HTMLElement) => {
  * @param element The element you want to show.
  */
 export const showElement = (element: HTMLElement) => {
-	element.classList.remove('hidden');
+	element.classList.remove(HIDDEN_CLASS);
 };
 
 /**
@@ -22,7 +32,7 @@ export const showElement = (element: HTMLElement) => {
  * @param element The element you want to hide.
  */
 export const makeElementInvisible = (element: HTMLElement) => {
-	element.classList.add('invisible');
+	element.classList.add(INVISIBLE_CLASS);
 };
 
 /**
@@ -31,5 +41,5 @@ export const makeElementInvisible = (element: HTMLElement) => {
  * @param element The element you want to show.
  */
 export const makeElementVisible = (element: HTMLElement) => {
-	element.classList.remove('invisible');
+	element.classList.remove(INVISIBLE_CLASS);
 };
