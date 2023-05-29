@@ -28,17 +28,16 @@ export const removeDuplicateImages = () => {
 	searchURL.pathname = searchURL.pathname.split('/post/')[0];
 	searchURL.searchParams.append('q', titleElement.innerText);
 
-	// Request the page (it's text because it's a website)
+	// Request the page
 	fetch(searchURL).then(response => response.text()).then((html) => {
 		// The title might have been used multiple times so we have to filter the results
 		const chunks = html.split(' attachment');
-		const chunkForCurrentPost = chunks.filter(t => t.includes(location.pathname))[0];
+		const chunkForCurrentPost = chunks.filter(chunk => chunk.includes(location.pathname))[0];
 
 		const attachmentCount = parseInt(chunkForCurrentPost.match(/\d+$/)?.[0] ?? 'NaN');
 		if (isNaN(attachmentCount)) throw new Error(`[kemono] attachmentCount is NaN (got ${chunks.length} chunk(s) and type after filter is ${typeof chunkForCurrentPost})`);
 		if (attachmentCount > imgWrappers.length) throw new Error('[kemono] We somehow got an attachmentCount higher then the amount of images on the page.');
 		if (attachmentCount < imgWrappers.length - 1) throw new Error("[kemono] We somehow got an attachment count that's too little.");
-
 
 		// Everything is normal and this request was useless
 		if (attachmentCount === imgWrappers.length) return;
