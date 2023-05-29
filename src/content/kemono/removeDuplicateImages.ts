@@ -1,5 +1,4 @@
-
-import { qsa, qs } from '/src/lib/utils';
+import { qs, qsa } from '/src/lib/utils';
 
 // For some reason the first image is shown twice (sometimes the first image is a cropped version of the second image)
 // but it won't hurt to remove other duplicates as well.
