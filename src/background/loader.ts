@@ -23,11 +23,11 @@ for (const id of fragments.keys()) {
  * Add Listeners
  */
 
-runtime.onMessage.addListener(async (request: JSONValue, sender, sendResponse: (response?: JSONValue | void) => void) => {
+runtime.onMessage.addListener(async (request: JSONValue, sender) => {
 	const { target, fragmentId, msg, data } = RuntimeMessageSchema.parse(request);
 
 	if (target !== 'background') return;
 	if (!runtimeMessageHandlers.has(fragmentId)) throw new Error(`No handler for: ${fragmentId}`);
 
-	sendResponse(await runtimeMessageHandlers.get(fragmentId)!(msg, data, sender));
+	return await runtimeMessageHandlers.get(fragmentId)!(msg, data, sender);
 });
