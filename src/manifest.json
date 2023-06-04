@@ -185,6 +185,9 @@
 	"permissions": [
 		"<all_urls>",
 		"scripting",
-		"storage"
+		"storage",
+		"unlimitedStorage",
+		"webRequest",
+		"webRequestBlocking"
 	]
 }

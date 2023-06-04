@@ -3,9 +3,11 @@ import { BackgroundFragment, RuntimeMessageHandler, RuntimeMessageSchema } from 
 import { JSONValue } from '/src/lib/json.js';
 // Background fragments
 import * as hideCursor from './hideCursor';
+import * as viewer from './viewer';
 
 const fragments: Map<string, BackgroundFragment> = new Map();
 fragments.set('hideCursor', hideCursor);
+fragments.set('viewer', viewer);
 
 /*
  * Register Handlers

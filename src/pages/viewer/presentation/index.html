@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Presentation | Viewer</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" type="module"></script>
+</head>
+
+<body>
+
+	<main>
+
+		<div id="presentation-container" class="hidden"></div>
+
+		<div id="error-container">
+			<p id="error-title">If you see this something went horribly wrong.</p>
+			<p id="error-description">Check if JavaScript is enabled and if it is, there's probably a more detailed
+				error in the dev tools console of your browser.</p>
+		</div>
+
+	</main>
+
+	<p id="media-counter" class="hidden"></p>
+
+	<template id="media-container-template">
+		<div class="media-container hidden" data-origin="" data-type="">
+
+			<div class="content-container"></div>
+
+			<div class="info-container">
+				<div>
+					<p class="media-name"></p>
+					<button class="favorite-button"></button>
+					<a class="origin-link" target="_blank">&#x27A6</a>
+				</div>
+				<ul class="creator-list"></ul>
+			</div>
+
+		</div>
+	</template>
+
+</body>
+
+</html>
