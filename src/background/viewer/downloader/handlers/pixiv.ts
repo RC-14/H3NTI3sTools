@@ -101,7 +101,7 @@ const handler: DownloadHandler = {
 		return {
 			origin: url,
 			name: parsedApiResponse.body.title,
-			description: decode(parsedApiResponse.body.description.replaceAll(/<[^>]+>/g, '')),
+			description: decode(parsedApiResponse.body.description.replaceAll(/<[^>]+>/g, '')) || undefined,
 			type: types[parsedApiResponse.body.illustType],
 			sources,
 			favorite: false,

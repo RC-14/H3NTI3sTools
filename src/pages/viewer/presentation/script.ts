@@ -38,14 +38,18 @@ const parseSearch = (): string[] => {
 
 const getInfoForAllMedia = async (): Promise<Media[]> => {
 	const mediaOrigins = parseSearch();
-	const mediaInfoPromises: Promise<Media | undefined>[] = [];
+	const mediaInfoPromises: Promise<Media>[] = [];
 
 	for (const origin of mediaOrigins) {
 		if (typeof origin !== 'string') continue;
 		mediaInfoPromises.push(getMediaInfo(origin));
 	}
 
-	return (await Promise.all(mediaInfoPromises)).filter(Boolean);
+	const settledPromises = await Promise.allSettled(mediaInfoPromises);
+
+	const results = settledPromises.filter((result) => result.status === 'fulfilled') as PromiseFulfilledResult<Media>[];
+
+	return results.map((result) => result.value);
 };
 
 const getMediaContainer = (origin: string) => qs<HTMLDivElement>(`div.media-container[data-origin="${UrlSchema.parse(origin)}"]`);

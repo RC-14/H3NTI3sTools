@@ -58,6 +58,7 @@ messageHandlers.set('downloadMedia', async (data, sender) => {
 	try {
 		await mediaPromiseMap.get(origin);
 	} catch (error) {
+		console.error(error);
 		return false;
 	}
 	return true;
@@ -72,6 +73,7 @@ messageHandlers.set('downloadData', async (data, sender) => {
 	try {
 		await dataPromiseMap.get(source);
 	} catch (error) {
+		console.error(error);
 		return false;
 	}
 	return true;
