@@ -21,7 +21,7 @@
 #media-counter {
 	position: absolute;
 	right: 3px;
-	bottom: 3px;
+	top: 3px;
 	text-shadow: black 0 0 5px;
 }
 
