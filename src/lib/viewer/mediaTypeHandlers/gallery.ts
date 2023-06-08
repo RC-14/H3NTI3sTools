@@ -4,7 +4,7 @@ import { Media, MediaTypeHandler } from '/src/lib/viewer';
 
 const updateCounter = (contentContainer: HTMLDivElement) => {
 	const counter = qs<HTMLParagraphElement>('p.content-counter', contentContainer)!;
-	counter.innerText = `${contentContainer.dataset.index}/${contentContainer.childElementCount - 1}`;
+	counter.innerText = `${parseInt(contentContainer.dataset.index!) + 1}/${contentContainer.childElementCount - 1}`;
 };
 
 const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
