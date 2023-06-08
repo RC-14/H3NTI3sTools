@@ -2,15 +2,21 @@ import { hideElement, HIDDEN_CLASS, showElement } from '../../pageUtils';
 import { qs } from '../../utils';
 import { Media, MediaTypeHandler } from '/src/lib/viewer';
 
-const showFirst = (sources: Media['sources'], mediaContainer: HTMLDivElement) => {
+const updateCounter = (contentContainer: HTMLDivElement) => {
+	const counter = qs<HTMLParagraphElement>('p.content-counter', contentContainer)!;
+	counter.innerText = `${contentContainer.dataset.index}/${contentContainer.childElementCount - 1}`;
+};
+
+const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
 	const source = sources[0];
 
-	const img = qs<HTMLImageElement>(`img[data-source="${source}"]`, mediaContainer);
+	const img = qs<HTMLImageElement>(`img[data-source="${source}"]`, contentContainer);
 	if (!(img instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the first source (${source}).`);
 
 	showElement(img);
 
-	mediaContainer.dataset.index = '0';
+	contentContainer.dataset.index = '0';
+	updateCounter(contentContainer);
 };
 
 const showLast = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
@@ -22,6 +28,7 @@ const showLast = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 	showElement(img);
 
 	contentContainer.dataset.index = `${sources.length - 1}`;
+	updateCounter(contentContainer);
 };
 
 const showNext = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
@@ -40,6 +47,7 @@ const showNext = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 	showElement(nextImg);
 
 	contentContainer.dataset.index = `${nextIndex}`;
+	updateCounter(contentContainer);
 
 	return false;
 };
@@ -60,6 +68,7 @@ const showPrevious = (sources: Media['sources'], contentContainer: HTMLDivElemen
 	showElement(nextImg);
 
 	contentContainer.dataset.index = `${nextIndex}`;
+	updateCounter(contentContainer);
 
 	return false;
 };
@@ -78,6 +87,10 @@ const defaultExport: MediaTypeHandler = {
 			hideElement(img);
 			contentContainer.append(img);
 		}
+
+		const pageCounter = document.createElement('p');
+		pageCounter.classList.add('content-counter');
+		contentContainer.append(pageCounter);
 	},
 	presentMedia: (media, contentContainer, direction) => {
 		if (direction === 'backward') {
