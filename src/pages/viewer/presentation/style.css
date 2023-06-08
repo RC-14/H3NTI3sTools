@@ -44,6 +44,15 @@
 	max-height: 100vh;
 }
 
+.content-container>.content-counter {
+	width: fit-content;
+	height: fit-content;
+	position: absolute;
+	right: 3px;
+	bottom: 3px;
+	text-shadow: black 0 0 5px;
+}
+
 .info-container {
 	position: absolute;
 	left: 3px;
