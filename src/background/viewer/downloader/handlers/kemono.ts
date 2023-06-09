@@ -33,7 +33,7 @@ const handler: DownloadHandler = {
 			const html = await fetch(creatorUrl, {
 				redirect: 'error'
 			}).then((response) => response.text());
-			
+
 			const creator = html.split('<span itemprop="name">')[1].split('</span>')[0];
 			creatorChache.set(creatorUrl.pathname, creator);
 		}
@@ -41,7 +41,7 @@ const handler: DownloadHandler = {
 		return {
 			origin: url,
 			name: parsedApiResponse.title,
-			description: decode(parsedApiResponse.content.replaceAll(/<[^>]+>/g, '')),
+			description: decode(parsedApiResponse.content.replaceAll(/<[^>]+>/g, '')) || undefined,
 			type: 'gallery',
 			sources: attachments.map((item) => 'https://c1.kemono.party/data' + item.path) as [string, ...string[]],
 			favorite: false,
