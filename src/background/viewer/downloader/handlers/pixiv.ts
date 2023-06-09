@@ -1,7 +1,7 @@
 import { WebRequest, tabs, webRequest } from 'webextension-polyfill';
 import { z } from 'zod';
-import { DownloadHandler, Media, UrlSchema } from '/src/lib/viewer';
 import { decode } from '/src/lib/htmlCharReferences';
+import { DownloadHandler, Media, UrlSchema } from '/src/lib/viewer';
 
 /*
  * Set headers so that pixiv doesn't block the request.
