@@ -28,7 +28,7 @@ const handler: DownloadHandler = {
 		const attachments = parsedApiResponse.attachments.filter((item) => ['png', 'jpg', 'gif', 'webp'].includes(item.path.split('.').at(-1)!));
 
 		if (attachments.length === 0) {
-			if (parsedApiResponse.file.path === undefined) throw new Error("No attachments.");
+			if (parsedApiResponse.file.path === undefined) throw new Error(`No attachments for post: ${url}`);
 
 			attachments.push({ path: parsedApiResponse.file.path });
 		}
