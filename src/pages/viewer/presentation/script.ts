@@ -210,6 +210,11 @@ const init = async () => {
 
 	mediaList.push(...await getInfoForAllMedia());
 
+	if (mediaList.length === 0) {
+		showError('Nothing to show', 'The search part of the URL contains an empty array.');
+		return;
+	}
+
 	const addMediaContainerToDomPromises: Promise<void>[] = [];
 
 	// Add media containers to DOM
