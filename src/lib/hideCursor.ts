@@ -25,6 +25,9 @@ const updateGlobalState = async () => {
 	if (listenersAttached) await storage.set(STORAGE_KEY, hidden);
 };
 
+export const showCursorEventName = 'h3nti3-showcursor';
+export const hideCursorEventName = 'h3nti3-hidecursor';
+
 /**
  * Hides the cursor.
  */
@@ -36,6 +39,7 @@ export const hideCursor = async () => {
 	document.addEventListener('contextmenu', contextmenuListener, { capture: true });
 
 	hidden = true;
+	window.dispatchEvent(new Event(hideCursorEventName));
 	await updateGlobalState();
 };
 
@@ -50,6 +54,7 @@ export const showCursor = async () => {
 	document.removeEventListener('contextmenu', contextmenuListener, { capture: true });
 
 	hidden = false;
+	window.dispatchEvent(new Event(showCursorEventName));
 	await updateGlobalState();
 };
 
