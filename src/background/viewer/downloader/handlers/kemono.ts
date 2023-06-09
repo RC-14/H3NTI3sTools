@@ -10,6 +10,9 @@ const apiResponseSchema = z.array(z.object({
 	attachments: z.array(z.object({
 		path: z.string()
 	})),
+	file: z.object({
+		path: z.string().optional()
+	})
 }));
 
 const handler: DownloadHandler = {
@@ -24,7 +27,11 @@ const handler: DownloadHandler = {
 
 		const attachments = parsedApiResponse.attachments.filter((item) => ['png', 'jpg', 'gif', 'webp'].includes(item.path.split('.').at(-1)!));
 
-		if (attachments.length === 0) throw new Error("No attachments.");
+		if (attachments.length === 0) {
+			if (parsedApiResponse.file.path === undefined) throw new Error("No attachments.");
+
+			attachments.push({ path: parsedApiResponse.file.path });
+		}
 
 		const creatorUrl = new URL(url);
 		creatorUrl.pathname = creatorUrl.pathname.split('/post/')[0];
