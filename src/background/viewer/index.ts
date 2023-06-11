@@ -1,11 +1,11 @@
 import { Runtime, Tabs, runtime, tabs } from 'webextension-polyfill';
-import StorageHelper from '/src/lib/StorageHelper';
+import { downloadData, downloadMedia } from './downloader';
 import { RuntimeMessage, RuntimeMessageHandler } from '/src/lib/fragments';
 import { IdSchema, Media, Name, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
-import { downloadData, downloadMedia } from './downloader';
+import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
-const storage = new StorageHelper('local', 'viewer');
-storage.clear();
+// Prevent carrying over a selection from a previous session.
+clearSelection();
 
 const mediaPromiseMap = new Map<string, Promise<void>>();
 const creatorPromiseMap = new Map<Name, Promise<void>>();
@@ -42,11 +42,11 @@ messageHandlers.set('showMedia', async (data, sender) => {
 messageHandlers.set('showSelection', async (data, sender) => {
 	if (data !== undefined && data !== null && typeof data !== 'number') throw new Error(`[viewer] Got an invalid target tab: ${data}`);
 
-	const origins = UrlSchema.array().parse(storage.get('selection'));
+	const origins = await getSelection();
 
 	show(origins, data);
 
-	storage.remove('selection');
+	clearSelection();
 });
 
 messageHandlers.set('downloadMedia', async (data, sender) => {
