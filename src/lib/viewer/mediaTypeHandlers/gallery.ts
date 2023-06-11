@@ -1,10 +1,21 @@
-import { hideElement, HIDDEN_CLASS, showElement } from '../../pageUtils';
+import { HIDDEN_CLASS, hideElement, showElement } from '../../pageUtils';
 import { qs } from '../../utils';
 import { Media, MediaTypeHandler } from '/src/lib/viewer';
 
+const setIndex = (contentContainer: HTMLDivElement, index: number) => {
+	if (isNaN(index)) throw new Error(`Index is NaN.`);
+	if (index < 0) throw new Error(`Index is negative.`);
+
+	contentContainer.dataset.index = `${index}`;
+};
+
+const getIndex = (contentContainer: HTMLDivElement) => {
+	return parseInt(contentContainer.dataset.index ?? 'NaN');
+};
+
 const updateCounter = (contentContainer: HTMLDivElement) => {
 	const counter = qs<HTMLParagraphElement>('p.content-counter', contentContainer)!;
-	counter.innerText = `${parseInt(contentContainer.dataset.index!) + 1}/${contentContainer.childElementCount - 1}`;
+	counter.innerText = `${getIndex(contentContainer) + 1}/${contentContainer.childElementCount - 1}`;
 };
 
 const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
@@ -15,7 +26,7 @@ const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) 
 
 	showElement(img);
 
-	contentContainer.dataset.index = '0';
+	setIndex(contentContainer, 0);
 	updateCounter(contentContainer);
 };
 
@@ -27,12 +38,12 @@ const showLast = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 
 	showElement(img);
 
-	contentContainer.dataset.index = `${sources.length - 1}`;
+	setIndex(contentContainer, sources.length - 1);
 	updateCounter(contentContainer);
 };
 
 const showNext = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
-	const previousIndex = parseInt(contentContainer.dataset.index ?? 'NaN');
+	const previousIndex = getIndex(contentContainer);
 	const nextIndex = previousIndex + 1;
 	if (nextIndex === sources.length) return true;
 
@@ -46,14 +57,14 @@ const showNext = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 	if (!(nextImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the next source (${nextSource}).`);
 	showElement(nextImg);
 
-	contentContainer.dataset.index = `${nextIndex}`;
+	setIndex(contentContainer, nextIndex);
 	updateCounter(contentContainer);
 
 	return false;
 };
 
 const showPrevious = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
-	const previousIndex = parseInt(contentContainer.dataset.index ?? 'NaN');
+	const previousIndex = getIndex(contentContainer);
 	const nextIndex = previousIndex - 1;
 	if (previousIndex === 0) return true;
 
@@ -67,7 +78,7 @@ const showPrevious = (sources: Media['sources'], contentContainer: HTMLDivElemen
 	if (!(nextImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the next source (${nextSource}).`);
 	showElement(nextImg);
 
-	contentContainer.dataset.index = `${nextIndex}`;
+	setIndex(contentContainer, nextIndex);
 	updateCounter(contentContainer);
 
 	return false;
@@ -93,10 +104,14 @@ const defaultExport: MediaTypeHandler = {
 		contentContainer.append(pageCounter);
 	},
 	presentMedia: (media, contentContainer, direction) => {
-		if (direction === 'backward') {
-			showLast(media.sources, contentContainer);
-		} else if (direction === 'forward') {
-			showFirst(media.sources, contentContainer);
+		switch (direction) {
+			case 'backward':
+				showLast(media.sources, contentContainer);
+				break;
+
+			case 'forward':
+				showFirst(media.sources, contentContainer);
+				break;
 		}
 	},
 	hideMedia: (media, contentContainer, direction) => {
