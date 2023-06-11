@@ -13,12 +13,12 @@ fragments.set('viewer', viewer);
  * Register Handlers
  */
 
-const runtimeMessageHandlers: Map<string, RuntimeMessageHandler> = new Map();
+const runtimeMessageHandlers = new Map<string, RuntimeMessageHandler>();
 
 for (const id of fragments.keys()) {
-	const fragment = fragments.get(id);
+	const fragment = fragments.get(id)!;
 
-	if (fragment?.runtimeMessageHandler) runtimeMessageHandlers.set(id, fragment.runtimeMessageHandler);
+	if (fragment.runtimeMessageHandler) runtimeMessageHandlers.set(id, fragment.runtimeMessageHandler);
 }
 
 /*
