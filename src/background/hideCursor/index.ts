@@ -2,12 +2,13 @@ import { Scripting, scripting } from 'webextension-polyfill';
 import StorageHelper from '/src/lib/StorageHelper';
 import { BackgroundFragment } from '/src/lib/fragments';
 
-// Clears the storage every time the extension gets loaded.
-// This is done to prevent unexpectedly hiding the cursor.
-const storage = new StorageHelper('local', 'hideCursor');
-storage.clear();
-
 const fragment: BackgroundFragment = {
+	startupHandler: () => {
+		// Clears the storage every time the extension gets loaded.
+		// This is done to prevent unexpectedly hiding the cursor.
+		const storage = new StorageHelper('local', 'hideCursor');
+		storage.clear();
+	},
 	runtimeMessageHandler: async (msg, data, sender) => {
 		if (sender.tab?.id === undefined) return;
 

@@ -4,9 +4,6 @@ import { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
 import { IdSchema, Media, Name, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
 import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
-// Prevent carrying over a selection from a previous session.
-clearSelection();
-
 const mediaPromiseMap = new Map<string, Promise<void>>();
 const creatorPromiseMap = new Map<Name, Promise<void>>();
 const dataPromiseMap = new Map<Media['sources'][number], Promise<void>>();
@@ -92,6 +89,10 @@ messageHandlers.set('willCreatorExist', async (data, sender) => {
 });
 
 const fragment: BackgroundFragment = {
+	startupHandler: () => {
+		// Prevent carrying over a selection from a previous session.
+		clearSelection();
+	},
 	runtimeMessageHandler: async (msg, data, sender) => {
 		const messageHandler = messageHandlers.get(msg);
 
