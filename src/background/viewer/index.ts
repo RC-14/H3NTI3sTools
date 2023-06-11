@@ -1,6 +1,6 @@
 import { Runtime, Tabs, runtime, tabs } from 'webextension-polyfill';
 import { downloadData, downloadMedia } from './downloader';
-import { RuntimeMessage, RuntimeMessageHandler } from '/src/lib/fragments';
+import { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
 import { IdSchema, Media, Name, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
 import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
@@ -91,10 +91,14 @@ messageHandlers.set('willCreatorExist', async (data, sender) => {
 	return true;
 });
 
-export const runtimeMessageHandler: RuntimeMessageHandler = async (msg, data, sender) => {
-	const messageHandler = messageHandlers.get(msg);
+const fragment: BackgroundFragment = {
+	runtimeMessageHandler: async (msg, data, sender) => {
+		const messageHandler = messageHandlers.get(msg);
 
-	if (messageHandler === undefined) throw new Error(`[viewer] Got unknown message: ${msg}`);
+		if (messageHandler === undefined) throw new Error(`[viewer] Got unknown message: ${msg}`);
 
-	return await messageHandler(data, sender);
+		return await messageHandler(data, sender);
+	}
 };
+
+export default fragment;
