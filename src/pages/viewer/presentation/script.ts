@@ -152,6 +152,9 @@ const showNextMedia = () => {
 
 	mediaTypeHandlers[nextMedia.type].presentMedia(nextMedia, getContentContainerFromMediaContainer(getMediaContainer(nextMedia.origin)!)!, 'forward');
 
+	const mediaAfterNextMedia = mediaList[(mediaCounter + 1) % mediaList.length];
+	mediaTypeHandlers[mediaAfterNextMedia.type].preload(mediaAfterNextMedia, getContentContainerFromMediaContainer(getMediaContainer(mediaAfterNextMedia.origin)!)!, 'forward');
+
 	showMedia(nextMedia.origin);
 	updateCounterElement();
 };
@@ -170,6 +173,9 @@ const showPreviousMedia = () => {
 	const nextMedia = mediaList[mediaCounter];
 
 	mediaTypeHandlers[nextMedia.type].presentMedia(nextMedia, getContentContainerFromMediaContainer(getMediaContainer(nextMedia.origin)!)!, 'backward');
+
+	const mediaAfterNextMedia = mediaList[(mediaCounter + mediaList.length) % mediaList.length];
+	mediaTypeHandlers[mediaAfterNextMedia.type].preload(mediaAfterNextMedia, getContentContainerFromMediaContainer(getMediaContainer(mediaAfterNextMedia.origin)!)!, 'backward');
 
 	showMedia(nextMedia.origin);
 	updateCounterElement();
@@ -229,6 +235,10 @@ const init = async () => {
 	showNextMedia();
 
 	showElement(mediaCounterElement);
+
+	// Preload last media
+	const lastMedia = mediaList.at(-1)!;
+	mediaTypeHandlers[lastMedia.type].preload(lastMedia, getContentContainerFromMediaContainer(getMediaContainer(lastMedia.origin)!)!, 'backward');
 
 	// Add controls
 	addControls();

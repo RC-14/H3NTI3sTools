@@ -18,6 +18,35 @@ const updateCounter = (contentContainer: HTMLDivElement) => {
 	counter.innerText = `${getIndex(contentContainer) + 1}/${contentContainer.childElementCount - 1}`;
 };
 
+const preload = (source: Media['sources'][number], contentContainer: HTMLDivElement) => {
+	const img = qs<HTMLImageElement>(`img[data-source="${source}"]`, contentContainer);
+	if (!(img instanceof HTMLImageElement)) throw new Error(`Didn't find an image to preload for source: ${source}`);
+
+	img.decode();
+};
+
+const preloadNext = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
+	let i = getIndex(contentContainer);
+	if (isNaN(i)) i = -1;
+
+	if (i + 1 === sources.length) return;
+
+	const source = sources[i + 1];
+
+	preload(source, contentContainer);
+};
+
+const preloadPrevious = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
+	let i = getIndex(contentContainer);
+	if (isNaN(i)) i = sources.length;
+
+	if (i - 1 === -1) return;
+
+	const source = sources[i - 1];
+
+	preload(source, contentContainer);
+};
+
 const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
 	const source = sources[0];
 
@@ -27,6 +56,7 @@ const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) 
 	showElement(img);
 
 	setIndex(contentContainer, 0);
+	preloadNext(sources, contentContainer);
 	updateCounter(contentContainer);
 };
 
@@ -39,6 +69,7 @@ const showLast = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 	showElement(img);
 
 	setIndex(contentContainer, sources.length - 1);
+	preloadPrevious(sources, contentContainer);
 	updateCounter(contentContainer);
 };
 
@@ -58,6 +89,7 @@ const showNext = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 	showElement(nextImg);
 
 	setIndex(contentContainer, nextIndex);
+	preloadNext(sources, contentContainer);
 	updateCounter(contentContainer);
 
 	return false;
@@ -79,6 +111,7 @@ const showPrevious = (sources: Media['sources'], contentContainer: HTMLDivElemen
 	showElement(nextImg);
 
 	setIndex(contentContainer, nextIndex);
+	preloadPrevious(sources, contentContainer);
 	updateCounter(contentContainer);
 
 	return false;
@@ -102,6 +135,17 @@ const defaultExport: MediaTypeHandler = {
 		const pageCounter = document.createElement('p');
 		pageCounter.classList.add('content-counter');
 		contentContainer.append(pageCounter);
+	},
+	preload: (media, contentContainer, direction) => {
+		switch (direction) {
+			case 'backward':
+				preloadPrevious(media.sources, contentContainer);
+				break;
+
+			case 'forward':
+				preloadNext(media.sources, contentContainer);
+				break;
+		}
 	},
 	presentMedia: (media, contentContainer, direction) => {
 		switch (direction) {

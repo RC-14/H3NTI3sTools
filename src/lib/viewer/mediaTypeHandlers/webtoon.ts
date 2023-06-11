@@ -10,6 +10,7 @@ const defaultExport: MediaTypeHandler = {
 			contentContainer.append(img);
 		}
 	},
+	preload: (media, contentContainer, direction) => undefined,
 	presentMedia: (media, contentContainer, direction) => undefined,
 	hideMedia: (media, contentContainer, direction) => undefined,
 	presentationControlHandler: (media, contentContainer, event) => true
