@@ -6,44 +6,46 @@ import { qsa } from '/src/lib/utils';
 export const loadImages = () => {
 	const images = Array.from(qsa<HTMLImageElement>('img.wp-manga-chapter-img'));
 
-	const imageSrcs: string[] = [];
+	if (images.length === 0) return;
 
-	for (let i = 0; i < images.length; i++) {
+	const imageSrcs: string[] = []; // = images.map((img) => img.src.trim());
+
+	for (let i = images.length - 1; i >= 0; i--) {
 		const image = images[i];
-		const src = image.dataset.src?.trim();
 
-		delete image.dataset.src;
-		image.classList.remove('img-responsive', 'lazyload', 'effect-fade');
-
-		if (typeof src !== 'string' || image.src.length > 0 && image.complete) {
+		// Skip already loaded images
+		if (image.complete) {
 			images.splice(i, 1);
 			continue;
 		}
 
-		imageSrcs.push(src);
-	}
-
-	if (images.length === 0) return;
-
-	images.forEach((image, i) => {
+		imageSrcs.push(image.src);
 		image.src = '';
 
 		image.addEventListener('load', (event) => {
 			let message = 'hiperdex imageLoader: loaded image';
 
-			if (!images[i + 1]) {
-				// If this is the last image, log the message and return
-				console.log(`${message} (${images.length}/${images.length}) - completed`);
+			const nextImage = images.shift();
+
+			// If this is the last image, log the message and return
+			if (nextImage === undefined) {
+				console.log(`${message} (${imageCount}/${imageCount}) - completed`);
 				return;
 			}
-			if (images.length <= 10 || (i + 1) % 10 === 0) message += ` (${i + 1}/${images.length})`;
-			console.log(message);
+
+			// Avoid spamming the log if there are many images.
+			if (images.length <= 10 || (i + 1) % 10 === 0) {
+				console.log(`${message} (${i + 1}/${imageCount})`);
+			}
 
 			// Load next image
-			images[i + 1].src = imageSrcs[i + 1];
+			nextImage.src = imageSrcs.pop()!;
 		}, { once: true });
-	});
+	};
+
+	// Used only for logging
+	const imageCount = images.length;
 
 	// Load first image
-	images[0].src = imageSrcs[0];
+	images.shift()!.src = imageSrcs.pop()!;
 };
