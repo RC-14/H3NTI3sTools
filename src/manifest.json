@@ -98,10 +98,10 @@
 		},
 		{
 			"matches": [
-				"*://*.leviatanscans.com/*"
+				"*://luminousscans.com/*"
 			],
 			"css": [
-				"./content/leviatanscans/styles.css"
+				"./content/luminousscans/styles.css"
 			]
 		},
 		{
