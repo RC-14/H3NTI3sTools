@@ -21,6 +21,6 @@ document.addEventListener('click', (event) => {
 	open(event.target.href, '_self');
 });
 
-runAfterReadyStateReached('interactive', removeUglyWhitBoxAtBottom);
+runAfterReadyStateReached('complete', removeUglyWhitBoxAtBottom);
 
 addNextPreviousShortcuts(nextChapter, previousChapter);
