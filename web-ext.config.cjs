@@ -6,8 +6,7 @@ module.exports = {
 		startUrl: ['about:debugging#/runtime/this-firefox'],
 		firefox: 'firefoxdeveloperedition',
 		firefoxProfile: 'dev-edition-default',
-		keepProfileChanges: false,
-		preInstall: true
+		keepProfileChanges: false
 	},
 	build: {
 		// {path.to.value} will be replaced with whatever value is there in the manifest
