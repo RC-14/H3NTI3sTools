@@ -55,6 +55,7 @@ messageHandlers.set('downloadMedia', async (data, sender) => {
 	try {
 		await mediaPromiseMap.get(origin);
 	} catch (error) {
+		mediaPromiseMap.delete(origin);
 		console.error(error);
 		return false;
 	}
