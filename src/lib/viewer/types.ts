@@ -29,7 +29,7 @@ export const MediaSchema = z.object({
 	description: DescriptionSchema.optional(),
 	image: UrlSchema.optional(), // Source of the cover/first image/thumbnail/...
 	type: MediaTypeSchema,
-	sources: UrlSchema.array().nonempty(), // Array of all sources (e.g. direct links to images/the video/...)
+	sources: UrlSchema.array(), // Array of all sources (e.g. direct links to images/the video/...)
 	favorite: z.boolean(),
 	tags: TagSchema.array(),
 	creatorNames: NameSchema.array() // Array of the IDs of all creators (may be empty if the creator is unknown)
@@ -47,7 +47,6 @@ export type WebtoonMedia = {
 } & MediaBase;
 export type VideoMedia = {
 	type: 'video';
-	sources: [string];
 } & MediaBase;
 export type Media = GalleryMedia | MangaMedia | WebtoonMedia | VideoMedia;
 
