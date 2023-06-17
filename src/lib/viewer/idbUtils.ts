@@ -1,4 +1,5 @@
 import { generateIDBGetter } from '../utils';
+import { Collection } from './types';
 
 export const DATA_OS_NAME = 'Data';
 
@@ -82,3 +83,30 @@ export const getFromObjectStore = (key: IDBValidKey | IDBKeyRange, objectStoreNa
 
 	transaction.commit();
 });
+
+type createCollectionOptionals = { description?: Collection['description'], image?: Collection['image'] }
+
+export const createCollection = (name: Collection['name'], mediaOrigins: Collection['mediaOrigins'], { description, image }: createCollectionOptionals = {}) => new Promise<void>(async (resolve, reject) => {
+	const collection: Collection = {
+		id: crypto.randomUUID(),
+		name,
+		mediaOrigins,
+		description,
+		image
+	}
+
+	const db = await getViewerIDB();
+	const transaction = db.transaction(COLLECTION_OS_NAME, 'readwrite');
+	const request = transaction.objectStore(COLLECTION_OS_NAME).add(collection);
+
+	request.addEventListener('error', (event) => {
+		db.close();
+		reject(request.error);
+	});
+	request.addEventListener('success', (event) => {
+		db.close();
+		resolve();
+	});
+
+	transaction.commit();
+})
