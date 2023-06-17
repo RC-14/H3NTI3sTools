@@ -67,7 +67,7 @@ const handler: DownloadHandler = {
 			favorite: false,
 			tags,
 			creatorNames: creators
-		} as MangaMedia;
+		};
 	},
 	data: async (url) => {
 		return {

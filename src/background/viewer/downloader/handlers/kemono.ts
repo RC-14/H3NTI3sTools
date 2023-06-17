@@ -50,7 +50,7 @@ const handler: DownloadHandler = {
 			name: parsedApiResponse.title,
 			description: decode(parsedApiResponse.content.replaceAll(/<[^>]+>/g, '')) || undefined,
 			type: 'gallery',
-			sources: attachments.map((item) => 'https://c1.kemono.party/data' + item.path) as [string, ...string[]],
+			sources: attachments.map((item) => 'https://c1.kemono.party/data' + item.path),
 			favorite: false,
 			tags: [],
 			creatorNames: [creatorChache.get(creatorUrl.pathname)!]
