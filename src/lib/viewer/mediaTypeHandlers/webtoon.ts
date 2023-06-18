@@ -12,7 +12,9 @@ const defaultExport: MediaTypeHandler = {
 	},
 	preload: (media, contentContainer, direction) => undefined,
 	presentMedia: (media, contentContainer, direction) => undefined,
-	hideMedia: (media, contentContainer, direction) => undefined,
+	hideMedia: (media, contentContainer, direction) => {
+		window.scrollTo({ top: 0, behavior: 'instant' });
+	},
 	presentationControlHandler: (media, contentContainer, event) => event.code !== 'Space'
 };
 
