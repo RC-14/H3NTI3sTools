@@ -62,9 +62,11 @@ export const getViewerIDB = generateIDBGetter('viewer', 1, (event) => {
  * 
  * @param objectStoreName Name of the object store from which to get data.
  * 
+ * @param indexName Name of the index to search in. (optional)
+ * 
  * @returns A promise that resolves to whatever the result is or rejects with the error if an error occurred.
  */
-export const getFromObjectStore = (key: IDBValidKey | IDBKeyRange, objectStoreName: IDBObjectStore['name']) => new Promise<unknown>(async (resolve, reject) => {
+export const getFromObjectStore = (key: IDBValidKey | IDBKeyRange, objectStoreName: IDBObjectStore['name'], indexName?: IDBIndex['name']) => new Promise<unknown>(async (resolve, reject) => {
 	const db = await getViewerIDB();
 
 	const transaction = db.transaction(objectStoreName);
@@ -74,7 +76,10 @@ export const getFromObjectStore = (key: IDBValidKey | IDBKeyRange, objectStoreNa
 		reject(transaction.error);
 	});
 
-	const request = transaction.objectStore(objectStoreName).get(key);
+	const objectStore = transaction.objectStore(objectStoreName);
+	const source = indexName === undefined ? objectStore : objectStore.index(indexName);
+
+	const request = source.get(key);
 	request.addEventListener('success', (event) => {
 		db.close();
 
