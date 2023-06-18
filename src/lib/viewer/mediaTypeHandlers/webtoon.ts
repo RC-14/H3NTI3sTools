@@ -13,7 +13,7 @@ const defaultExport: MediaTypeHandler = {
 	preload: (media, contentContainer, direction) => undefined,
 	presentMedia: (media, contentContainer, direction) => undefined,
 	hideMedia: (media, contentContainer, direction) => undefined,
-	presentationControlHandler: (media, contentContainer, event) => true
+	presentationControlHandler: (media, contentContainer, event) => event.code !== 'Space'
 };
 
 export default defaultExport;
