@@ -9,7 +9,7 @@ const LONGEST_DEC_CHAR_REF_LENGTH = 7; // `${0x10ffff}`.length
 const LONGEST_HEX_CHAR_REF_LENGTH = 6; // '10ffff'.length
 
 const namedCharRefRegEx = new RegExp(`&[a-zA-Z0-9]{1,${LONGEST_NAMED_CHAR_REF_LENGTH}};`, 'g');
-const numericalCharRefRegEx = new RegExp(`&#(?:(?:\d{1,${LONGEST_DEC_CHAR_REF_LENGTH}})|(?:[xX][a-fA-F0-9]{1,${LONGEST_HEX_CHAR_REF_LENGTH}}));`, 'g');
+const numericalCharRefRegEx = new RegExp(`&#(?:(?:\\d{1,${LONGEST_DEC_CHAR_REF_LENGTH}})|(?:[xX][a-fA-F0-9]{1,${LONGEST_HEX_CHAR_REF_LENGTH}}));`, 'g');
 
 // export const encode = (string: string): string => { };
 
