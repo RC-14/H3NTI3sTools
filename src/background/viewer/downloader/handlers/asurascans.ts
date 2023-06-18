@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { decode } from '/src/lib/htmlCharReferences';
 import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, createCollection, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
 
-const decodedHtmlEncodedStringSchema = z.string().transform((str, ctx) => decode(str));
-
 const contentInfoSchema = z.object({
 	sources: z.array(z.object({
 		images: z.array(z.string().url())
@@ -11,8 +9,8 @@ const contentInfoSchema = z.object({
 });
 
 const chapterInfoSchema = z.object({
-	chapter_title: decodedHtmlEncodedStringSchema,
-	manga_title: decodedHtmlEncodedStringSchema
+	chapter_title: z.string(),
+	manga_title: z.string()
 });
 
 const DISCORD_PROMOTION_URLS = [
@@ -35,6 +33,9 @@ const getChapterInfoFromChapterHTML = (html: string) => {
 	const chapterInfoJson = historyParams.substring(historyParams.indexOf(',') + 1).trim();
 	const chapterInfo = JSON.parse(chapterInfoJson);
 	const parsedChapterInfo = chapterInfoSchema.parse(chapterInfo);
+
+	parsedChapterInfo.chapter_title = decode(parsedChapterInfo.chapter_title);
+	parsedChapterInfo.manga_title = decode(parsedChapterInfo.manga_title);
 
 	return parsedChapterInfo;
 };
