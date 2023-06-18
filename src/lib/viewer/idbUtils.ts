@@ -62,7 +62,7 @@ export const getViewerIDB = generateIDBGetter('viewer', 1, (event) => {
  * 
  * @param indexName Name of the index to search in. (optional)
  * 
- * @returns A promise that resolves to whatever the result is or rejects with the error if an error occurred.
+ * @returns A promise that resolves to whatever the result is (`undefined` if nothing is found) or rejects with the error if an error occurred.
  */
 export const getFromObjectStore = (key: IDBValidKey | IDBKeyRange, objectStoreName: IDBObjectStore['name'], indexName?: IDBIndex['name']) => new Promise<unknown>(async (resolve, reject) => {
 	const db = await getViewerIDB();
