@@ -28,7 +28,6 @@ export const getViewerIDB = generateIDBGetter('viewer', 1, (event) => {
 	const transaction = event.target.transaction;
 
 	let dataOS: IDBObjectStore;
-	let creatorsOS: IDBObjectStore;
 	let mediaOS: IDBObjectStore;
 	let collectionsOS: IDBObjectStore;
 
@@ -44,8 +43,7 @@ export const getViewerIDB = generateIDBGetter('viewer', 1, (event) => {
 		mediaOS.createIndex(MEDIA_OS_TAG_INDEX_NAME, 'tags', { multiEntry: true });
 		mediaOS.createIndex(MEDIA_OS_CREATOR_NAME_INDEX_NAME, 'creatorNames', { multiEntry: true });
 
-		collectionsOS = db.createObjectStore(COLLECTION_OS_NAME, { keyPath: 'id' });
-		collectionsOS.createIndex(COLLECTION_OS_NAME_INDEX_NAME, 'name');
+		collectionsOS = db.createObjectStore(COLLECTION_OS_NAME, { keyPath: 'name' });
 		collectionsOS.createIndex(COLLECTION_OS_IMAGE_INDEX_NAME, 'image');
 		collectionsOS.createIndex(COLLECTION_OS_MEDIA_ID_INDEX_NAME, 'mediaIDs', { multiEntry: true });
 	} else {
@@ -107,7 +105,6 @@ type createCollectionOptionals = {
  */
 export const createCollection = (name: Collection['name'], mediaOrigins: Collection['mediaOrigins'], { description, image }: createCollectionOptionals = {}) => new Promise<string>(async (resolve, reject) => {
 	const collection: Collection = {
-		id: crypto.randomUUID(),
 		name,
 		mediaOrigins,
 		description,
@@ -126,7 +123,7 @@ export const createCollection = (name: Collection['name'], mediaOrigins: Collect
 	});
 	request.addEventListener('success', (event) => {
 		db.close();
-		resolve(parsedCollection.id);
+		resolve(parsedCollection.name);
 	});
 
 	transaction.commit();

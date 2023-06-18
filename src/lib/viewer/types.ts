@@ -4,8 +4,6 @@ const SingleLineStringRefine: [(str: string) => boolean, string] = [(str) => !st
 
 const NonEmptyStringSchema = z.string().nonempty();
 
-export const IdSchema = z.string().uuid();
-export type Id = z.infer<typeof IdSchema>;
 export const NameSchema = NonEmptyStringSchema.trim().refine(...SingleLineStringRefine);
 export type Name = z.infer<typeof NameSchema>;
 export const DescriptionSchema = z.string();
@@ -51,11 +49,10 @@ export type VideoMedia = {
 export type Media = GalleryMedia | MangaMedia | WebtoonMedia | VideoMedia;
 
 export const CollectionSchema = z.object({
-	id: IdSchema,
 	name: NameSchema,
 	description: DescriptionSchema.optional(),
 	image: UrlSchema.optional(), // Source for cover or smth.
-	mediaOrigins: UrlSchema.array() // Media IDs
+	mediaOrigins: UrlSchema.array()
 });
 export type Collection = z.infer<typeof CollectionSchema>;
 
