@@ -70,16 +70,16 @@ const addToCollection = (chapterUrl: string, seriesName: string, seriesUrl: stri
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(html, 'text/html');
 
-		const descriptionElement = doc.querySelector<HTMLParagraphElement>('[itemprop="description"] > p');
+		const descriptionElement = doc.querySelector<HTMLDivElement>('div[itemprop="description"]');
 		const imageElement = doc.querySelector<HTMLImageElement>('[itemprop="image"] > img');
 
 		if (!(
-			descriptionElement instanceof HTMLParagraphElement &&
+			descriptionElement instanceof HTMLDivElement &&
 			imageElement instanceof HTMLImageElement
 		)) throw new Error(`Didn't get the right elements ("${seriesName}": ${seriesUrl}): ${descriptionElement} ${imageElement}`);
 
 		await createCollection(seriesName, [chapterUrl], {
-			description: descriptionElement.innerText,
+			description: descriptionElement.innerText.trim(),
 			image: imageElement.src
 		});
 
