@@ -84,8 +84,22 @@ export const getFromObjectStore = (key: IDBValidKey | IDBKeyRange, objectStoreNa
 	transaction.commit();
 });
 
-type createCollectionOptionals = { description?: Collection['description'], image?: Collection['image'] }
+type createCollectionOptionals = {
+	/** The description of the collection. */ description?: Collection['description'];
+	/** The source url of the cover image (or whatever) of the collection. */ image?: Collection['image'];
+};
 
+/**
+ * Creates a new collection with the given name.
+ * 
+ * @param name The name of the collection.
+ * 
+ * @param mediaOrigins An array of origins of media.
+ * 
+ * @param options An object containing the optional parts of the collection. (optional)
+ * 
+ * @returns The UUID of the created collection.
+ */
 export const createCollection = (name: Collection['name'], mediaOrigins: Collection['mediaOrigins'], { description, image }: createCollectionOptionals = {}) => new Promise<string>(async (resolve, reject) => {
 	const collection: Collection = {
 		id: crypto.randomUUID(),
