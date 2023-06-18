@@ -91,3 +91,14 @@
 	margin-top: 5px;
 	font-size: .9rem;
 }
+
+.media-container[data-type="webtoon"]>.content-container {
+	flex-direction: column;
+	justify-content: flex-start;
+	overflow-y: scroll;
+}
+
+.media-container[data-type="webtoon"]>.content-container>img {
+	width: 25vw;
+	max-height: none;
+}
