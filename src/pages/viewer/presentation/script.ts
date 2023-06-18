@@ -1,5 +1,6 @@
 import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
+import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
 import { qs, useTemplate } from '/src/lib/utils';
 import { MEDIA_OS_NAME, Media, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
@@ -244,6 +245,7 @@ const init = async () => {
 	addControls();
 };
 
+preventSpaceBarScroll();
 addHideCursorListeners();
 
 if (location.search) {
