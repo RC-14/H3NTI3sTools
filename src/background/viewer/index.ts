@@ -1,11 +1,10 @@
 import { Runtime, Tabs, runtime, tabs } from 'webextension-polyfill';
 import { downloadData, downloadMedia } from './downloader';
 import { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
-import { IdSchema, Media, Name, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
+import { Media, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
 import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
 const mediaPromiseMap = new Map<string, Promise<void>>();
-const creatorPromiseMap = new Map<Name, Promise<void>>();
 const dataPromiseMap = new Map<Media['sources'][number], Promise<void>>();
 
 const show = (origins: string[], targetTab?: Tabs.Tab['id'] | null) => {
@@ -72,18 +71,6 @@ messageHandlers.set('downloadData', async (data, sender) => {
 		await dataPromiseMap.get(source);
 	} catch (error) {
 		console.error(error);
-		return false;
-	}
-	return true;
-});
-
-messageHandlers.set('willCreatorExist', async (data, sender) => {
-	const id = IdSchema.parse(data);
-	if (!creatorPromiseMap.has(id)) return false;
-
-	try {
-		await creatorPromiseMap.get(id);
-	} catch (error) {
 		return false;
 	}
 	return true;
