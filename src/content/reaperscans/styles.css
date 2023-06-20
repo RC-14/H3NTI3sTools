@@ -4,7 +4,7 @@
 	font-size: 0px !important;
 }
 
-img.max-w-full.mx-auto.display-block {
+.py-4 > img {
 	width: 25vw;
 	height: auto;
 }
