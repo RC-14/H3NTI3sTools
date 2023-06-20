@@ -44,6 +44,7 @@ const toggleFullscreen = (video: HTMLVideoElement) => {
 
 const defaultExport: MediaTypeHandler = {
 	addContentToContentContainer: async (media, contentContainer, getSrcForSource) => {
+		// TODO: Have a smart idea on how to manage multiple videos
 		const src = await getSrcForSource(media.sources[0]);
 
 		const video = document.createElement('video');
