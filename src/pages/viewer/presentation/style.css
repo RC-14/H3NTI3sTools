@@ -44,6 +44,15 @@
 	max-height: 100vh;
 }
 
+.loading {
+	min-width: 5vw;
+	min-height: 5vh;
+	background-image: url(../../../images/spinner/light.svg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
 .content-container>.content-counter {
 	width: fit-content;
 	height: fit-content;
