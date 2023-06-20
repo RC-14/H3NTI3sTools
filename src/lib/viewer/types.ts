@@ -62,13 +62,13 @@ export const ShowMediaMessageSchema = z.object({
 });
 export type ShowMediaMessage = z.infer<typeof ShowMediaMessageSchema>;
 
-export type PresentationNavigationDirection = "forward" | "backward"
+export type PresentationNavigationDirection = "forward" | "backward";
 
 export type MediaTypeHandler = {
 	addContentToContentContainer: (media: Media, contentContainer: HTMLDivElement, getSrcForSource: (source: Url) => Promise<string>) => Promise<void>;
 	preload: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
-	presentMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
-	hideMedia: MediaTypeHandler['presentMedia'];
+	presentMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection, setProgress: (progress?: number) => void, progress?: number) => void;
+	hideMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
 	presentationControlHandler: (media: Media, contentContainer: HTMLDivElement, event: KeyboardEvent) => boolean;
 };
 

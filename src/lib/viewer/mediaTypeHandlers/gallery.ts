@@ -2,12 +2,14 @@ import { HIDDEN_CLASS, hideElement, showElement } from '../../pageUtils';
 import { qs } from '../../utils';
 import { Media, MediaTypeHandler } from '/src/lib/viewer';
 
+let setProgress: ((progress?: number) => void) | undefined;
+
 const addSrcToImg = async (img: HTMLImageElement, source: string, getSrcForSource: (source: string) => Promise<string>) => {
 	img.classList.add('loading');
 
 	img.src = await getSrcForSource(source);
 
-	img.classList.remove('loading')
+	img.classList.remove('loading');
 };
 
 const setIndex = (contentContainer: HTMLDivElement, index: number) => {
@@ -15,6 +17,8 @@ const setIndex = (contentContainer: HTMLDivElement, index: number) => {
 	if (index < 0) throw new Error(`Index is negative.`);
 
 	contentContainer.dataset.index = `${index}`;
+
+	if (setProgress !== undefined) setProgress(index);
 };
 
 const getIndex = (contentContainer: HTMLDivElement) => {
@@ -29,7 +33,7 @@ const updateCounter = (contentContainer: HTMLDivElement) => {
 const preload = (source: Media['sources'][number], contentContainer: HTMLDivElement) => {
 	const img = qs<HTMLImageElement>(`img[data-source="${source}"]`, contentContainer);
 	if (!(img instanceof HTMLImageElement)) throw new Error(`Didn't find an image to preload for source: ${source}`);
-	
+
 	if (img.src.length > 0) img.decode();
 };
 
@@ -55,29 +59,19 @@ const preloadPrevious = (sources: Media['sources'], contentContainer: HTMLDivEle
 	preload(source, contentContainer);
 };
 
-const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
-	const source = sources[0];
+const show = (sources: Media['sources'], contentContainer: HTMLDivElement, index: number) => {
+	if (index < 0 || index >= sources.length) throw new Error(`Index is out of range for gallery (${sources.length - 1}): ${index}`);
+
+	const source = sources[index];
 
 	const img = qs<HTMLImageElement>(`img[data-source="${source}"]`, contentContainer);
 	if (!(img instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the first source (${source}).`);
 
 	showElement(img);
 
-	setIndex(contentContainer, 0);
-	preloadNext(sources, contentContainer);
-	updateCounter(contentContainer);
-};
-
-const showLast = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
-	const source = sources.at(-1);
-
-	const img = qs<HTMLImageElement>(`[data-source="${source}"]`, contentContainer);
-	if (!(img instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the last source (${source}).`);
-
-	showElement(img);
-
-	setIndex(contentContainer, sources.length - 1);
+	setIndex(contentContainer, index);
 	preloadPrevious(sources, contentContainer);
+	preloadNext(sources, contentContainer);
 	updateCounter(contentContainer);
 };
 
@@ -154,14 +148,21 @@ const defaultExport: MediaTypeHandler = {
 				break;
 		}
 	},
-	presentMedia: (media, contentContainer, direction) => {
+	presentMedia: (media, contentContainer, direction, setProgressFunc, progress) => {
+		setProgress = setProgressFunc;
+
+		if (progress !== undefined) {
+			show(media.sources, contentContainer, progress);
+			return;
+		}
+
 		switch (direction) {
 			case 'backward':
-				showLast(media.sources, contentContainer);
+				show(media.sources, contentContainer, media.sources.length - 1);
 				break;
 
 			case 'forward':
-				showFirst(media.sources, contentContainer);
+				show(media.sources, contentContainer, 0);
 				break;
 		}
 	},
@@ -169,6 +170,8 @@ const defaultExport: MediaTypeHandler = {
 		hideElement(qs<HTMLImageElement>(`img:not(.${HIDDEN_CLASS})`, contentContainer)!);
 
 		delete contentContainer.dataset.index;
+
+		setProgress = undefined;
 	},
 	presentationControlHandler: (media, contentContainer, event) => {
 		switch (event.code) {

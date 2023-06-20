@@ -1,9 +1,10 @@
+import { z } from 'zod';
 import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
 import { qs, useTemplate } from '/src/lib/utils';
-import { MEDIA_OS_NAME, Media, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
+import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
 
 const presentationContainer = qs<HTMLDivElement>('div#presentation-container');
 const mediaCounterElement = qs<HTMLParagraphElement>('p#media-counter');
@@ -24,6 +25,8 @@ if (!(
 
 const mediaList: Media[] = [];
 let mediaCounter = -1;
+let progress: number | undefined = undefined;
+let ignorePopState = false;
 
 const showError = (title: string, description: string) => {
 	hideElement(presentationContainer);
@@ -33,12 +36,26 @@ const showError = (title: string, description: string) => {
 	errorDescription.innerText = description;
 };
 
-const parseSearch = (): string[] => {
-	return UrlSchema.array().parse(JSON.parse(atob(location.search.substring(1))));
+const parseSearch = () => {
+	const { searchParams } = new URL(location.href);
+
+	if (!searchParams.has(MEDIA_ORIGINS_SEARCH_PARAM)) throw new Error(`Search doesn't contain a media list.`);
+	const mediaOrigins = UrlSchema.array().parse(JSON.parse(atob(searchParams.get(MEDIA_ORIGINS_SEARCH_PARAM)!)));
+
+	const currentMedia = parseInt(searchParams.get(CURRENT_MEDIA_SEARCH_PARAM) ?? '0');
+	const parsedCurrentMedia = z.number().nonnegative().max(mediaOrigins.length).safeParse(currentMedia);
+
+	const progress = Number(searchParams.get(PROGRESS_SEARCH_PARAM));
+	const parsedProgress = z.number().safeParse(progress);
+
+	return {
+		mediaOrigins,
+		currentMedia: parsedCurrentMedia.success ? parsedCurrentMedia.data : 0,
+		progress: parsedProgress.success ? parsedProgress.data : undefined
+	};
 };
 
-const getInfoForAllMedia = async (): Promise<Media[]> => {
-	const mediaOrigins = parseSearch();
+const getInfoForAllMedia = async (mediaOrigins: string[]): Promise<Media[]> => {
 	const mediaInfoPromises: Promise<Media>[] = [];
 
 	for (const origin of mediaOrigins) {
@@ -120,18 +137,64 @@ const addMediaContainerToDOM = async (media: Media) => {
 	presentationContainer.append(mediaContainer);
 };
 
-const showMedia = (origin: string) => {
-	const mediaContainer = getMediaContainer(origin);
+const preload = (index: number, direction: PresentationNavigationDirection) => {
+	const media = mediaList[index];
+	const mediaContainer = getMediaContainer(media.origin)!;
+	const contentContainer = getContentContainerFromMediaContainer(mediaContainer)!;
+
+	mediaTypeHandlers[media.type].preload(media, contentContainer, direction);
+};
+
+const popstateHandler = (event: PopStateEvent) => {
+	if (ignorePopState) {
+		ignorePopState = false;
+		return;
+	}
+
+	const { mediaOrigins, currentMedia, progress } = parseSearch();
+
+	if (!(mediaOrigins.length === mediaList.length && mediaOrigins.every((origin, i) => origin === mediaList[i].origin))) {
+		location.reload();
+		return;
+	}
+
+	showMedia(currentMedia, 'forward');
+};
+
+const updateUrl = () => {
+	const url = new URL(location.href);
+
+	url.searchParams.set(CURRENT_MEDIA_SEARCH_PARAM, `${mediaCounter}`);
+
+	if (progress !== undefined) url.searchParams.set(PROGRESS_SEARCH_PARAM, `${progress}`);
+
+	if (url.href === location.href) return;
+
+	ignorePopState = true;
+	history.pushState(undefined, '', url);
+};
+
+const setProgress = (newProgress?: number) => {
+	progress = newProgress;
+
+	updateUrl();
+};
+
+const showMediaContainer = (media: Media, direction: PresentationNavigationDirection = 'forward', progress?: number) => {
+	const mediaContainer = getMediaContainer(media.origin);
 
 	if (!(mediaContainer instanceof HTMLDivElement)) throw new Error("Couldn't find an element for the given media origin.");
 
 	showElement(mediaContainer);
+
+	mediaTypeHandlers[media.type].presentMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, setProgress, progress);
 };
 
-const hideMedia = (origin: string) => {
-	const mediaContainer = getMediaContainer(origin);
-
+const hideMediaContainer = (media: Media, direction: PresentationNavigationDirection = 'forward') => {
+	const mediaContainer = getMediaContainer(media.origin);
 	if (!(mediaContainer instanceof HTMLDivElement)) throw new Error("Couldn't find an element for the given media.");
+
+	mediaTypeHandlers[media.type].hideMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction);
 
 	hideElement(mediaContainer);
 };
@@ -140,46 +203,35 @@ const updateCounterElement = () => {
 	mediaCounterElement.innerText = `${mediaCounter + 1}/${mediaList.length}`;
 };
 
-const showNextMedia = () => {
-	if (mediaCounter !== -1) {
-		const currentMedia = mediaList[mediaCounter];
-		hideMedia(currentMedia.origin);
+const showMedia = (index: number, direction: PresentationNavigationDirection = 'forward', progress?: number) => {
+	if (index < 0 || index >= mediaList.length) throw new Error(`Index out of range (0, ${mediaList.length - 1}): ${index}`);
 
-		mediaTypeHandlers[currentMedia.type].hideMedia(currentMedia, getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!, 'forward');
+	// Hide the previous media if necessary
+	if (mediaCounter !== -1) {
+		const lastMedia = mediaList[mediaCounter];
+		hideMediaContainer(lastMedia, direction);
+
+		progress = undefined;
 	}
 
-	mediaCounter = (mediaCounter + 1) % mediaList.length;
-	const nextMedia = mediaList[mediaCounter];
-
-	mediaTypeHandlers[nextMedia.type].presentMedia(nextMedia, getContentContainerFromMediaContainer(getMediaContainer(nextMedia.origin)!)!, 'forward');
-
-	const mediaAfterNextMedia = mediaList[(mediaCounter + 1) % mediaList.length];
-	mediaTypeHandlers[mediaAfterNextMedia.type].preload(mediaAfterNextMedia, getContentContainerFromMediaContainer(getMediaContainer(mediaAfterNextMedia.origin)!)!, 'forward');
-
-	showMedia(nextMedia.origin);
+	mediaCounter = index;
 	updateCounterElement();
+	updateUrl();
+
+	const media = mediaList[mediaCounter];
+	showMediaContainer(media, direction, progress);
+
+	// Preload the media that could be shown next
+	preload((mediaCounter + 1) % mediaList.length, direction === 'forward' ? 'forward' : 'backward');
+	preload((mediaCounter + mediaList.length - 1) % mediaList.length, direction === 'forward' ? 'backward' : 'forward');
+};
+
+const showNextMedia = () => {
+	showMedia((mediaCounter + 1) % mediaList.length, 'forward');
 };
 
 const showPreviousMedia = () => {
-	if (mediaCounter !== -1) {
-		const currentMedia = mediaList[mediaCounter];
-		hideMedia(currentMedia.origin);
-
-		mediaTypeHandlers[currentMedia.type].hideMedia(currentMedia, getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!, 'backward');
-	} else {
-		mediaCounter = 0;
-	}
-
-	mediaCounter = (mediaCounter + mediaList.length - 1) % mediaList.length;
-	const nextMedia = mediaList[mediaCounter];
-
-	mediaTypeHandlers[nextMedia.type].presentMedia(nextMedia, getContentContainerFromMediaContainer(getMediaContainer(nextMedia.origin)!)!, 'backward');
-
-	const mediaAfterNextMedia = mediaList[(mediaCounter + mediaList.length) % mediaList.length];
-	mediaTypeHandlers[mediaAfterNextMedia.type].preload(mediaAfterNextMedia, getContentContainerFromMediaContainer(getMediaContainer(mediaAfterNextMedia.origin)!)!, 'backward');
-
-	showMedia(nextMedia.origin);
-	updateCounterElement();
+	showMedia((mediaCounter + mediaList.length - 1) % mediaList.length, 'backward');
 };
 
 const addControls = () => {
@@ -215,7 +267,9 @@ const init = async () => {
 	hideElement(errorContainer);
 	showElement(presentationContainer);
 
-	mediaList.push(...await getInfoForAllMedia());
+	const { mediaOrigins, currentMedia, progress } = parseSearch();
+
+	mediaList.push(...await getInfoForAllMedia(mediaOrigins));
 
 	if (mediaList.length === 0) {
 		showError('Nothing to show', 'The search part of the URL contains an empty array.');
@@ -233,13 +287,13 @@ const init = async () => {
 	await Promise.all(addMediaContainerToDomPromises);
 
 	// Show first media
-	showNextMedia();
+	showMedia(currentMedia, 'forward', progress);
 
+	// Show the media counter
 	showElement(mediaCounterElement);
 
-	// Preload last media
-	const lastMedia = mediaList.at(-1)!;
-	mediaTypeHandlers[lastMedia.type].preload(lastMedia, getContentContainerFromMediaContainer(getMediaContainer(lastMedia.origin)!)!, 'backward');
+	// Add the popstate listener
+	window.addEventListener('popstate', popstateHandler);
 
 	// Add controls
 	addControls();
@@ -247,6 +301,8 @@ const init = async () => {
 
 preventSpaceBarScroll();
 addHideCursorListeners();
+
+history.scrollRestoration = 'manual';
 
 if (location.search) {
 	try {

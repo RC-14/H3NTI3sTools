@@ -1,7 +1,7 @@
 import { Runtime, Tabs, runtime, tabs } from 'webextension-polyfill';
 import { downloadData, downloadMedia } from './downloader';
 import { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
-import { Media, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
+import { MEDIA_ORIGINS_SEARCH_PARAM, Media, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
 import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
 const mediaPromiseMap = new Map<string, Promise<void>>();
@@ -11,7 +11,7 @@ const show = (origins: string[], targetTab?: Tabs.Tab['id'] | null) => {
 	const parsedOrigins = UrlSchema.array().parse(origins);
 
 	const url = new URL(runtime.getURL('pages/viewer/presentation/index.html'));
-	url.search = btoa(JSON.stringify(parsedOrigins));
+	url.searchParams.set(MEDIA_ORIGINS_SEARCH_PARAM, btoa(JSON.stringify(parsedOrigins)));
 
 	if (targetTab === undefined) {
 		tabs.create({ url: url.href });

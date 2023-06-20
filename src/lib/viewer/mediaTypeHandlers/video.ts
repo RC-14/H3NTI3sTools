@@ -52,7 +52,7 @@ const defaultExport: MediaTypeHandler = {
 		contentContainer.append(video);
 	},
 	preload: (media, contentContainer, direction) => undefined,
-	presentMedia: (media, contentContainer, direction) => {
+	presentMedia: (media, contentContainer, direction, setProgressFunc, progress) => {
 		const video = contentContainer.firstElementChild;
 		if (!(video instanceof HTMLVideoElement)) throw new Error("The content containers first child isn't a video.");
 
