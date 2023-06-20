@@ -2,6 +2,14 @@ import { HIDDEN_CLASS, hideElement, showElement } from '../../pageUtils';
 import { qs } from '../../utils';
 import { Media, MediaTypeHandler } from '/src/lib/viewer';
 
+const addSrcToImg = async (img: HTMLImageElement, source: string, getSrcForSource: (source: string) => Promise<string>) => {
+	img.classList.add('loading');
+
+	img.src = await getSrcForSource(source);
+
+	img.classList.remove('loading')
+};
+
 const setIndex = (contentContainer: HTMLDivElement, index: number) => {
 	if (isNaN(index)) throw new Error(`Index is NaN.`);
 	if (index < 0) throw new Error(`Index is negative.`);
@@ -21,8 +29,8 @@ const updateCounter = (contentContainer: HTMLDivElement) => {
 const preload = (source: Media['sources'][number], contentContainer: HTMLDivElement) => {
 	const img = qs<HTMLImageElement>(`img[data-source="${source}"]`, contentContainer);
 	if (!(img instanceof HTMLImageElement)) throw new Error(`Didn't find an image to preload for source: ${source}`);
-
-	img.decode();
+	
+	if (img.src.length > 0) img.decode();
 };
 
 const preloadNext = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
@@ -123,13 +131,12 @@ const defaultExport: MediaTypeHandler = {
 			// Don't add images twice.
 			if (qs<HTMLImageElement>(`img[data-source="${source}"]`, contentContainer) !== null) continue;
 
-			const src = await getSrcForSource(source);
-
 			const img = document.createElement('img');
 			img.dataset.source = source;
-			img.src = src;
 			hideElement(img);
 			contentContainer.append(img);
+
+			addSrcToImg(img, source, getSrcForSource);
 		}
 
 		const pageCounter = document.createElement('p');
