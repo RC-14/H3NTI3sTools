@@ -305,7 +305,7 @@ addHideCursorListeners();
 history.scrollRestoration = 'manual';
 
 if (location.search) {
-	init().catch((error) => showError('Error when trying to show Galleries', `${error}`));
+	init().catch((error) => showError('Error when trying to show Media', `${error}`));
 } else {
 	showError('Nothing to show', 'The search part of the URL is empty.');
 }
