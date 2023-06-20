@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { decode } from '/src/lib/htmlCharReferences';
-import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, createCollection, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
+import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, MEDIA_OS_NAME, MediaSchema, createCollection, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
 
 const decodedHtmlEncodedStringSchema = z.string().transform((str, ctx) => decode(str));
 
@@ -54,13 +54,18 @@ const chapterNumberFromUrl = (url: string) => {
 	parts.splice(0, parts.indexOf('chapter') + 1);
 	parts.splice(2);
 
-	const num = parseFloat(parts.join('.'));
-	if (isNaN(num)) throw new Error(`Got NaN as the chapter number which can't be. (${url})`);
-
-	return num;
+	return parseFloat(parts.join('.'));
 };
 
-const addToCollection = (chapterUrl: string, seriesName: string, seriesUrl: string) => new Promise<void>(async (resolve, reject) => {
+const chapterNumberFromTitle = (title: string) => {
+	const lowerCaseTitle = title.toLowerCase();
+	const afterChapter = lowerCaseTitle.split('chapter')[1];
+	const beforeDash = afterChapter.split('-')[0];
+
+	return parseFloat(beforeDash.trim());
+};
+
+const addToCollection = (chapterUrl: string, chapterTitle: string, seriesName: string, seriesUrl: string) => new Promise<void>(async (resolve, reject) => {
 	const collection = await getFromObjectStore(seriesName, COLLECTION_OS_NAME);
 	const parsedCollection = CollectionSchema.safeParse(collection);
 
@@ -87,8 +92,51 @@ const addToCollection = (chapterUrl: string, seriesName: string, seriesUrl: stri
 		return;
 	}
 
-	parsedCollection.data.mediaOrigins.push(chapterUrl);
-	parsedCollection.data.mediaOrigins.sort((a, b) => chapterNumberFromUrl(a) - chapterNumberFromUrl(b));
+	const sortArray: { origin: string, chapterNumber: number; }[] = [];
+
+	const promises: Promise<void>[] = [];
+
+	for (const origin of parsedCollection.data.mediaOrigins) {
+		sortArray.push({
+			origin,
+			chapterNumber: chapterNumberFromUrl(origin)
+		});
+
+		const entry = sortArray.at(-1)!;
+
+		if (!isNaN(entry.chapterNumber)) continue;
+
+		promises.push(new Promise(async (resolve, reject) => {
+			const media = await getFromObjectStore(origin, MEDIA_OS_NAME);
+			const parsedMedia = MediaSchema.safeParse(media);
+
+			if (!parsedMedia.success) {
+				resolve();
+				return;
+			}
+
+			entry.chapterNumber = chapterNumberFromTitle(parsedMedia.data.name);
+
+			if (isNaN(entry.chapterNumber)) entry.chapterNumber = -1;
+
+			resolve();
+		}));
+	}
+
+	await Promise.all(promises);
+
+	let chapterNumber = chapterNumberFromUrl(chapterUrl);
+	if (isNaN(chapterNumber)) {
+		chapterNumber = chapterNumberFromTitle(chapterTitle);
+
+		if (isNaN(chapterNumber)) chapterNumber = -1;
+	}
+
+	sortArray.push({ origin: chapterUrl, chapterNumber });
+
+	sortArray.sort((a, b) => a.chapterNumber - b.chapterNumber);
+
+	parsedCollection.data.mediaOrigins = sortArray.map((entry) => entry.origin);
 
 	const db = await getViewerIDB();
 	const transaction = db.transaction(COLLECTION_OS_NAME, 'readwrite');
@@ -112,7 +160,7 @@ const handler: DownloadHandler = {
 		const chapterInfo = getChapterInfoFromChapterHTML(chapterHtml);
 
 		const seriesUrl = getSeriesUrlFromChapterHtml(chapterHtml);
-		await addToCollection(url, chapterInfo.manga_title, seriesUrl);
+		await addToCollection(url, chapterInfo.chapter_title, chapterInfo.manga_title, seriesUrl);
 
 		return {
 			origin: url,
