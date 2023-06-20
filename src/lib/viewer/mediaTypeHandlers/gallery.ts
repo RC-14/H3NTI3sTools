@@ -79,12 +79,12 @@ const showNext = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 	if (nextIndex === sources.length) return true;
 
 	const previousSource = sources[previousIndex];
-	const previousImg = qs<HTMLImageElement>(`img[data-source="${previousSource}"]`);
+	const previousImg = qs<HTMLImageElement>(`img[data-source="${previousSource}"]`, contentContainer);
 	if (!(previousImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the previous source (${previousSource}).`);
 	hideElement(previousImg);
 
 	const nextSource = sources[nextIndex];
-	const nextImg = qs<HTMLImageElement>(`img[data-source="${nextSource}"]`);
+	const nextImg = qs<HTMLImageElement>(`img[data-source="${nextSource}"]`, contentContainer);
 	if (!(nextImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the next source (${nextSource}).`);
 	showElement(nextImg);
 
@@ -101,12 +101,12 @@ const showPrevious = (sources: Media['sources'], contentContainer: HTMLDivElemen
 	if (previousIndex === 0) return true;
 
 	const previousSource = sources[previousIndex];
-	const previousImg = qs<HTMLImageElement>(`img[data-source="${previousSource}"]`);
+	const previousImg = qs<HTMLImageElement>(`img[data-source="${previousSource}"]`, contentContainer);
 	if (!(previousImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the previous source (${previousSource}).`);
 	hideElement(previousImg);
 
 	const nextSource = sources[nextIndex];
-	const nextImg = qs<HTMLImageElement>(`img[data-source="${nextSource}"]`);
+	const nextImg = qs<HTMLImageElement>(`img[data-source="${nextSource}"]`, contentContainer);
 	if (!(nextImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the next source (${nextSource}).`);
 	showElement(nextImg);
 
@@ -159,7 +159,7 @@ const defaultExport: MediaTypeHandler = {
 		}
 	},
 	hideMedia: (media, contentContainer, direction) => {
-		hideElement(qs<HTMLImageElement>(`img:not(.${HIDDEN_CLASS})`)!);
+		hideElement(qs<HTMLImageElement>(`img:not(.${HIDDEN_CLASS})`, contentContainer)!);
 
 		delete contentContainer.dataset.index;
 	},
