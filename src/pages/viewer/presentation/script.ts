@@ -26,6 +26,7 @@ if (!(
 const mediaList: Media[] = [];
 let mediaCounter = -1;
 let progress: number | undefined = undefined;
+let lastProgressSet: number = 0;
 let ignorePopState = false;
 
 const showError = (title: string, description: string) => {
@@ -175,6 +176,10 @@ const updateUrl = () => {
 };
 
 const setProgress = (newProgress?: number) => {
+	// Prevent calling history.pushtate() to often
+	if (lastProgressSet + 1_000 > Date.now()) return;
+	lastProgressSet = Date.now();
+
 	progress = newProgress;
 
 	updateUrl();
