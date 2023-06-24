@@ -23,10 +23,10 @@ export const getMediaInfo = (origin: string) => new Promise<Media>(async (resolv
 		const answer = await sendRuntimeMessage('background', 'viewer', 'downloadMedia', parsedOrigin.data);
 
 		if (typeof answer !== 'boolean') {
-			reject(`Expected a boolean as an answer but got typeof ${typeof answer}`);
+			reject(new Error(`Expected a boolean as an answer but got typeof ${typeof answer}`));
 			return;
 		} else if (!answer) {
-			reject(`Got an id for a nonexistent media: ${parsedOrigin.data}`);
+			reject(new Error(`Got an id for a nonexistent media: ${parsedOrigin.data}`));
 			return;
 		}
 
@@ -64,10 +64,10 @@ export const getUsableSrcForSource = (source: Url) => new Promise<string>(async 
 		const answer = await sendRuntimeMessage('background', 'viewer', 'downloadData', parsedSource.data);
 
 		if (typeof answer !== 'boolean') {
-			reject(`Expected a boolean as an answer but got typeof ${typeof answer}`);
+			reject(new Error(`Expected a boolean as an answer but got typeof ${typeof answer}`));
 			return;
 		} else if (!answer) {
-			reject(`Couldn't download blob for source: ${parsedSource.data}`);
+			reject(new Error(`Couldn't download blob for source: ${parsedSource.data}`));
 			return;
 		}
 

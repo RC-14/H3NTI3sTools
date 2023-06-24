@@ -144,7 +144,7 @@ const addToCollection = (chapterUrl: string, chapterTitle: string, seriesName: s
 
 	request.addEventListener('error', (event) => {
 		db.close();
-		reject(request.error);
+		reject(new Error(`[reaperscans] Couldn't update collection ("${parsedCollection.data.name}"): ${request.error}`));
 	});
 	request.addEventListener('success', (event) => {
 		db.close();

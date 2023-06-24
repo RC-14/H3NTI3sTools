@@ -172,7 +172,7 @@ export const generateIDBGetter = (name: string, version: number, upgradeneededLi
 	return () => new Promise<IDBDatabase>((resolve, reject) => {
 		const request = indexedDB.open(name, version);
 
-		request.addEventListener('error', (event) => reject(request.error));
+		request.addEventListener('error', (event) => reject(new Error(`Couldn't get iDB (name: "${name}", version: ${version}): ${request.error}`)));
 
 		if (blockedListener !== undefined) request.addEventListener('blocked', blockedListener);
 

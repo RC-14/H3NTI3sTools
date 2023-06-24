@@ -28,7 +28,7 @@ const writeToIdb = (data: unknown, validationSchema: z.AnyZodObject, objectStore
 	const parsedData = validationSchema.safeParse(data);
 
 	if (!parsedData.success) {
-		reject(parsedData.error);
+		reject(new Error(`Can't write invalid data to iDB (object store: "${objectStoreName}"): ${parsedData.error}`));
 		return;
 	}
 
@@ -38,7 +38,7 @@ const writeToIdb = (data: unknown, validationSchema: z.AnyZodObject, objectStore
 
 	request.addEventListener('error', (event) => {
 		db.close();
-		reject(request.error);
+		reject(new Error(`Couldn't write data to iDB (object store: "${objectStoreName}"): ${request.error}`));
 	});
 	request.addEventListener('success', (event) => {
 		db.close();
@@ -74,7 +74,7 @@ const downloader = async (queue: DownloadQueue, handler: (url: string) => Promis
 			 * 
 			 * The better question here is "Why can you even throw something that's not an error?".
 			 */
-			current.reject(error as Error);
+			current.reject(new Error(`Error during download (object store: "${objectStoreName}"): ${error}`));
 		}
 	}
 };

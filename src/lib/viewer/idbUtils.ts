@@ -71,7 +71,7 @@ export const getFromObjectStore = (key: IDBValidKey | IDBKeyRange, objectStoreNa
 	transaction.addEventListener('error', (event) => {
 		db.close();
 
-		reject(transaction.error);
+		reject(new Error(`Couldn't get "${key}" from Object Store "${objectStoreName}" ${indexName === undefined ? '' : `(index: "${indexName}")`}: ${transaction.error}`));
 	});
 
 	const objectStore = transaction.objectStore(objectStoreName);
@@ -119,7 +119,7 @@ export const createCollection = (name: Collection['name'], mediaOrigins: Collect
 
 	request.addEventListener('error', (event) => {
 		db.close();
-		reject(request.error);
+		reject(new Error(`Couldn't create collection: ${request.error}`));
 	});
 	request.addEventListener('success', (event) => {
 		db.close();
