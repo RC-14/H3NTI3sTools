@@ -1,7 +1,7 @@
 import { Runtime, Tabs, runtime, tabs } from 'webextension-polyfill';
 import { downloadData, downloadMedia } from './downloader';
 import { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
-import { MEDIA_ORIGINS_SEARCH_PARAM, Media, ShowMediaMessageSchema, UrlSchema } from '/src/lib/viewer';
+import { DATA_OS_NAME, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, MediaSchema, ShowMediaMessageSchema, UrlSchema, getViewerIDB } from '/src/lib/viewer';
 import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
 const mediaPromiseMap = new Map<string, Promise<void>>();
@@ -75,6 +75,75 @@ messageHandlers.set('downloadData', async (data, sender) => {
 	}
 	return true;
 });
+
+messageHandlers.set('cleanup', (data, sender) => new Promise<void>(async (resolve, reject) => {
+	const db = await getViewerIDB();
+
+	const transaction = db.transaction([DATA_OS_NAME, MEDIA_OS_NAME], 'readwrite');
+
+	transaction.addEventListener('complete', (event) => {
+		db.close();
+		resolve();
+	});
+
+	const mediaOS = transaction.objectStore(MEDIA_OS_NAME);
+
+	const mediaGetAllRequest = mediaOS.getAll();
+	mediaGetAllRequest.addEventListener('error', (event) => {
+		throw new Error(`Getting all entries from the Media Object Store failed with an error: ${mediaGetAllRequest.error}`);
+	});
+	mediaGetAllRequest.addEventListener('success', (event) => {
+		const parsedMediaList = MediaSchema.array().safeParse(mediaGetAllRequest.result);
+
+		if (!parsedMediaList.success) {
+			throw new Error(`The list of Media received from getting all Media contained invalid entries: ${parsedMediaList.error}`);
+		}
+
+		const favoriteSources: Media['sources'] = [];
+
+		for (const media of parsedMediaList.data) {
+			if (media.favorite) {
+				for (const source of media.sources) {
+					if (favoriteSources.includes(source)) continue;
+					favoriteSources.push(source);
+				}
+				continue;
+			}
+
+			const deleteRequest = mediaOS.delete(media.origin);
+			deleteRequest.addEventListener('error', (event) => {
+				throw new Error(`Couldn't delete Media (origin: "${media.origin}") because of error: ${deleteRequest.error}`);
+			});
+		}
+
+		const dataOS = transaction.objectStore(DATA_OS_NAME);
+
+		const getAllKeysRequest = dataOS.getAllKeys();
+		getAllKeysRequest.addEventListener('error', (event) => {
+			throw new Error(`Couldn't get all Data Object Store keys because of error: ${getAllKeysRequest.error}`);
+		});
+		getAllKeysRequest.addEventListener('success', (event) => {
+			const parsedSources = UrlSchema.array().safeParse(getAllKeysRequest.result);
+	
+			if (!parsedSources.success) {
+				throw new Error(`The list of Sources received from getting all keys from the Data Object Store contained invalid entries: ${parsedSources.error}`);
+			}
+	
+			for (const source of parsedSources.data) {
+				if (favoriteSources.includes(source)) continue;
+	
+				const deleteRequest = dataOS.delete(source);
+				deleteRequest.addEventListener('error', (event) => {
+					throw new Error(`Couldn't delete data for source ("${source}") because of error: ${deleteRequest.error}`);
+				});
+			}
+		});
+	
+		transaction.commit();
+	});
+
+	transaction.commit();
+}));
 
 const fragment: BackgroundFragment = {
 	startupHandler: () => {
