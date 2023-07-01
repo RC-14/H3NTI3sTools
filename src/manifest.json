@@ -150,18 +150,6 @@
 		},
 		{
 			"matches": [
-				"*://reaperscans.com/*"
-			],
-			"js": [
-				"./content/reaperscans/main.js"
-			],
-			"css": [
-				"./content/reaperscans/styles.css"
-			],
-			"run_at": "document_start"
-		},
-		{
-			"matches": [
 				"*://saucenao.com/*"
 			],
 			"js": [
