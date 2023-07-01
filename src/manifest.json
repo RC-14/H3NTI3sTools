@@ -156,18 +156,6 @@
 				"./content/saucenao/main.js"
 			],
 			"run_at": "document_start"
-		},
-		{
-			"matches": [
-				"*://www.webtoons.com/*"
-			],
-			"js": [
-				"./content/webtoon/main.js"
-			],
-			"css": [
-				"./content/webtoon/styles.css"
-			],
-			"run_at": "document_start"
 		}
 	],
 	"permissions": [
