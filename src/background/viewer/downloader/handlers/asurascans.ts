@@ -65,28 +65,34 @@ const chapterNumberFromTitle = (title: string) => {
 	return parseFloat(beforeDash.trim());
 };
 
+const getSeriesInfo = async (seriesUrl: string) => {
+	const html = await fetch(seriesUrl).then((response) => response.text());
+
+	const parser = new DOMParser();
+	const doc = parser.parseFromString(html, 'text/html');
+
+	const descriptionElement = doc.querySelector<HTMLDivElement>('div[itemprop="description"]');
+	const imageElement = doc.querySelector<HTMLImageElement>('[itemprop="image"] > img');
+
+	if (!(
+		descriptionElement instanceof HTMLDivElement &&
+		imageElement instanceof HTMLImageElement
+	)) throw new Error(`Didn't get the right elements ("${seriesUrl}"): ${descriptionElement} ${imageElement}`);
+
+	return {
+		description: descriptionElement.innerText.trim(),
+		image: imageElement.src
+	};
+};
+
 const addToCollection = (chapterUrl: string, chapterTitle: string, seriesName: string, seriesUrl: string) => new Promise<void>(async (resolve, reject) => {
 	const collection = await getFromObjectStore(seriesName, COLLECTION_OS_NAME);
 	const parsedCollection = CollectionSchema.safeParse(collection);
 
 	if (!parsedCollection.success) {
-		const html = await fetch(seriesUrl).then((response) => response.text());
+		const seriesInfo = await getSeriesInfo(seriesUrl);
 
-		const parser = new DOMParser();
-		const doc = parser.parseFromString(html, 'text/html');
-
-		const descriptionElement = doc.querySelector<HTMLDivElement>('div[itemprop="description"]');
-		const imageElement = doc.querySelector<HTMLImageElement>('[itemprop="image"] > img');
-
-		if (!(
-			descriptionElement instanceof HTMLDivElement &&
-			imageElement instanceof HTMLImageElement
-		)) throw new Error(`Didn't get the right elements ("${seriesName}": ${seriesUrl}): ${descriptionElement} ${imageElement}`);
-
-		await createCollection(seriesName, [chapterUrl], {
-			description: descriptionElement.innerText.trim(),
-			image: imageElement.src
-		});
+		await createCollection(seriesName, [chapterUrl], seriesInfo);
 
 		resolve();
 		return;
