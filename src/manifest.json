@@ -160,6 +160,7 @@
 	],
 	"permissions": [
 		"<all_urls>",
+		"cookies",
 		"scripting",
 		"storage",
 		"unlimitedStorage",
