@@ -1,12 +1,12 @@
 import { WebRequest, tabs, webRequest } from 'webextension-polyfill';
 import { z } from 'zod';
 import { decode } from '/src/lib/htmlCharReferences';
-import { DownloadHandler, Media, UrlSchema } from '/src/lib/viewer';
+import { DownloadHandler, UrlSchema } from '/src/lib/viewer';
 
 /*
  * Set headers so that pixiv doesn't block the request.
  */
-const TOKEN_HEADER_NAME = 'X-Hentie-Token';
+const TOKEN_HEADER_NAME = 'X-Hentie-Token-Pixiv';
 let validToken = crypto.randomUUID();
 
 webRequest.onBeforeSendHeaders.addListener((details) => {
@@ -21,7 +21,7 @@ webRequest.onBeforeSendHeaders.addListener((details) => {
 		}
 	];
 
-	headers.push(...details.requestHeaders.filter((header) => header.name !== 'Referer'));
+	headers.push(...details.requestHeaders.filter((header) => header.name !== 'Referer' && header.name !== TOKEN_HEADER_NAME));
 
 	return {
 		requestHeaders: headers
