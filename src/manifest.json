@@ -48,31 +48,6 @@
 		},
 		{
 			"matches": [
-				"*://www.asura.gg/*",
-				"*://www.asurascans.com/*"
-			],
-			"js": [
-				"./content/asurascans/main.js"
-			],
-			"css": [
-				"./content/asurascans/styles.css"
-			],
-			"run_at": "document_start"
-		},
-		{
-			"matches": [
-				"*://flamescans.org/*"
-			],
-			"js": [
-				"./content/flamescans/main.js"
-			],
-			"css": [
-				"./content/flamescans/styles.css"
-			],
-			"run_at": "document_start"
-		},
-		{
-			"matches": [
 				"*://hiperdex.com/*",
 				"*://1sthiperdex.com/*"
 			],
@@ -95,34 +70,6 @@
 				"./content/kemono/styles.css"
 			],
 			"run_at": "document_start"
-		},
-		{
-			"matches": [
-				"*://luminousscans.com/*"
-			],
-			"css": [
-				"./content/luminousscans/styles.css"
-			]
-		},
-		{
-			"matches": [
-				"*://mangahub.io/*"
-			],
-			"js": [
-				"./content/mangahub/main.js"
-			],
-			"css": [
-				"./content/mangahub/styles.css"
-			],
-			"run_at": "document_start"
-		},
-		{
-			"matches": [
-				"*://mm-scans.org/*"
-			],
-			"css": [
-				"./content/mm-scans/styles.css"
-			]
 		},
 		{
 			"matches": [
