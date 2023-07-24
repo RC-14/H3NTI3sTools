@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/webextension-polyfill": "^0.10.1",
-		"esbuild": "0.18.13",
+		"esbuild": "0.18.16",
 		"typescript": "^5.1.6",
 		"web-ext": "^7.6.2"
 	}
