@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { unknown, z } from 'zod';
 import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
@@ -66,7 +66,7 @@ const getInfoForAllMedia = async (mediaOrigins: string[]): Promise<Media[]> => {
 
 	const settledPromises = await Promise.allSettled(mediaInfoPromises);
 
-	const results = settledPromises.filter((result) => result.status === 'fulfilled') as PromiseFulfilledResult<Media>[];
+	const results = settledPromises.filter((result): result is PromiseFulfilledResult<Media> => result.status === 'fulfilled');
 
 	return results.map((result) => result.value);
 };
