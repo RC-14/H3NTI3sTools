@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DownloadHandler, MangaMedia } from '/src/lib/viewer';
+import { DownloadHandler } from '/src/lib/viewer';
 
 const fileTypes = {
 	j: 'jpg',
