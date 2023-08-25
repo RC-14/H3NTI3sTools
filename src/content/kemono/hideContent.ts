@@ -10,15 +10,40 @@ export const hideContent = () => {
 	// There may be no content
 	if (!(content instanceof HTMLDivElement)) return;
 
+	// If there is only one line it's unnecessary to hide it
+	if (content.childElementCount === 0) return;
+	if (content.childElementCount === 1 && !content.innerText.includes('\n')) {
+		if (content.firstElementChild instanceof HTMLParagraphElement && content.firstElementChild.childElementCount === 0) return;
+		if (content.firstElementChild instanceof HTMLAnchorElement && content.firstElementChild.childElementCount === 0) return;
+	}
+
 	for (const img of Array.from(qsa<HTMLImageElement>('img', content))) {
 		img.loading = 'lazy';
 		img.decoding = 'async';
 	}
 
+	// Show content button
 	const showContentButton = document.createElement('button');
-	showContentButton.innerText = '...';
+	showContentButton.innerText = '▼';
+	showContentButton.addEventListener('click', (event: MouseEvent) => showContentButton.replaceWith(content), { passive: true });
 
-	showContentButton.addEventListener('click', (event: MouseEvent) => showContentButton.replaceWith(content), { once: true, passive: true });
+	// Hide content
+	const hideContentElement = () => content.replaceWith(showContentButton);
+	hideContentElement();
 
-	content.replaceWith(showContentButton);
+	// Hide content button(s)
+	const topHideContentButton = document.createElement('button');
+	topHideContentButton.innerText = '▲';
+	topHideContentButton.addEventListener('click', hideContentElement, { passive: true });
+
+	content.prepend(topHideContentButton, document.createElement('br'));
+
+	// Don't add a second hide button if there isn't that much content
+	if (content.childElementCount < 10 && qs('img', content) === null && qs('video', content) === null) return;
+
+	// Add a copy of topHideContentButton to the bottom of the content
+	const bottomHideContentButton = topHideContentButton.cloneNode(true);
+	bottomHideContentButton.addEventListener('click', hideContentElement, { passive: true });
+
+	content.append(document.createElement('br'), bottomHideContentButton);
 };
