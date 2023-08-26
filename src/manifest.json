@@ -48,6 +48,18 @@
 		},
 		{
 			"matches": [
+				"*://hentai2read.com/*"
+			],
+			"js": [
+				"./content/hentai2read/main.js"
+			],
+			"css": [
+				"./content/hentai2read/styles.css"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"*://hiperdex.com/*",
 				"*://1sthiperdex.com/*",
 				"*://hiperdex.xyz/*"
