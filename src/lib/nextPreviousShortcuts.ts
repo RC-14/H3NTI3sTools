@@ -46,7 +46,7 @@ const eventListener = (event: KeyboardEvent) => {
 export const addNextPreviousShortcuts = (next: typeof nextHandler, previous: typeof previousHandler, enableSpace = false) => {
 	if (listenerAttached) return;
 
-	enableSpace = enableSpace;
+	spaceEnabled = enableSpace;
 
 	nextHandler = next;
 	previousHandler = previous;
