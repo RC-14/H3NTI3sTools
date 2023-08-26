@@ -1,6 +1,7 @@
 import { isElementEditable } from './utils';
 
 let listenerAttached = false;
+let spaceEnabled = false;
 
 let previousHandler = () => { };
 let nextHandler = () => { };
@@ -18,6 +19,15 @@ const eventListener = (event: KeyboardEvent) => {
 			nextHandler();
 			break;
 
+		case 'Space':
+			if (!spaceEnabled) break;
+			if (event.shiftKey) {
+				previousHandler();
+			} else {
+				nextHandler();
+			}
+			break;
+
 		default:
 			return;
 	}
@@ -33,8 +43,10 @@ const eventListener = (event: KeyboardEvent) => {
  * 
  * @param previous The function that opens the previous page.
  */
-export const addNextPreviousShortcuts = (next: typeof nextHandler, previous: typeof previousHandler) => {
+export const addNextPreviousShortcuts = (next: typeof nextHandler, previous: typeof previousHandler, enableSpace = false) => {
 	if (listenerAttached) return;
+
+	enableSpace = enableSpace;
 
 	nextHandler = next;
 	previousHandler = previous;
