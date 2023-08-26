@@ -74,6 +74,15 @@
 		},
 		{
 			"matches": [
+				"*://www.kenmei.co/*"
+			],
+			"js": [
+				"./content/kenmei/main.js"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"*://nhentai.net/*"
 			],
 			"js": [
