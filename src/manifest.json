@@ -48,6 +48,15 @@
 		},
 		{
 			"matches": [
+				"*://hanime.tv/*"
+			],
+			"js": [
+				"./content/hanime/main.js"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"*://hentai2read.com/*"
 			],
 			"js": [
