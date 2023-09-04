@@ -106,7 +106,15 @@ export const runAfterReadyStateReached = (readystate: Exclude<DocumentReadyState
 		return;
 	}
 
-	document.addEventListener('readystatechange', () => callback(), { once: true });
+	const listenerFunc = () => {
+		if (document.readyState !== readystate) return;
+		
+		document.removeEventListener('readystatechange', listenerFunc);
+
+		callback();
+	};
+
+	document.addEventListener('readystatechange', listenerFunc);
 };
 
 type showMessageOptions = {
