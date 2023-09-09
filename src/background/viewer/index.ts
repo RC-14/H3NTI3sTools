@@ -149,6 +149,8 @@ const fragment: BackgroundFragment = {
 	startupHandler: () => {
 		// Prevent carrying over a selection from a previous session.
 		clearSelection();
+		// Ensure nothing gets deleted automatically
+		navigator.storage.persist().then((result) => result ? console.log('Got persistent storage.') : console.warn("Didn't get persistent storage."));
 	},
 	runtimeMessageHandler: async (msg, data, sender) => {
 		const messageHandler = messageHandlers.get(msg);
