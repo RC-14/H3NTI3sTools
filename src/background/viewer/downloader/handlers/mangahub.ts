@@ -4,6 +4,10 @@ import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, createCollection
 
 const API_URL = 'https://api.mghubcdn.com/graphql';
 const IMG_URL_BASE = 'https://imgx.mghubcdn.com/';
+const ACCESS_TOKEN_URL = 'https://mangahub.io/';
+const ACCESS_TOKEN_COOKIE_NAME = 'mhub_access';
+let lastError = 0;
+let mediaRetry = false;
 
 /*
  * Set headers so that pixiv doesn't block the request.
@@ -61,18 +65,42 @@ const apiResponseSchema = z.object({
 	})
 });
 
+const apiErrorResponseSchema = z.object({
+	errors: z.array(z.object({
+		message: z.string()
+	}))
+});
+
 const getAccessToken = async () => {
-	let cookie = await cookies.get({ url: 'https://mangahub.io/', name: 'mhub_access' });
-	
+	let cookie = await cookies.get({ url: ACCESS_TOKEN_URL, name: ACCESS_TOKEN_COOKIE_NAME });
 	if (cookie !== null) return cookie.value;
 
-	await fetch('https://mangahub.io/');
+	await fetch(ACCESS_TOKEN_URL);
 
-	cookie = await cookies.get({ url: 'https://mangahub.io/', name: 'mhub_access' });
-
+	cookie = await cookies.get({ url: ACCESS_TOKEN_URL, name: ACCESS_TOKEN_COOKIE_NAME });
 	if (cookie !== null) return cookie.value;
 
 	throw new Error(`Couldn't get an access token for the mangahub api.`);
+};
+
+const clearAccessToken = async () => {
+	await cookies.remove({ url: ACCESS_TOKEN_URL, name: ACCESS_TOKEN_COOKIE_NAME });
+};
+
+const setRecentlyCookie = async (chapterNumber: number) => {
+	const now = Date.now();
+
+	await cookies.set({
+		url: ACCESS_TOKEN_URL,
+		name: 'recently',
+		value: encodeURIComponent(JSON.stringify({
+			[now - Math.floor(Math.random() * 1200)]: {
+				mangaID: Math.floor(Math.random() * 30000 + 1),
+				number: chapterNumber
+			}
+		})),
+		expirationDate: now / 1000 + 60 * 60 * 24 * 31 * 3
+	});
 };
 
 const seriesSlugFromUrl = (url: URL) => {
@@ -130,9 +158,14 @@ const addToCollection = (chapterUrl: URL, seriesInfo: z.infer<typeof apiResponse
 
 const handler: DownloadHandler = {
 	media: async (urlString) => {
+		const retry = mediaRetry;
+		if (mediaRetry) mediaRetry = false;
+
+		if (Date.now() - lastError < 1000 * 60 * 60) throw new Error(`Got an error in the last hour (${Math.floor((Date.now() - lastError) / 1000 / 60)} min).`);
+
 		const url = new URL(urlString);
 		if (!url.pathname.startsWith('/chapter/')) throw new Error(`[mangahub] Not a chapter URL: ${urlString}`);
-		
+
 		const accessToken = await getAccessToken();
 		const slug = seriesSlugFromUrl(url);
 		const chapterNumber = chapterNumberFromUrl(url);
@@ -151,9 +184,23 @@ const handler: DownloadHandler = {
 
 		const apiResponse = await fetch(request).then((response) => response.json());
 
+		const parsedApiErrorResponse = apiErrorResponseSchema.safeParse(apiResponse);
+
+		if (parsedApiErrorResponse.success) {
+			if (!retry) {
+				await clearAccessToken();
+				setRecentlyCookie(chapterNumber);
+				mediaRetry = true;
+				return await handler.media(urlString);
+			}
+
+			lastError = Date.now();
+			throw new Error('Got an error back from the API: ' + parsedApiErrorResponse.data.errors.at(0)?.message);
+		}
+
 		const parsedApiResponse = apiResponseSchema.parse(apiResponse);
 
-		await addToCollection(url, parsedApiResponse.data.manga)
+		await addToCollection(url, parsedApiResponse.data.manga);
 
 		return {
 			origin: urlString,
