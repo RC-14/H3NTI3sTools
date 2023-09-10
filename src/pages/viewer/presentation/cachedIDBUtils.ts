@@ -36,7 +36,7 @@ export const getMediaInfo = (origin: string) => new Promise<Media>(async (resolv
 	const parsedResult = MediaSchema.safeParse(result);
 
 	if (!parsedResult.success) {
-		reject(new Error(`Got an invalid object from indexedDB: ${parsedResult.error}`));
+		reject(new Error(`Got an invalid object from indexedDB (origin: ${origin}): ${parsedResult.error}`));
 		return;
 	}
 
@@ -77,7 +77,7 @@ export const getUsableSrcForSource = (source: Url) => new Promise<string>(async 
 	const parsedResult = DataSchema.safeParse(result);
 
 	if (!parsedResult.success) {
-		reject(new Error(`Got an invalid object from indexedDB: ${parsedResult.error}`));
+		reject(new Error(`Got an invalid object from indexedDB (source: ${source}): ${parsedResult.error}`));
 		return;
 	}
 
