@@ -1,5 +1,6 @@
 import { WebRequest, cookies, tabs, webRequest } from 'webextension-polyfill';
 import { z } from 'zod';
+import genericDataHandler from './genericDataHandler';
 import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, createCollection, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
 
 const API_URL = 'https://api.mghubcdn.com/graphql';
@@ -191,7 +192,7 @@ const handler: DownloadHandler = {
 				await clearAccessToken();
 				setRecentlyCookie(chapterNumber);
 				mediaRetry = true;
-				return await handler.media(urlString);
+				return await genericDataHandler.media(urlString);
 			}
 
 			lastError = Date.now();
@@ -212,12 +213,7 @@ const handler: DownloadHandler = {
 			creatorNames: []
 		};
 	},
-	data: async (url) => {
-		return {
-			source: url,
-			blob: await fetch(url).then(response => response.blob())
-		};
-	}
+	data: genericDataHandler.data
 };
 
 export default handler;

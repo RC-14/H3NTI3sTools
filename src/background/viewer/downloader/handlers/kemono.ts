@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import genericDataHandler from './genericDataHandler';
 import { decode } from '/src/lib/htmlCharReferences';
 import { DownloadHandler } from '/src/lib/viewer';
 
@@ -56,12 +57,7 @@ const handler: DownloadHandler = {
 			creatorNames: [creatorChache.get(creatorUrl.pathname)!]
 		};
 	},
-	data: (url) => new Promise((resolve, reject) => setTimeout(async () => {
-		resolve({
-			source: url,
-			blob: await fetch(url).then((response) => response.blob())
-		});
-	}, 1_000))
+	data: (url) => new Promise((resolve, reject) => setTimeout(async () => resolve(await genericDataHandler.data(url)), 1_000))
 };
 
 export default handler;

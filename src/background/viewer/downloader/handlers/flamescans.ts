@@ -1,4 +1,5 @@
 import z from 'zod';
+import genericDataHandler from './genericDataHandler';
 import { decode } from '/src/lib/htmlCharReferences';
 import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, MEDIA_OS_NAME, MediaSchema, createCollection, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
 
@@ -171,12 +172,7 @@ const handler: DownloadHandler = {
 			creatorNames: []
 		};
 	},
-	data: async (url) => {
-		return {
-			source: url,
-			blob: await fetch(url).then((response) => response.blob())
-		};
-	}
+	data: genericDataHandler.data
 };
 
 export default handler;

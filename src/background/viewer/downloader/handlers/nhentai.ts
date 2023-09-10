@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import genericDataHandler from './genericDataHandler';
 import { DownloadHandler } from '/src/lib/viewer';
 
 const fileTypes = {
@@ -69,12 +70,7 @@ const handler: DownloadHandler = {
 			creatorNames: creators
 		};
 	},
-	data: async (url) => {
-		return {
-			source: url,
-			blob: await fetch(url).then((response) => response.blob())
-		};
-	}
+	data: genericDataHandler.data
 };
 
 export default handler;
