@@ -1,4 +1,11 @@
+/* Make the reader usable */
 img#arf-reader {
 	max-width: 95vw;
 	max-height: 95vh;
+}
+
+/* Fix the weird gaps when looking at thumbnails of a chapter */
+div#thumbnails {
+	display: flex;
+	flex-flow: wrap;
 }
