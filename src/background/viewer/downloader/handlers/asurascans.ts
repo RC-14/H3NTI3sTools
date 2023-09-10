@@ -16,8 +16,10 @@ const chapterInfoSchema = z.object({
 	manga_title: decodedHtmlEncodedStringSchema
 });
 
-const DISCORD_PROMOTION_URLS = [
-	'https://www.asurascans.com/wp-content/uploads/2021/04/page100-10.jpg'
+const PROMOTION_URLS = [
+	'https://www.asurascans.com/wp-content/uploads/2021/04/page100-10.jpg',
+	'https://asura.nacm.xyz/wp-content/uploads/2023/05/EndDesignPSD02.png',
+	'https://asuracomics.com/wp-content/uploads/2023/05/EndDesignPSD02.png'
 ];
 
 const getSourcesFromChapterHTML = (html: string) => {
@@ -26,7 +28,7 @@ const getSourcesFromChapterHTML = (html: string) => {
 	const parsedContentInfo = contentInfoSchema.parse(contentInfo);
 
 	// Filter out discord promotions
-	const sources = parsedContentInfo.sources[0].images.filter((source) => !DISCORD_PROMOTION_URLS.includes(source));
+	const sources = parsedContentInfo.sources[0].images.filter((source) => !PROMOTION_URLS.includes(source));
 
 	return sources;
 };
