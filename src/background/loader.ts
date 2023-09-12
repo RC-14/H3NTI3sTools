@@ -3,10 +3,12 @@ import { BackgroundFragment, RuntimeMessageHandler, RuntimeMessageSchema, Startu
 import { JSONValue } from '/src/lib/json.js';
 // Background fragments
 import hideCursor from './hideCursor';
+import historyRecorder from './historyRecorder'
 import viewer from './viewer';
 
 const fragments: Map<string, BackgroundFragment> = new Map();
 fragments.set('hideCursor', hideCursor);
+fragments.set('historyRecorder', historyRecorder);
 fragments.set('viewer', viewer);
 
 /*
