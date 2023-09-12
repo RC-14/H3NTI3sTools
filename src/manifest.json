@@ -22,6 +22,13 @@
 		"default_popup": "./popup/index.html",
 		"default_title": "H3NTI3's Tools"
 	},
+	"protocol_handlers": [
+		{
+			"protocol": "ext+h3nti3",
+			"name": "H3NTI3's Tools Extension Pages shortcut",
+			"uriTemplate": "/%s"
+		}
+	],
 	"content_scripts": [
 		{
 			"matches": [
