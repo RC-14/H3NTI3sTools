@@ -3,7 +3,7 @@ module.exports = {
 	artifactsDir: 'dist',
 	run: {
 		target: ['firefox-desktop'],
-		startUrl: ['about:addons','about:debugging#/runtime/this-firefox'],
+		// startUrl: ['about:addons','about:debugging#/runtime/this-firefox'],
 		firefox: 'firefoxdeveloperedition',
 		firefoxProfile: 'dev-edition-default',
 		keepProfileChanges: false,
