@@ -3,7 +3,7 @@ import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
-import { qs, useTemplate } from '/src/lib/utils';
+import { qs, sendRuntimeMessage, useTemplate } from '/src/lib/utils';
 import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
 
 const presentationContainer = qs<HTMLDivElement>('div#presentation-container');
@@ -302,6 +302,8 @@ const init = async () => {
 
 	// Add controls
 	addControls();
+
+	sendRuntimeMessage('background', 'historyRecorder', null);
 };
 
 preventSpaceBarScroll();
