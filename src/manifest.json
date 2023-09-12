@@ -139,6 +139,7 @@
 	"permissions": [
 		"<all_urls>",
 		"cookies",
+		"history",
 		"scripting",
 		"storage",
 		"unlimitedStorage",
