@@ -1,7 +1,7 @@
 import { Runtime, Tabs, runtime, tabs } from 'webextension-polyfill';
 import { downloadData, downloadMedia } from './downloader';
 import { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
-import { DATA_OS_NAME, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, MediaSchema, ShowMediaMessageSchema, UrlSchema, getViewerIDB } from '/src/lib/viewer';
+import { COLLECTION_OS_NAME, CollectionSchema, DATA_OS_NAME, Data, DataSchema, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, MediaSchema, ShowMediaMessageSchema, UrlSchema, getViewerIDB } from '/src/lib/viewer';
 import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
 const mediaPromiseMap = new Map<string, Promise<void>>();
@@ -23,6 +23,106 @@ const show = (origins: string[], targetTab?: Tabs.Tab['id'] | null) => {
 
 	tabs.update(targetTab, { url: url.href });
 };
+
+const cleanup_collectionsPart = () => new Promise<void>(async (resolve, reject) => {
+	const db = await getViewerIDB();
+	const transaction = db.transaction(COLLECTION_OS_NAME, 'readwrite');
+	const objectStore = transaction.objectStore(COLLECTION_OS_NAME);
+	const cursorRequest = objectStore.openCursor();
+	cursorRequest.addEventListener('error', (event) => {
+		reject(new Error(`Getting collection media origins failed with an error: ${cursorRequest.error}`));
+	});
+	cursorRequest.addEventListener('success', (event) => {
+		const cursor = cursorRequest.result;
+
+		// null if all object store entries have been processed
+		if (cursor === null) {
+			resolve();
+			return;
+		}
+
+		const parsedCollection = CollectionSchema.safeParse(cursor.value);
+
+		if (!parsedCollection.success) {
+			const deleteRequest = cursor.delete();
+			deleteRequest.addEventListener('error', (event) => {
+				reject(new Error(`Deleting broken collection (name: "${cursor.key}") failed with an error: ${deleteRequest.error}`));
+			});
+		}
+
+		cursor.continue();
+	});
+});
+
+const cleanup_mediaPart = () => new Promise<Data['source'][]>(async (resolve, reject) => {
+	const dataWhitelist: Data['source'][] = [];
+
+	const db = await getViewerIDB();
+	const readTransaction = db.transaction(MEDIA_OS_NAME, 'readwrite');
+	const readOS = readTransaction.objectStore(MEDIA_OS_NAME);
+	const cursorRequest = readOS.openCursor();
+	cursorRequest.addEventListener('error', (event) => {
+		throw new Error(`Getting to be deleted media origins failed with an error: ${cursorRequest.error}`);
+	});
+	cursorRequest.addEventListener('success', (event) => {
+		const cursor = cursorRequest.result;
+
+		// null if all object store entries have been processed
+		if (cursor === null) {
+			// Deduplicate in place
+			for (let i = dataWhitelist.length - 1; i >= 0; i--) {
+				if (dataWhitelist.indexOf(dataWhitelist[i])) continue;
+				dataWhitelist.splice(i, 1);
+			}
+
+			resolve(dataWhitelist);
+			return;
+		}
+
+		const parsedMedia = MediaSchema.safeParse(cursor.value);
+
+		if (parsedMedia.success && (parsedMedia.data.favorite)) {
+			dataWhitelist.push(...parsedMedia.data.sources);
+		} else {
+			const deleteRequest = cursor.delete();
+			deleteRequest.addEventListener('error', (event) => {
+				reject(new Error(`Deleting media (origin: "${cursor.key}") failed with an error: ${deleteRequest.error}`));
+			});
+		}
+
+		cursor.continue();
+	});
+});
+
+const cleanup_dataPart = (dataWhitelist: Data['source'][]) => new Promise<void>(async (resolve, reject) => {
+	const db = await getViewerIDB();
+	const readTransaction = db.transaction(DATA_OS_NAME, 'readwrite');
+	const readOS = readTransaction.objectStore(DATA_OS_NAME);
+	const cursorRequest = readOS.openCursor();
+	cursorRequest.addEventListener('error', (event) => {
+		throw new Error(`Getting to be deleted data sources failed with an error: ${cursorRequest.error}`);
+	});
+	cursorRequest.addEventListener('success', (event) => {
+		const cursor = cursorRequest.result;
+
+		// null if all object store entries have been processed
+		if (cursor === null) {
+			resolve();
+			return;
+		}
+
+		const parsedMedia = DataSchema.safeParse(cursor.value);
+
+		if (!parsedMedia.success || !dataWhitelist.includes(parsedMedia.data.source)) {
+			const deleteRequest = cursor.delete();
+			deleteRequest.addEventListener('error', (event) => {
+				reject(new Error(`Deleting data (source: "${cursor.key}") failed with an error: ${deleteRequest.error}`));
+			});
+		}
+
+		cursor.continue();
+	});
+});
 
 /*
  * Message handlers
@@ -76,74 +176,11 @@ messageHandlers.set('downloadData', async (data, sender) => {
 	return true;
 });
 
-messageHandlers.set('cleanup', (data, sender) => new Promise<void>(async (resolve, reject) => {
-	const db = await getViewerIDB();
-
-	const transaction = db.transaction([DATA_OS_NAME, MEDIA_OS_NAME], 'readwrite');
-
-	transaction.addEventListener('complete', (event) => {
-		db.close();
-		resolve();
-	});
-
-	const mediaOS = transaction.objectStore(MEDIA_OS_NAME);
-
-	const mediaGetAllRequest = mediaOS.getAll();
-	mediaGetAllRequest.addEventListener('error', (event) => {
-		throw new Error(`Getting all entries from the Media Object Store failed with an error: ${mediaGetAllRequest.error}`);
-	});
-	mediaGetAllRequest.addEventListener('success', (event) => {
-		const parsedMediaList = MediaSchema.array().safeParse(mediaGetAllRequest.result);
-
-		if (!parsedMediaList.success) {
-			throw new Error(`The list of Media received from getting all Media contained invalid entries: ${parsedMediaList.error}`);
-		}
-
-		const favoriteSources: Media['sources'] = [];
-
-		for (const media of parsedMediaList.data) {
-			if (media.favorite) {
-				for (const source of media.sources) {
-					if (favoriteSources.includes(source)) continue;
-					favoriteSources.push(source);
-				}
-				continue;
-			}
-
-			const deleteRequest = mediaOS.delete(media.origin);
-			deleteRequest.addEventListener('error', (event) => {
-				throw new Error(`Couldn't delete Media (origin: "${media.origin}") because of error: ${deleteRequest.error}`);
-			});
-		}
-
-		const dataOS = transaction.objectStore(DATA_OS_NAME);
-
-		const getAllKeysRequest = dataOS.getAllKeys();
-		getAllKeysRequest.addEventListener('error', (event) => {
-			throw new Error(`Couldn't get all Data Object Store keys because of error: ${getAllKeysRequest.error}`);
-		});
-		getAllKeysRequest.addEventListener('success', (event) => {
-			const parsedSources = UrlSchema.array().safeParse(getAllKeysRequest.result);
-	
-			if (!parsedSources.success) {
-				throw new Error(`The list of Sources received from getting all keys from the Data Object Store contained invalid entries: ${parsedSources.error}`);
-			}
-	
-			for (const source of parsedSources.data) {
-				if (favoriteSources.includes(source)) continue;
-	
-				const deleteRequest = dataOS.delete(source);
-				deleteRequest.addEventListener('error', (event) => {
-					throw new Error(`Couldn't delete data for source ("${source}") because of error: ${deleteRequest.error}`);
-				});
-			}
-		});
-	
-		transaction.commit();
-	});
-
-	transaction.commit();
-}));
+messageHandlers.set('cleanup', async (data, sender) => {
+	await cleanup_collectionsPart();
+	const dataWhitelist = await cleanup_mediaPart();
+	await cleanup_dataPart(dataWhitelist);
+});
 
 const fragment: BackgroundFragment = {
 	startupHandler: () => {
