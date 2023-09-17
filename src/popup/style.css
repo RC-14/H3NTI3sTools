@@ -1,18 +1,17 @@
+@import url(./base.css);
+
 :root {
 	--navbar-height: 32px;
 }
 
-* {
-	color: rgb(245, 245, 245);
-	background-color: rgb(14, 14, 14);
-	margin: 0px;
-	padding: 0px;
-	border: none;
+html {
+	width: 250px;
+	height: 400px;
 }
 
 body {
-	width: 250px;
-	height: 400px;
+	height: calc(100% - var(--navbar-height));
+	width: inherit;
 }
 
 #navbar {
@@ -26,6 +25,7 @@ body {
 	justify-content: space-around;
 	overflow-y: hidden;
 	height: var(--navbar-height);
+	width: 100%;
 	background-color: rgb(17, 21, 28);
 }
 
@@ -47,6 +47,7 @@ body {
 	color: rgb(15, 192, 192);
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	overflow-y: hidden;
 }
 
 .navbar-item:hover {

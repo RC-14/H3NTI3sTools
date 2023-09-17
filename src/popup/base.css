@@ -1,0 +1,25 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	border: none;
+	width: fit-content;
+	height: fit-content;
+}
+
+html {
+	color: rgb(245, 245, 245);
+	background-color: rgb(14, 14, 14);
+}
+
+html, body {
+	width: 100%;
+	min-height: 100%;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.invisible {
+	visibility: hidden !important;
+}
