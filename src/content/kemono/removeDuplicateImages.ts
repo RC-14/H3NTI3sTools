@@ -4,7 +4,10 @@ import { qs, qsa } from '/src/lib/utils';
 const apiResponseSchema = z.array(z.object({
 	attachments: z.array(z.object({
 		path: z.string()
-	}))
+	})),
+	file: z.object({
+		path: z.string().optional()
+	})
 }));
 
 // For some reason the first image is shown twice (sometimes the first image is a cropped version of the second image)
@@ -33,5 +36,5 @@ export const removeDuplicateImages = async () => {
 	const parsedApiResponse = apiResponseSchema.parse(apiResponse)[0];
 
 	// If the api tells us there aren't as many images as we have we remove the first one
-	if (parsedApiResponse.attachments.length < imgWrappers.length) imgWrappers[0].remove();
+	if (parsedApiResponse.attachments.length > 0 && typeof parsedApiResponse.file.path === 'string') imgWrappers[0].remove();
 };
