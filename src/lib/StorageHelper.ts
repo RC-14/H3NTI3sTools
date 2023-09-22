@@ -27,7 +27,7 @@ export default class StorageHelper {
 	#storage: Storage.StorageArea;
 	#namespace: string | null;
 	#data: { [key: string]: unknown; } = {};
-	#listeners: ((changes: { [key: string]: Storage.StorageChange; }) => unknown)[] = [];
+	#listeners: ((changes: Storage.StorageAreaOnChangedChangesType) => unknown)[] = [];
 
 	/**
 	 * Creates a safe deep copy of the input.
@@ -124,7 +124,7 @@ export default class StorageHelper {
 	 * 
 	 * @returns `true` if the function is already registered as a listener and `false` otherwise.
 	 */
-	isListenerRegistered(listener: (changes: { [key: string]: Storage.StorageChange; }) => unknown) {
+	isListenerRegistered(listener: (changes: Storage.StorageAreaOnChangedChangesType) => unknown) {
 		return this.#listeners.includes(listener);
 	}
 
@@ -144,7 +144,7 @@ export default class StorageHelper {
 	 * 
 	 * @param listener A function taking one argument (the object representing the changes).
 	 */
-	registerChangeListener(listener: (changes: { [key: string]: Storage.StorageChange; }) => unknown) {
+	registerChangeListener(listener: (changes: Storage.StorageAreaOnChangedChangesType) => unknown) {
 		this.#listeners.push(listener);
 	}
 
@@ -155,7 +155,7 @@ export default class StorageHelper {
 	 * 
 	 * @param listener The function which should no langer be a listener.
 	 */
-	removeChangeListener(listener: (changes: { [key: string]: Storage.StorageChange; }) => unknown) {
+	removeChangeListener(listener: (changes: Storage.StorageAreaOnChangedChangesType) => unknown) {
 		for (let i = this.#listeners.length - 1; i >= 0; i--) {
 			if (this.#listeners[i] === listener) this.#listeners.splice(i, 1);
 		}
