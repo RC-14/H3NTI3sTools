@@ -112,6 +112,8 @@ export default class StorageHelper {
 			changes = tmp;
 		}
 
+		if (Object.keys(changes).length === 0) return;
+
 		for (const listener of this.#listeners) {
 			listener(this.#safeCopy(changes)!);
 		}
