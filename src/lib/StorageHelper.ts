@@ -38,7 +38,7 @@ export default class StorageHelper {
 	 * 
 	 * @returns The copy of input.
 	 */
-	#safeCopy(input: unknown): unknown {
+	#safeCopy<T>(input: T): T | undefined {
 		if (['function', 'symbol'].includes(typeof input)) return undefined;
 		return structuredClone(input);
 	}
@@ -67,7 +67,7 @@ export default class StorageHelper {
 	 * 
 	 * @param changes An object representing the changes to the storage contents.
 	 */
-	async #onChangeListener(changes: { [key: string]: Storage.StorageChange; }) {
+	async #onChangeListener(changes: Storage.StorageAreaOnChangedChangesType) {
 		const namespaces = Object.keys(changes);
 		if (this.#namespace !== null && !namespaces.includes(this.#namespace)) return;
 
@@ -85,7 +85,7 @@ export default class StorageHelper {
 			}
 		} else {
 			const namespaceChanges = changes[this.#namespace];
-			const tmp: { [key: string]: Storage.StorageChange; } = {};
+			const tmp: Storage.StorageAreaOnChangedChangesType = {};
 			let oldKeys: string[] = [];
 			let newKeys: string[] = [];
 
@@ -113,7 +113,7 @@ export default class StorageHelper {
 		}
 
 		for (const listener of this.#listeners) {
-			listener(this.#safeCopy(changes) as { [key: string]: Storage.StorageChange; });
+			listener(this.#safeCopy(changes)!);
 		}
 	}
 
