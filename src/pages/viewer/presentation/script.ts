@@ -303,7 +303,7 @@ const init = async () => {
 	// Add controls
 	addControls();
 
-	sendRuntimeMessage('background', 'historyRecorder', 'record');
+	sendRuntimeMessage('background', 'historyRecorder', 'recordExtensionPage');
 };
 
 preventSpaceBarScroll();
