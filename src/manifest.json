@@ -150,6 +150,7 @@
 		"scripting",
 		"storage",
 		"unlimitedStorage",
+		"webNavigation",
 		"webRequest",
 		"webRequestBlocking"
 	]

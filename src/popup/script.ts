@@ -2,6 +2,7 @@ import { runtime } from 'webextension-polyfill';
 import { qs, useTemplate } from '../lib/utils';
 
 const tabList: { name: string, fragmentId: string; }[] = [
+	{ fragmentId: 'historyRecorder', name: 'History Recorder' }
 ];
 
 const mainFrame = qs<HTMLIFrameElement>('main > iframe');

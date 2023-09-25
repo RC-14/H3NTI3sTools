@@ -1,0 +1,28 @@
+@import url(../base.css);
+
+body {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#privateHistoryPermissionWarning {
+	background-color: yellow;
+	color: black;
+	width: 80vw;
+	margin: 5vw;
+	padding: .5rem;
+	border-radius: 2rem;
+	text-align: center;
+}
+
+#privateHistoryToggle {
+	background-color: rgb(50, 50, 50);
+	color: inherit;
+	width: 70vw;
+	border-style: solid;
+	border-color: rgb(70, 70, 70);
+	border-radius: .5rem;
+	cursor: pointer;
+}
