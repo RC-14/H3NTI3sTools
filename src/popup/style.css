@@ -10,8 +10,9 @@ html {
 }
 
 body {
-	height: calc(100% - var(--navbar-height));
+	height: calc(98% - var(--navbar-height));
 	width: inherit;
+	min-height: unset;
 }
 
 #navbar {
@@ -38,16 +39,15 @@ body {
 	padding: 0px 5px;
 	height: calc(var(--navbar-height) - 6px);
 	width: fit-content;
-	max-width: 30vw;
+	max-width: 98vw;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background-color: rgb(33, 45, 64);
 	color: rgb(15, 192, 192);
-	text-overflow: ellipsis;
 	white-space: nowrap;
-	overflow-y: hidden;
+	overflow: hidden;
 }
 
 .navbar-item:hover {
