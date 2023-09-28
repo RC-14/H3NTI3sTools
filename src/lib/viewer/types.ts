@@ -70,6 +70,7 @@ export type MediaTypeHandler = {
 	presentMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection, setProgress: (progress?: number) => void, progress?: number) => void;
 	hideMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
 	keydownHandler: (media: Media, contentContainer: HTMLDivElement, event: KeyboardEvent) => boolean;
+	autoProgressHandler: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => boolean | Promise<void>;
 };
 
 export type DownloadHandler = {

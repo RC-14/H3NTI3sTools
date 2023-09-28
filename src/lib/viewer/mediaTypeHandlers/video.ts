@@ -2,6 +2,9 @@ import { MediaTypeHandler } from '/src/lib/viewer';
 
 const VIDEO_SKIP_DURATION = 5;
 
+let autoProgressPromiseReject: (() => void) | undefined = undefined;
+let autoProgressPromiseResolve: (() => void) | undefined = undefined;
+
 const hasFullscreen = () => document.fullscreenElement !== null;
 
 const togglePlayPause = (video: HTMLVideoElement) => {
@@ -42,6 +45,13 @@ const toggleFullscreen = (video: HTMLVideoElement) => {
 	video.requestFullscreen();
 };
 
+const videoPauseListener = () => {
+	if (autoProgressPromiseResolve === undefined) return;
+
+	autoProgressPromiseResolve();
+	autoProgressPromiseReject = autoProgressPromiseResolve = undefined;
+};
+
 const defaultExport: MediaTypeHandler = {
 	addContentToContentContainer: async (media, contentContainer, getSrcForSource) => {
 		// TODO: Have a smart idea on how to manage multiple videos
@@ -57,13 +67,21 @@ const defaultExport: MediaTypeHandler = {
 		if (!(video instanceof HTMLVideoElement)) throw new Error("The content containers first child isn't a video.");
 
 		video.currentTime = 0;
+		video.addEventListener('pause', videoPauseListener, { passive: true });
 
 		video.play();
 	},
 	hideMedia: (media, contentContainer, direction) => {
+		if (autoProgressPromiseReject !== undefined) {
+			autoProgressPromiseReject();
+			autoProgressPromiseReject = autoProgressPromiseResolve = undefined;
+		}
+
 		const video = contentContainer.firstElementChild;
 		if (!(video instanceof HTMLVideoElement)) throw new Error("The content containers first child isn't a video.");
 
+		video.removeEventListener('pause', videoPauseListener);
+		
 		video.pause();
 
 		video.muted = false;
@@ -105,7 +123,19 @@ const defaultExport: MediaTypeHandler = {
 		}
 
 		return !hasFullscreen();
-	}
+	},
+	autoProgressHandler: (media, contentContainer, direction) => {
+		const video = contentContainer.firstElementChild;
+		if (!(video instanceof HTMLVideoElement)) throw new Error("The content containers first child isn't a video.");
+
+		if (video.paused) return true;
+
+		const autoProgressPromise = new Promise<void>((resolve, reject) => {
+			autoProgressPromiseReject = reject;
+			autoProgressPromiseResolve = resolve;
+		});
+		return autoProgressPromise;
+	},
 };
 
 export default defaultExport;

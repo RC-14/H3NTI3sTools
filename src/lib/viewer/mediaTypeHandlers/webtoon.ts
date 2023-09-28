@@ -61,7 +61,8 @@ const defaultExport: MediaTypeHandler = {
 
 		setProgress = undefined;
 	},
-	keydownHandler: (media, contentContainer, event) => event.code !== 'Space'
+	keydownHandler: (media, contentContainer, event) => event.code !== 'Space',
+	autoProgressHandler: (media, contentContainer, direction) => false
 };
 
 export default defaultExport;

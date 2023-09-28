@@ -189,7 +189,13 @@ const defaultExport: MediaTypeHandler = {
 		}
 
 		return true;
-	}
+	},
+	autoProgressHandler: (media, contentContainer, direction) => {
+		if (direction === 'backward') {
+			return showPrevious(media.sources, contentContainer);
+		}
+		return showNext(media.sources, contentContainer);
+	},
 };
 
 export default defaultExport;
