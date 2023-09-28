@@ -181,7 +181,7 @@ const updateUrl = () => {
 
 const setProgress = (newProgress?: number) => {
 	// Prevent calling history.pushtate() to often
-	if (lastProgressSet + 1_000 > Date.now()) return;
+	if (lastProgressSet + 5_000 > Date.now()) return;
 	lastProgressSet = Date.now();
 
 	progress = newProgress;
