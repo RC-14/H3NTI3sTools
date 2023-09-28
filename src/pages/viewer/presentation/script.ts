@@ -167,7 +167,11 @@ const updateUrl = () => {
 
 	url.searchParams.set(CURRENT_MEDIA_SEARCH_PARAM, `${mediaCounter}`);
 
-	if (progress !== undefined) url.searchParams.set(PROGRESS_SEARCH_PARAM, `${progress}`);
+	if (progress !== undefined) {
+		url.searchParams.set(PROGRESS_SEARCH_PARAM, `${progress}`);
+	} else if (url.searchParams.has(PROGRESS_SEARCH_PARAM)) {
+		url.searchParams.delete(PROGRESS_SEARCH_PARAM);
+	}
 
 	if (url.href === location.href) return;
 
