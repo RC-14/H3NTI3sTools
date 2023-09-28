@@ -1,0 +1,18 @@
+@import url(../base.css);
+
+body {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#cleanupButton {
+	background-color: rgb(50, 50, 50);
+	color: inherit;
+	border-style: solid;
+	border-color: rgb(70, 70, 70);
+	border-radius: .5rem;
+	cursor: pointer;
+	padding: .1rem;
+}
