@@ -250,7 +250,7 @@ const addControls = () => {
 		const currentMedia = mediaList[mediaCounter];
 		const currentMediaContentContainer = getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!;
 
-		if (!event.altKey) doDefault = mediaTypeHandlers[currentMedia.type].presentationControlHandler(currentMedia, currentMediaContentContainer, event);
+		if (!event.altKey) doDefault = mediaTypeHandlers[currentMedia.type].keydownHandler(currentMedia, currentMediaContentContainer, event);
 
 		if (doDefault) switch (event.code) {
 			case 'ArrowLeft':

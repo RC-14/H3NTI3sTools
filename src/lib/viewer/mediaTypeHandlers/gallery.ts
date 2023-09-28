@@ -173,7 +173,7 @@ const defaultExport: MediaTypeHandler = {
 
 		setProgress = undefined;
 	},
-	presentationControlHandler: (media, contentContainer, event) => {
+	keydownHandler: (media, contentContainer, event) => {
 		switch (event.code) {
 			case 'Space':
 				if (event.shiftKey) {

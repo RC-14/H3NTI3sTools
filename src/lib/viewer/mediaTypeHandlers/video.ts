@@ -70,7 +70,7 @@ const defaultExport: MediaTypeHandler = {
 		video.loop = false;
 		document.exitFullscreen();
 	},
-	presentationControlHandler: (media, contentContainer, event) => {
+	keydownHandler: (media, contentContainer, event) => {
 		const video = contentContainer.firstElementChild;
 		if (!(video instanceof HTMLVideoElement)) throw new Error("The content containers first child isn't a video.");
 

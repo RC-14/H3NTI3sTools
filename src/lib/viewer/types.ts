@@ -69,7 +69,7 @@ export type MediaTypeHandler = {
 	preload: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
 	presentMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection, setProgress: (progress?: number) => void, progress?: number) => void;
 	hideMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
-	presentationControlHandler: (media: Media, contentContainer: HTMLDivElement, event: KeyboardEvent) => boolean;
+	keydownHandler: (media: Media, contentContainer: HTMLDivElement, event: KeyboardEvent) => boolean;
 };
 
 export type DownloadHandler = {
