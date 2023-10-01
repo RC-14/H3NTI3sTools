@@ -233,7 +233,7 @@ const defaultExport: MediaTypeHandler = {
 			case 'ArrowDown':
 				return showFirst(media.sources, contentContainer);
 
-			case 'ArrowLast':
+			case 'ArrowUp':
 				return showLast(media.sources, contentContainer);
 		}
 
