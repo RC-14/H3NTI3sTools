@@ -381,12 +381,10 @@ const addControls = () => {
 		if (doDefault) switch (event.code) {
 			case 'ArrowLeft':
 				showPreviousMedia();
-				restartAutoProgress();
 				break;
 
 			case 'ArrowRight':
 				showNextMedia();
-				restartAutoProgress();
 				break;
 
 			case 'Space':
@@ -394,12 +392,18 @@ const addControls = () => {
 					toggleAutoProgress();
 				} else if (event.shiftKey) {
 					showPreviousMedia();
-					restartAutoProgress();
 				} else {
 					showNextMedia();
-					restartAutoProgress();
 				}
 				break;
+		}
+
+		switch (event.code) {
+			case 'Space':
+				if (event.ctrlKey) break;
+			case 'ArrowRight':
+			case 'ArrowLeft':
+				restartAutoProgress();
 		}
 	});
 };
