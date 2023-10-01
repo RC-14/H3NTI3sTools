@@ -99,8 +99,9 @@ const showNext = (sources: Media['sources'], contentContainer: HTMLDivElement) =
 
 const showPrevious = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
 	const previousIndex = getIndex(contentContainer);
-	const nextIndex = previousIndex - 1;
 	if (previousIndex === 0) return true;
+
+	const nextIndex = previousIndex - 1;
 
 	const previousSource = sources[previousIndex];
 	const previousImg = qs<HTMLImageElement>(`img[data-source="${previousSource}"]`, contentContainer);
