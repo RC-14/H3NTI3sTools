@@ -13,7 +13,7 @@ const mediaCounterElement = qs<HTMLParagraphElement>('p#media-counter');
 const mediaContainerTemplate = qs<HTMLTemplateElement>('template#media-container-template');
 
 const toolboxWrapper = qs<HTMLDivElement>('div#toolbox-wrapper');
-const toolboxIconCheckbox = qs<HTMLInputElement>('#toolbox-icon > input[type="checkbox"]');
+const toolboxIcon = qs<HTMLLabelElement>('#toolbox-icon');
 const toolboxMenuSelector = qs<HTMLSelectElement>('select#toolbox-menu-selector');
 const toolboxMenuList = qs<HTMLUListElement>(`ul#${TOOLBOX_MENU_LIST_ID}`);
 
@@ -31,7 +31,7 @@ if (!(
 	mediaCounterElement &&
 	mediaContainerTemplate &&
 	toolboxWrapper &&
-	toolboxIconCheckbox &&
+	toolboxIcon &&
 	toolboxMenuSelector &&
 	toolboxMenuList &&
 	autoProgressMenu &&
@@ -360,15 +360,7 @@ const addToolboxFunctionality = () => {
 		newMenu.classList.add('selected');
 	});
 
-	toolboxIconCheckbox.addEventListener('change', (event) => {
-		if (toolboxIconCheckbox.checked) {
-			showElement(toolboxMenuList);
-			showElement(toolboxMenuSelector);
-			return;
-		}
-		hideElement(toolboxMenuList);
-		hideElement(toolboxMenuSelector);
-	});
+	toolboxIcon.addEventListener('click', (event) => toolboxWrapper.classList.toggle('open'), { passive: true });
 
 	const defaultMenuName = ToolboxMenuIdSchema.parse(toolboxMenuSelector.value);
 	const defaultMenu = getToolboxMenu(defaultMenuName);

@@ -130,6 +130,11 @@
 	max-height: 50vh;
 }
 
+#toolbox-wrapper:not(.open)>#toolbox-menu-selector,
+#toolbox-wrapper:not(.open)>#toolbox-menu-list {
+	display: none;
+}
+
 #toolbox-icon {
 	--bar-width: 1.5rem;
 	--bar-height: .25rem;
@@ -141,7 +146,7 @@
 }
 
 #toolbox-icon::before,
-#toolbox-icon>input,
+#toolbox-icon>p,
 #toolbox-icon::after {
 	content: "";
 	width: var(--bar-width);
