@@ -120,6 +120,48 @@ const showPrevious = (sources: Media['sources'], contentContainer: HTMLDivElemen
 	return false;
 };
 
+const showFirst = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
+	const previousIndex = getIndex(contentContainer);
+	if (previousIndex === 0) return false;
+
+	const previousSource = sources[previousIndex];
+	const previousImg = qs<HTMLImageElement>(`img[data-source="${previousSource}"]`, contentContainer);
+	if (!(previousImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the previous source (${previousSource}).`);
+	hideElement(previousImg);
+
+	const firstSource = sources[0];
+	const firstImg = qs<HTMLImageElement>(`img[data-source="${firstSource}"]`, contentContainer);
+	if (!(firstImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the first source (${firstSource}).`);
+	showElement(firstImg);
+
+	setIndex(contentContainer, 0);
+	preloadPrevious(sources, contentContainer);
+	updateCounter(contentContainer);
+
+	return false;
+}
+
+const showLast = (sources: Media['sources'], contentContainer: HTMLDivElement) => {
+	const previousIndex = getIndex(contentContainer);
+	if (previousIndex === sources.length - 1) return false;
+
+	const previousSource = sources[previousIndex];
+	const previousImg = qs<HTMLImageElement>(`img[data-source="${previousSource}"]`, contentContainer);
+	if (!(previousImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the previous source (${previousSource}).`);
+	hideElement(previousImg);
+
+	const lastSource = sources[sources.length - 1];
+	const lastImg = qs<HTMLImageElement>(`img[data-source="${lastSource}"]`, contentContainer);
+	if (!(lastImg instanceof HTMLImageElement)) throw new Error(`Didn't find an image element for the last source (${lastSource}).`);
+	showElement(lastImg);
+
+	setIndex(contentContainer, sources.length - 1);
+	preloadPrevious(sources, contentContainer);
+	updateCounter(contentContainer);
+
+	return false;
+}
+
 const defaultExport: MediaTypeHandler = {
 	addContentToContentContainer: async (media, contentContainer, getSrcForSource) => {
 		for (const source of media.sources) {
@@ -187,6 +229,12 @@ const defaultExport: MediaTypeHandler = {
 
 			case 'ArrowRight':
 				return showNext(media.sources, contentContainer);
+
+			case 'ArrowDown':
+				return showFirst(media.sources, contentContainer);
+
+			case 'ArrowLast':
+				return showLast(media.sources, contentContainer);
 		}
 
 		return true;
