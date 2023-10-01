@@ -25,6 +25,23 @@
 
 	<p id="media-counter" class="hidden"></p>
 
+	<div id="toolbox-wrapper" class="hidden">
+		<label id="toolbox-icon"><input type="checkbox"></label>
+		<select id="toolbox-menu-selector" class="hidden">
+			<option value="autoProgress">Auto Progress</option>
+		</select>
+		<ul id="toolbox-menu-list" class="hidden">
+			<li id="autoProgress-menu" name="autoProgress" class="toolbox-menu">
+				<p>
+					Delay (sec):
+					<input id="autoProgress-delay-input" type="number" placeholder="30" min="0" step="0.001" value="30">
+					<button id="autoProgress-delay-apply-button">Apply</button>
+				</p>
+				<button id="autoProgress-toggle-button">Start</button>
+			</li>
+		</ul>
+	</div>
+
 	<template id="media-container-template">
 		<div class="media-container hidden" data-origin="" data-type="">
 

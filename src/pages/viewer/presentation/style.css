@@ -113,3 +113,85 @@
 	width: 25vw;
 	max-height: none;
 }
+
+#toolbox-wrapper {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+	background-color: black;
+	padding: 7.5px;
+	border-style: solid;
+	border-color: #555;
+	border-radius: 1rem;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap-reverse;
+	max-width: 30vw;
+	max-height: 50vh;
+}
+
+#toolbox-icon {
+	--bar-width: 1.5rem;
+	--bar-height: .25rem;
+	--gap: .2rem;
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap);
+}
+
+#toolbox-icon::before,
+#toolbox-icon>input,
+#toolbox-icon::after {
+	content: "";
+	width: var(--bar-width);
+	height: var(--bar-height);
+	background-color: white;
+	appearance: none;
+	pointer-events: none;
+	cursor: pointer;
+}
+
+#toolbox-menu-selector {
+	margin: 0px auto;
+	padding: .1rem;
+	background-color: rgb(40, 40, 40);
+	color: inherit;
+	border-radius: .2rem;
+}
+
+#toolbox-menu-selector:active {
+	background-color: rgb(50, 50, 50);
+}
+
+#toolbox-menu-list {
+	width: 100%;
+	margin-bottom: 10px;
+	list-style: none;
+}
+
+#toolbox-menu-list>.toolbox-menu:not(.selected) {
+	display: none;
+}
+
+.toolbox-menu {
+	width: 100%;
+}
+
+.toolbox-menu button {
+	margin: 2.5px;
+	padding: .15rem;
+	border-radius: .3rem;
+	color: inherit;
+	background-color: rgb(40, 40, 40);
+	cursor: pointer;
+}
+
+.toolbox-menu button:active {
+	background-color: rgb(50, 50, 50);
+}
+
+.toolbox-menu input[type="number"] {
+	width: 4rem;
+	margin: 0px 2.5px;
+}

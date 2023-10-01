@@ -1,4 +1,4 @@
-import { unknown, z } from 'zod';
+import { z } from 'zod';
 import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
@@ -6,28 +6,54 @@ import { hideElement, showElement } from '/src/lib/pageUtils';
 import { qs, sendRuntimeMessage, useTemplate } from '/src/lib/utils';
 import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
 
+const TOOLBOX_MENU_LIST_ID = 'toolbox-menu-list';
+
 const presentationContainer = qs<HTMLDivElement>('div#presentation-container');
 const mediaCounterElement = qs<HTMLParagraphElement>('p#media-counter');
 const mediaContainerTemplate = qs<HTMLTemplateElement>('template#media-container-template');
+
+const toolboxWrapper = qs<HTMLDivElement>('div#toolbox-wrapper');
+const toolboxIconCheckbox = qs<HTMLInputElement>('#toolbox-icon > input[type="checkbox"]');
+const toolboxMenuSelector = qs<HTMLSelectElement>('select#toolbox-menu-selector');
+const toolboxMenuList = qs<HTMLUListElement>(`ul#${TOOLBOX_MENU_LIST_ID}`);
+
+const autoProgressMenu = qs<HTMLLIElement>(`#autoProgress-menu`);
+const autoProgressToggleButton = qs<HTMLButtonElement>('#autoProgress-toggle-button');
+const autoProgressDelayInput = qs<HTMLInputElement>('#autoProgress-delay-input');
+const autoProgressApplyDelayButton = qs<HTMLButtonElement>('#autoProgress-delay-apply-button');
 
 const errorContainer = qs<HTMLDivElement>('div#error-container');
 const errorTitle = qs<HTMLParagraphElement>('p#error-title');
 const errorDescription = qs<HTMLParagraphElement>('p#error-description');
 
 if (!(
-	presentationContainer instanceof HTMLDivElement &&
-	mediaCounterElement instanceof HTMLParagraphElement &&
-	mediaContainerTemplate instanceof HTMLTemplateElement &&
-	errorContainer instanceof HTMLDivElement &&
-	errorTitle instanceof HTMLParagraphElement &&
-	errorDescription instanceof HTMLParagraphElement
+	presentationContainer &&
+	mediaCounterElement &&
+	mediaContainerTemplate &&
+	toolboxWrapper &&
+	toolboxIconCheckbox &&
+	toolboxMenuSelector &&
+	toolboxMenuList &&
+	autoProgressMenu &&
+	autoProgressToggleButton &&
+	autoProgressDelayInput &&
+	autoProgressApplyDelayButton &&
+	errorContainer &&
+	errorTitle &&
+	errorDescription
 )) throw new Error("An essential element couldn't be found.");
+
+const ToolboxMenuIdSchema = z.string().regex(/[a-zA-Z0-9]*/, { message: 'Invalid toolbox menu ID' });
 
 const mediaList: Media[] = [];
 let mediaCounter = -1;
 let progress: number | undefined = undefined;
 let lastProgressSet: number = 0;
 let ignorePopState = false;
+let autoProgressDirection: PresentationNavigationDirection = 'forward';
+let autoProgressTimeoutDelay = -1;
+let autoProgressTimeoutId = -1;
+let autoProgressActive = false;
 
 const showError = (title: string, description: string) => {
 	hideElement(presentationContainer);
@@ -243,6 +269,114 @@ const showPreviousMedia = () => {
 	showMedia((mediaCounter + mediaList.length - 1) % mediaList.length, 'backward');
 };
 
+const applyAutoProgressSettings = () => {
+	if (!autoProgressDelayInput.validity.valid) return;
+
+	autoProgressTimeoutDelay = autoProgressDelayInput.valueAsNumber * 1_000;
+};
+
+const autoProgressTimeoutHandler = async () => {
+	const currentMedia = mediaList[mediaCounter];
+	const currentMediaContentContainer = getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!;
+
+	const handlerReponse = mediaTypeHandlers[currentMedia.type].autoProgressHandler(currentMedia, currentMediaContentContainer, autoProgressDirection);
+
+	if (handlerReponse !== false) {
+		if (handlerReponse !== true) await handlerReponse;
+
+		if (autoProgressDirection === 'forward') {
+			showNextMedia();
+		} else {
+			showPreviousMedia();
+		}
+	}
+
+	autoProgressTimeoutId = setTimeout(autoProgressTimeoutHandler, autoProgressTimeoutDelay);
+};
+
+const startAutoProgress = () => {
+	if (autoProgressActive) return;
+
+	autoProgressTimeoutId = setTimeout(autoProgressTimeoutHandler, autoProgressTimeoutDelay);
+
+	autoProgressToggleButton.innerText = 'Stop';
+
+	autoProgressActive = true;
+};
+
+const stopAutoProgress = () => {
+	if (!autoProgressActive) return;
+
+	clearInterval(autoProgressTimeoutId);
+	autoProgressTimeoutId = -1;
+
+	autoProgressToggleButton.innerText = 'Start';
+
+	autoProgressActive = false;
+};
+
+const toggleAutoProgress = () => {
+	if (autoProgressActive) {
+		stopAutoProgress();
+		return;
+	}
+
+	applyAutoProgressSettings();
+	startAutoProgress();
+};
+
+const restartAutoProgress = () => {
+	if (!autoProgressActive) return;
+
+	startAutoProgress();
+	startAutoProgress();
+};
+
+const addAutoProgressFunctionality = () => {
+	autoProgressToggleButton.addEventListener('click', toggleAutoProgress, { passive: true });
+
+	autoProgressApplyDelayButton.addEventListener('click', applyAutoProgressSettings, { passive: true });
+};
+
+const getToolboxMenu = (id: string) => {
+	const parsedId = ToolboxMenuIdSchema.parse(id);
+
+	const menu = qs<HTMLLIElement>(`#${TOOLBOX_MENU_LIST_ID} > .toolbox-menu[name="${parsedId}"]`);
+
+	if (menu === null) throw new Error(`No toolbox menu found for id: ${parsedId}`);
+
+	return menu;
+};
+
+const addToolboxFunctionality = () => {
+	addAutoProgressFunctionality();
+
+	toolboxMenuSelector.addEventListener('change', (event) => {
+		const previousMenu = qs(`#${TOOLBOX_MENU_LIST_ID} > .selected`);
+		previousMenu?.classList.remove('selected');
+
+		const newMenuName = ToolboxMenuIdSchema.parse(toolboxMenuSelector.value);
+		const newMenu = getToolboxMenu(newMenuName);
+		newMenu.classList.add('selected');
+	});
+
+	toolboxIconCheckbox.addEventListener('change', (event) => {
+		if (toolboxIconCheckbox.checked) {
+			showElement(toolboxMenuList);
+			showElement(toolboxMenuSelector);
+			return;
+		}
+		hideElement(toolboxMenuList);
+		hideElement(toolboxMenuSelector);
+	});
+
+	const defaultMenuName = ToolboxMenuIdSchema.parse(toolboxMenuSelector.value);
+	const defaultMenu = getToolboxMenu(defaultMenuName);
+	defaultMenu.classList.add('selected');
+
+	showElement(toolboxWrapper);
+};
+
 const addControls = () => {
 	document.addEventListener('keydown', (event) => {
 		let doDefault = true;
@@ -255,17 +389,23 @@ const addControls = () => {
 		if (doDefault) switch (event.code) {
 			case 'ArrowLeft':
 				showPreviousMedia();
+				restartAutoProgress();
 				break;
 
 			case 'ArrowRight':
 				showNextMedia();
+				restartAutoProgress();
 				break;
 
 			case 'Space':
-				if (event.shiftKey) {
+				if (event.ctrlKey) {
+					toggleAutoProgress();
+				} else if (event.shiftKey) {
 					showPreviousMedia();
+					restartAutoProgress();
 				} else {
 					showNextMedia();
+					restartAutoProgress();
 				}
 				break;
 		}
@@ -303,6 +443,8 @@ const init = async () => {
 
 	// Add the popstate listener
 	window.addEventListener('popstate', popstateHandler);
+
+	addToolboxFunctionality();
 
 	// Add controls
 	addControls();
