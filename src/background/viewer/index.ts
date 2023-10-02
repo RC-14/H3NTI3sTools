@@ -7,6 +7,8 @@ import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 const mediaPromiseMap = new Map<string, Promise<void>>();
 const dataPromiseMap = new Map<Media['sources'][number], Promise<void>>();
 
+let cleanupPromise: Promise<void> | null;
+
 const show = (origins: string[], targetTab?: Tabs.Tab['id'] | null) => {
 	const parsedOrigins = UrlSchema.array().parse(origins);
 
@@ -176,10 +178,19 @@ messageHandlers.set('downloadData', async (data, sender) => {
 	return true;
 });
 
-messageHandlers.set('cleanup', async (data, sender) => {
-	await cleanup_collectionsPart();
-	const dataWhitelist = await cleanup_mediaPart();
-	await cleanup_dataPart(dataWhitelist);
+messageHandlers.set('cleanup', (data, sender) => {
+	if (cleanupPromise !== null) return cleanupPromise;
+
+	cleanupPromise = new Promise<void>(async (resolve, reject) => {
+		await cleanup_collectionsPart();
+		const dataWhitelist = await cleanup_mediaPart();
+		await cleanup_dataPart(dataWhitelist);
+
+		cleanupPromise = null;
+		resolve();
+	});
+	
+	return cleanupPromise;
 });
 
 const fragment: BackgroundFragment = {
