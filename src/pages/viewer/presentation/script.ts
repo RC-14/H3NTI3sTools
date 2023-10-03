@@ -328,7 +328,7 @@ const toggleAutoProgress = () => {
 const restartAutoProgress = () => {
 	if (!autoProgressActive) return;
 
-	startAutoProgress();
+	stopAutoProgress();
 	startAutoProgress();
 };
 
