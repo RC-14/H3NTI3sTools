@@ -33,14 +33,18 @@ const privateHistoryWebNavigationCommittedListener = async (details: WebNavigati
 	history.addUrl(historyEntry);
 };
 
+const updatePrivateHistoryEnabledInStorage = () => storage.set(PRIVATE_HISTORY_ENABLED_STORAGE_KEY, privateHistoryEnabled);
+
 const enablePrivateHistory = () => {
 	webNavigation.onCommitted.addListener(privateHistoryWebNavigationCommittedListener);
 	privateHistoryEnabled = true;
+	updatePrivateHistoryEnabledInStorage();
 };
 
 const disablePrivateHistory = () => {
 	webNavigation.onCommitted.removeListener(privateHistoryWebNavigationCommittedListener);
 	privateHistoryEnabled = false;
+	updatePrivateHistoryEnabledInStorage();
 };
 
 const handleRecordExtensionPage = async (sender: Runtime.MessageSender) => {
@@ -92,7 +96,7 @@ const fragment: BackgroundFragment = {
 
 			case 'enablePrivateHistory':
 				enablePrivateHistory();
-				return true;
+				return;
 
 			case 'disablePrivateHistory':
 				disablePrivateHistory();
