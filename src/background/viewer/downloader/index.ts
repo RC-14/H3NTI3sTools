@@ -82,7 +82,14 @@ const downloader = async (queue: DownloadQueue, handler: (url: string) => Promis
 const startDownloader = (hostDomain: string, queue: DownloadQueue, activeDownloadersMap: ActiveDownloadersMap, validationSchema: z.AnyZodObject, objectStoreName: IDBObjectStore['name'], handlerType: keyof DownloadHandler) => {
 	activeDownloadersMap.set(hostDomain, true);
 
-	downloader(queue, handlerMap.get(hostDomain)![handlerType], validationSchema, objectStoreName).then(() => {
+	let handler = handlerMap.get(hostDomain);
+	if (handler === undefined) {
+		if (handlerType !== 'data') throw new Error(`Reached startDownloader without a handler for the handlerType: ${handlerType}`);
+		handler = handlerMap.get('ganeric');
+		if (handler === undefined) throw new Error(`No generic handler found.`);
+	}
+
+	downloader(queue, handler[handlerType], validationSchema, objectStoreName).then(() => {
 		activeDownloadersMap.set(hostDomain, false);
 	});
 };
@@ -91,7 +98,7 @@ const queueDownload = (url: string, queueMap: QueueMap, activeDownloadersMap: Ac
 	const parsedUrl = UrlSchema.parse(url);
 
 	const hostDomain = getHostDomainFromUrl(parsedUrl);
-	if (!handlerMap.has(hostDomain)) throw new Error(`No download handler for domain: ${hostDomain}`);
+	if (!handlerMap.has(hostDomain) && handlerType !== 'data') throw new Error(`No download handler for domain: ${hostDomain}`);
 
 	if (!queueMap.has(hostDomain)) {
 		queueMap.set(hostDomain, []);

@@ -1,5 +1,6 @@
 import asurascans from './asurascans';
 import flamescans from './flamescans';
+import genericDataHandler from './genericDataHandler';
 import kemono from './kemono';
 import luminousscans from './luminousscans';
 import mangahub from './mangahub';
@@ -12,6 +13,7 @@ handlerMap.set('asurascans.com', asurascans);
 handlerMap.set('asuracomics.com', asurascans);
 handlerMap.set('asura.gg', asurascans);
 handlerMap.set('flamescans.org', flamescans);
+handlerMap.set('generic', genericDataHandler);
 handlerMap.set('kemono.party', kemono);
 handlerMap.set('luminousscans.com', luminousscans);
 handlerMap.set('mangahub.io', mangahub);
