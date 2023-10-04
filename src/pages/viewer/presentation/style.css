@@ -115,7 +115,7 @@
 }
 
 #toolbox-wrapper {
-	position: absolute;
+	position: sticky;
 	bottom: 5px;
 	left: 5px;
 	background-color: black;
