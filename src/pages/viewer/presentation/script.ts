@@ -3,7 +3,7 @@ import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
-import { qs, sendRuntimeMessage, useTemplate } from '/src/lib/utils';
+import { qs, sendRuntimeMessage, useTemplate, showMessage } from '/src/lib/utils';
 import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
 
 const TOOLBOX_MENU_LIST_ID = 'toolbox-menu-list';
@@ -294,7 +294,7 @@ const autoProgressTimeoutHandler = async () => {
 	autoProgressTimeoutId = setTimeout(autoProgressTimeoutHandler, autoProgressTimeoutDelay);
 };
 
-const startAutoProgress = () => {
+const startAutoProgress = (notify = false) => {
 	if (autoProgressActive) return;
 
 	autoProgressTimeoutId = setTimeout(autoProgressTimeoutHandler, autoProgressTimeoutDelay);
@@ -302,9 +302,11 @@ const startAutoProgress = () => {
 	autoProgressToggleButton.innerText = 'Stop';
 
 	autoProgressActive = true;
+
+	if (notify) showMessage('Auto Progress started');
 };
 
-const stopAutoProgress = () => {
+const stopAutoProgress = (notify = false) => {
 	if (!autoProgressActive) return;
 
 	clearInterval(autoProgressTimeoutId);
@@ -313,16 +315,18 @@ const stopAutoProgress = () => {
 	autoProgressToggleButton.innerText = 'Start';
 
 	autoProgressActive = false;
+
+	if (notify) showMessage('Auto Progress stopped');
 };
 
-const toggleAutoProgress = () => {
+const toggleAutoProgress = (notify = false) => {
 	if (autoProgressActive) {
-		stopAutoProgress();
+		stopAutoProgress(notify);
 		return;
 	}
 
 	applyAutoProgressSettings();
-	startAutoProgress();
+	startAutoProgress(notify);
 };
 
 const restartAutoProgress = () => {
@@ -333,7 +337,7 @@ const restartAutoProgress = () => {
 };
 
 const addAutoProgressFunctionality = () => {
-	autoProgressToggleButton.addEventListener('click', toggleAutoProgress, { passive: true });
+	autoProgressToggleButton.addEventListener('click', () => toggleAutoProgress(), { passive: true });
 
 	autoProgressApplyDelayButton.addEventListener('click', applyAutoProgressSettings, { passive: true });
 };
@@ -389,7 +393,7 @@ const addControls = () => {
 
 			case 'Space':
 				if (event.ctrlKey) {
-					toggleAutoProgress();
+					toggleAutoProgress(true);
 				} else if (event.shiftKey) {
 					showPreviousMedia();
 				} else {
