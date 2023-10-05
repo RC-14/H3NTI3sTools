@@ -33,6 +33,8 @@ const scrollHandler = (event: Event) => {
 	setProgress(window.scrollY);
 };
 
+const returnFalse = () => false;
+
 const defaultExport: MediaTypeHandler = {
 	addContentToContentContainer: async (media, contentContainer, getSrcForSource) => {
 		for (const source of media.sources) {
@@ -43,8 +45,10 @@ const defaultExport: MediaTypeHandler = {
 		}
 	},
 	preload: (media, contentContainer, direction) => undefined,
-	presentMedia: async (media, contentContainer, direction, setProgressFunc, progress) => {
+	presentMedia: async (media, contentContainer, direction, addKeybind, setProgressFunc, progress) => {
 		setProgress = setProgressFunc;
+
+		addKeybind('Space', returnFalse);
 
 		if (progress !== undefined) {
 			await waitForImages(contentContainer);
@@ -54,14 +58,15 @@ const defaultExport: MediaTypeHandler = {
 
 		window.addEventListener('scroll', scrollHandler);
 	},
-	hideMedia: (media, contentContainer, direction) => {
+	hideMedia: (media, contentContainer, direction, removeKeybind) => {
 		window.removeEventListener('scroll', scrollHandler);
+
+		removeKeybind('Space', returnFalse);
 
 		window.scrollTo({ top: 0, behavior: 'instant' });
 
 		setProgress = undefined;
 	},
-	keydownHandler: (media, contentContainer, event) => event.code !== 'Space',
 	autoProgressHandler: (media, contentContainer, direction) => false
 };
 

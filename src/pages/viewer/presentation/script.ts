@@ -3,8 +3,8 @@ import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
-import { qs, sendRuntimeMessage, useTemplate, showMessage } from '/src/lib/utils';
-import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
+import { qs, sendRuntimeMessage, showMessage, useTemplate } from '/src/lib/utils';
+import { AddKeybindFunction, CURRENT_MEDIA_SEARCH_PARAM, KeybindHandler, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, RemoveKeybindFunction, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
 
 const TOOLBOX_MENU_LIST_ID = 'toolbox-menu-list';
 
@@ -46,6 +46,7 @@ if (!(
 const ToolboxMenuIdSchema = z.string().regex(/[a-zA-Z0-9]*/, { message: 'Invalid toolbox menu ID' });
 
 const mediaList: Media[] = [];
+const keybindMap: Map<string, KeybindHandler[]> = new Map();
 let mediaCounter = -1;
 let progress: number | undefined = undefined;
 let lastProgressSet: number = 0;
@@ -215,6 +216,46 @@ const setProgress = (newProgress?: number) => {
 	updateUrl();
 };
 
+const getKeybindId = (key: string, shift?: boolean, ctrl?: boolean, fallback?: boolean) => `${key};${shift ?? false};${ctrl ?? false};${fallback ?? false}`;
+
+const addKeybind = (trigger: string | { key: string, shift?: boolean, ctrl?: boolean, fallback?: boolean; }, func: KeybindHandler) => {
+	if (typeof trigger === 'string') trigger = { key: trigger };
+
+	const keybindId = getKeybindId(trigger.key, trigger.shift, trigger.ctrl, trigger.fallback);
+
+	if (!keybindMap.has(keybindId)) keybindMap.set(keybindId, []);
+
+	const funcArray = keybindMap.get(keybindId)!;
+	funcArray.push(func);
+};
+const addKeybindNoFallback: AddKeybindFunction = (trigger, func) => {
+	if (typeof trigger === 'string') {
+		addKeybind(trigger, func);
+		return;
+	}
+	addKeybind({ ...trigger, fallback: false }, func);
+};
+
+const removeKeybind = (trigger: string | { key: string, shift?: boolean, ctrl?: boolean, fallback?: boolean; }, func: KeybindHandler) => {
+	if (typeof trigger === 'string') trigger = { key: trigger };
+
+	const keybindId = getKeybindId(trigger.key, trigger.shift, trigger.ctrl, trigger.fallback);
+
+	if (!keybindMap.has(keybindId)) return;
+
+	const funcArray = keybindMap.get(keybindId)!;
+	for (let i = funcArray.length - 1; i >= 0; i--) {
+		if (func === funcArray[i]) funcArray.splice(i, 1);
+	}
+};
+const removeKeybindNoFallback: RemoveKeybindFunction = (trigger, func) => {
+	if (typeof trigger === 'string') {
+		removeKeybind(trigger, func);
+		return;
+	}
+	removeKeybind({ ...trigger, fallback: false }, func);
+};
+
 const showMediaContainer = (media: Media, direction: PresentationNavigationDirection = 'forward', progress?: number) => {
 	const mediaContainer = getMediaContainer(media.origin);
 
@@ -222,14 +263,14 @@ const showMediaContainer = (media: Media, direction: PresentationNavigationDirec
 
 	showElement(mediaContainer);
 
-	mediaTypeHandlers[media.type].presentMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, setProgress, progress);
+	mediaTypeHandlers[media.type].presentMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, addKeybindNoFallback, setProgress, progress);
 };
 
 const hideMediaContainer = (media: Media, direction: PresentationNavigationDirection = 'forward') => {
 	const mediaContainer = getMediaContainer(media.origin);
 	if (!(mediaContainer instanceof HTMLDivElement)) throw new Error("Couldn't find an element for the given media.");
 
-	mediaTypeHandlers[media.type].hideMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction);
+	mediaTypeHandlers[media.type].hideMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, removeKeybindNoFallback);
 
 	hideElement(mediaContainer);
 };
@@ -374,42 +415,55 @@ const addToolboxFunctionality = () => {
 };
 
 const addControls = () => {
+	// Add keybinds
+	addKeybind({ key: 'ArrowLeft', fallback: true }, showPreviousMedia);
+	addKeybind('ArrowLeft', restartAutoProgress);
+
+	addKeybind({ key: 'ArrowRight', fallback: true }, showNextMedia);
+	addKeybind('ArrowRight', restartAutoProgress);
+
+	addKeybind({ key: 'Space', fallback: true }, showNextMedia);
+	addKeybind('Space', restartAutoProgress);
+
+	addKeybind({ key: 'Space', shift: true, fallback: true }, showPreviousMedia);
+	addKeybind({ key: 'Space', shift: true }, restartAutoProgress);
+
+	addKeybind({ key: 'Space', ctrl: true, fallback: true }, () => toggleAutoProgress(true));
+
+	// Add keybind event listener
 	document.addEventListener('keydown', (event) => {
-		let doDefault = true;
+		const keybindId = getKeybindId(event.code, event.shiftKey, event.ctrlKey, event.altKey);
 
 		const currentMedia = mediaList[mediaCounter];
 		const currentMediaContentContainer = getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!;
 
-		if (!event.altKey) doDefault = mediaTypeHandlers[currentMedia.type].keydownHandler(currentMedia, currentMediaContentContainer, event);
+		let continueProcessing = true;
 
-		if (doDefault) switch (event.code) {
-			case 'ArrowLeft':
-				showPreviousMedia();
-				break;
+		if (keybindMap.has(keybindId)) {
+			const funcArray = keybindMap.get(keybindId)!;
 
-			case 'ArrowRight':
-				showNextMedia();
-				break;
-
-			case 'Space':
-				if (event.ctrlKey) {
-					toggleAutoProgress(true);
-				} else if (event.shiftKey) {
-					showPreviousMedia();
-				} else {
-					showNextMedia();
-				}
-				break;
+			for (const func of funcArray) {
+				continueProcessing = func(currentMedia, currentMediaContentContainer, event) ?? true;
+				if (!continueProcessing) break;
+			}
 		}
 
-		switch (event.code) {
-			case 'Space':
-				if (event.ctrlKey) break;
-			case 'ArrowRight':
-			case 'ArrowLeft':
-				restartAutoProgress();
+		if (event.altKey || !continueProcessing) return;
+
+		// Process fallback keybinds
+		const fallbackKeybindId = getKeybindId(event.code, event.shiftKey, event.ctrlKey, true);
+
+		if (!keybindMap.has(fallbackKeybindId)) return;
+
+		const fallbackFuncArray = keybindMap.get(fallbackKeybindId)!;
+
+		continueProcessing = true;
+
+		for (const fallbackFunc of fallbackFuncArray) {
+			continueProcessing = fallbackFunc(currentMedia, currentMediaContentContainer, event) ?? true;
+			if (!continueProcessing) break;
 		}
-	});
+	}, { passive: true });
 };
 
 const init = async () => {

@@ -64,12 +64,15 @@ export type ShowMediaMessage = z.infer<typeof ShowMediaMessageSchema>;
 
 export type PresentationNavigationDirection = "forward" | "backward";
 
+export type KeybindHandler = (media: Media, contentContainer: HTMLDivElement, event: KeyboardEvent) => boolean | void;
+export type AddKeybindFunction = (trigger: string | { key: string, shift?: boolean, ctrl?: boolean }, func: KeybindHandler) => void;
+export type RemoveKeybindFunction = AddKeybindFunction;
+
 export type MediaTypeHandler = {
 	addContentToContentContainer: (media: Media, contentContainer: HTMLDivElement, getSrcForSource: (source: Url) => Promise<string>) => Promise<void>;
 	preload: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
-	presentMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection, setProgress: (progress?: number) => void, progress?: number) => void;
-	hideMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => void;
-	keydownHandler: (media: Media, contentContainer: HTMLDivElement, event: KeyboardEvent) => boolean;
+	presentMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection, addKeybind: AddKeybindFunction, setProgress: (progress?: number) => void, progress?: number) => void;
+	hideMedia: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection, removeKeybind: RemoveKeybindFunction) => void;
 	autoProgressHandler: (media: Media, contentContainer: HTMLDivElement, direction: PresentationNavigationDirection) => boolean | Promise<void>;
 };
 
