@@ -47,6 +47,7 @@ const ToolboxMenuIdSchema = z.string().regex(/[a-zA-Z0-9]*/, { message: 'Invalid
 
 const mediaList: Media[] = [];
 const keybindMap: Map<string, KeybindHandler[]> = new Map();
+let controlsEnabled = false;
 let mediaCounter = -1;
 let progress: number | undefined = undefined;
 let lastProgressSet: number = 0;
@@ -449,6 +450,8 @@ const addControls = () => {
 
 	// Add keybind event listener
 	document.addEventListener('keydown', (event) => {
+		if (!controlsEnabled) return;
+
 		const keybindId = getKeybindId(event.code, event.shiftKey, event.ctrlKey, event.altKey);
 
 		const currentMedia = mediaList[mediaCounter];
@@ -506,12 +509,6 @@ const init = async () => {
 	// Wait for everything to be ready
 	await Promise.all(addMediaContainerToDomPromises);
 
-	// Show first media
-	showMedia(currentMedia, 'forward', progress);
-
-	// Show the media counter
-	showElement(mediaCounterElement);
-
 	// Add the popstate listener
 	window.addEventListener('popstate', popstateHandler);
 
@@ -519,6 +516,14 @@ const init = async () => {
 
 	// Add controls
 	addControls();
+
+	// Show the media counter
+	showElement(mediaCounterElement);
+
+	// Show first media
+	showMedia(currentMedia, 'forward', progress);
+
+	controlsEnabled = true;
 
 	sendRuntimeMessage('background', 'historyRecorder', 'recordExtensionPage');
 };
