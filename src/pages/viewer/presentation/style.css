@@ -31,6 +31,11 @@ main {
 	text-shadow: black 0 0 5px;
 }
 
+/* Offset for the container for the messages by showMessage() to prevent them from getting hidden behind #media-counter */
+#h3nti3-messages {
+	top: calc(1rem + 3px) !important;
+}
+
 #presentation-container {
 	overflow: hidden;
 }
