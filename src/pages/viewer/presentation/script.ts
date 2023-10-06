@@ -316,6 +316,16 @@ const applyAutoProgressSettings = () => {
 	autoProgressTimeoutDelay = autoProgressDelayInput.valueAsNumber * 1_000;
 };
 
+const autoProgressSetDelayKeybind = (newDelay: number) => {
+	if (newDelay >= 0) {
+		autoProgressTimeoutDelay = newDelay;
+	} else {
+		autoProgressTimeoutDelay = 0;
+	}
+
+	autoProgressDelayInput.value = `${newDelay / 1000}`;
+};
+
 const autoProgressTimeoutHandler = async () => {
 	const currentMedia = mediaList[mediaCounter];
 	const currentMediaContentContainer = getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!;
@@ -427,6 +437,9 @@ const addControls = () => {
 
 	addKeybind({ key: 'Space', shift: true, fallback: true }, showPreviousMedia);
 	addKeybind({ key: 'Space', shift: true }, restartAutoProgress);
+
+	addKeybind({ key: 'ArrowDown', ctrl: true, fallback: true }, () => autoProgressSetDelayKeybind(autoProgressTimeoutDelay - 1000));
+	addKeybind({ key: 'ArrowUp', ctrl: true, fallback: true }, () => autoProgressSetDelayKeybind(autoProgressTimeoutDelay + 1000));
 
 	addKeybind({ key: 'Space', ctrl: true, fallback: true }, () => toggleAutoProgress(true));
 
