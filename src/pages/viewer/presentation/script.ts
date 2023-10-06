@@ -391,6 +391,8 @@ const addAutoProgressFunctionality = () => {
 	autoProgressToggleButton.addEventListener('click', () => toggleAutoProgress(), { passive: true });
 
 	autoProgressApplyDelayButton.addEventListener('click', applyAutoProgressSettings, { passive: true });
+
+	applyAutoProgressSettings();
 };
 
 const getToolboxMenu = (id: string) => {
