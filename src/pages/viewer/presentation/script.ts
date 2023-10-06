@@ -324,6 +324,8 @@ const autoProgressSetDelayKeybind = (newDelay: number) => {
 	}
 
 	autoProgressDelayInput.value = `${autoProgressTimeoutDelay / 1000}`;
+
+	showMessage(`Auto Progress delay set to ${autoProgressDelayInput.valueAsNumber} sec.`);
 };
 
 const autoProgressTimeoutHandler = async () => {
