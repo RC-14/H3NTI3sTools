@@ -115,6 +115,11 @@ main {
 	font-size: .9rem;
 }
 
+/* Allow scrolling even when the cursor is hidden with hideCursor */
+.media-container[data-type="webtoon"] {
+	pointer-events: auto !important;
+}
+
 .media-container[data-type="webtoon"]>.content-container {
 	flex-direction: column;
 	justify-content: flex-start;
