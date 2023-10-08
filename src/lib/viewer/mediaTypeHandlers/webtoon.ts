@@ -63,8 +63,6 @@ const defaultExport: MediaTypeHandler = {
 
 		removeKeybind('Space', returnFalse);
 
-		window.scrollTo({ top: 0, behavior: 'instant' });
-
 		setProgress = undefined;
 	},
 	autoProgressHandler: (media, contentContainer, direction) => false

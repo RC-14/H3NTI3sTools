@@ -288,6 +288,8 @@ const showMedia = (index: number, direction: PresentationNavigationDirection = '
 		const lastMedia = mediaList[mediaCounter];
 		hideMediaContainer(lastMedia, direction);
 
+		presentationContainer.parentElement!.scrollTo({ top: 0, behavior: 'instant' });
+
 		progress = undefined;
 	}
 
