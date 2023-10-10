@@ -14,6 +14,8 @@ handlerMap.set('asuracomics.com', asurascans);
 handlerMap.set('asura.gg', asurascans);
 handlerMap.set('flamescans.org', flamescans);
 handlerMap.set('generic', genericDataHandler);
+// TODO: Add handler for hentai2read
+// TODO: Add handler for hiperdex
 handlerMap.set('kemono.party', kemono);
 handlerMap.set('luminousscans.com', luminousscans);
 handlerMap.set('mangahub.io', mangahub);

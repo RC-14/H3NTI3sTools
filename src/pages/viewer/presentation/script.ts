@@ -6,6 +6,15 @@ import { hideElement, showElement } from '/src/lib/pageUtils';
 import { qs, sendRuntimeMessage, showMessage, useTemplate } from '/src/lib/utils';
 import { AddKeybindFunction, CURRENT_MEDIA_SEARCH_PARAM, KeybindHandler, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, RemoveKeybindFunction, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
 
+// TODO: Split up in multiple files
+
+/* TODO
+ * Don't add any elements to the DOM until they are needed,
+ * while still adding them to the download queue if necessary,
+ * to prevent tab crashes.
+ * Aim: Only ~5 media actually present in the DOM. (Maybe 11 or 21 if necessary for quickly searching through the media.)
+ */
+
 const TOOLBOX_MENU_LIST_ID = 'toolbox-menu-list';
 
 const presentationContainer = qs<HTMLDivElement>('div#presentation-container');
@@ -399,6 +408,8 @@ const addAutoProgressFunctionality = () => {
 
 	applyAutoProgressSettings();
 };
+
+// TODO: Toolbox menu for reordering media
 
 const getToolboxMenu = (id: string) => {
 	const parsedId = ToolboxMenuIdSchema.parse(id);
