@@ -36,5 +36,11 @@ export const removeDuplicateImages = async () => {
 	const parsedApiResponse = apiResponseSchema.parse(apiResponse)[0];
 
 	// If the api tells us there aren't as many images as we have we remove the first one
-	if (parsedApiResponse.attachments.length > 0 && typeof parsedApiResponse.file.path === 'string') imgWrappers[0].remove();
+	if (parsedApiResponse.attachments.length > 0 && typeof parsedApiResponse.file.path === 'string') {
+		const showFirstImageButton = document.createElement('button');
+		showFirstImageButton.innerText = 'Show Image';
+		showFirstImageButton.addEventListener('click', (event) => showFirstImageButton.replaceWith(imgWrappers[0]), { passive: true, once: true });
+
+		imgWrappers[0].replaceWith(showFirstImageButton);
+	}
 };
