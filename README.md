@@ -1,5 +1,5 @@
 # H3NTI3sTools
-A Firefox extension with useful stuff. (at least I think so)
+A Firefox Extension with useful stuff. (at least I think so)
 
 ## Install
 
