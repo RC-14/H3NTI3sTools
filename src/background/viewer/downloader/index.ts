@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import handlerMap from './handlers';
-import { DATA_OS_NAME, DataSchema, DownloadHandler, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
+import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
 
 type DownloadQueue = { url: string, resolve: () => void, reject: (reason: Error) => void; }[];
 type QueueMap = Map<string, DownloadQueue>;
@@ -50,7 +50,7 @@ const writeToIdb = (data: unknown, validationSchema: z.AnyZodObject, objectStore
 
 const downloader = async (queue: DownloadQueue, handler: (url: string) => Promise<unknown>, validationSchema: z.AnyZodObject, objectStoreName: IDBObjectStore['name']) => {
 	while (queue.length > 0) {
-		const [current] = queue.splice(0, 1);
+		const current = queue.splice(0, 1)[0]!;
 
 		if (await isInIdb(current.url, validationSchema, objectStoreName)) {
 			current.resolve();

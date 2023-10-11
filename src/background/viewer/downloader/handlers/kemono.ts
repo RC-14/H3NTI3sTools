@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import genericDataHandler from './genericDataHandler';
 import { decode } from '/src/lib/htmlCharReferences';
-import { DownloadHandler } from '/src/lib/viewer';
+import type { DownloadHandler } from '/src/lib/viewer';
 
 const creatorChache = new Map<string, string>();
 
@@ -35,14 +35,16 @@ const handler: DownloadHandler = {
 		}
 
 		const creatorUrl = new URL(url);
-		creatorUrl.pathname = creatorUrl.pathname.split('/post/')[0];
+		creatorUrl.pathname = creatorUrl.pathname.split('/post/')[0]!;
 
 		if (!creatorChache.has(creatorUrl.pathname)) {
 			const html = await fetch(creatorUrl, {
 				redirect: 'error'
 			}).then((response) => response.text());
 
-			const creator = html.split('<span itemprop="name">')[1].split('</span>')[0];
+			const creator = html.split('<span itemprop="name">')[1]?.split('</span>')[0];
+			if (creator === undefined) throw new Error(`Couldn't parse creator from kemono html.`);
+			
 			creatorChache.set(creatorUrl.pathname, creator);
 		}
 

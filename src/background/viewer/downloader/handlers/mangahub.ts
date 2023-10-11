@@ -1,7 +1,7 @@
-import { WebRequest, cookies, tabs, webRequest } from 'webextension-polyfill';
+import { cookies, tabs, webRequest, type WebRequest } from 'webextension-polyfill';
 import { z } from 'zod';
 import genericDataHandler from './genericDataHandler';
-import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, createCollection, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
+import { COLLECTION_OS_NAME, CollectionSchema, createCollection, type DownloadHandler, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
 
 const API_URL = 'https://api.mghubcdn.com/graphql';
 const IMG_URL_BASE = 'https://imgx.mghubcdn.com/';

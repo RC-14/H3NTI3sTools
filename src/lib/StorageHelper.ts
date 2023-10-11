@@ -1,4 +1,4 @@
-import { Storage, storage } from 'webextension-polyfill';
+import { type Storage, storage } from 'webextension-polyfill';
 
 type StorageAreaName = Exclude<keyof typeof storage, 'onChanged'>;
 
@@ -75,7 +75,7 @@ export default class StorageHelper {
 
 		if (this.#namespace === null) {
 			for (const namespace of namespaces) {
-				const currentChanges = changes[namespace];
+				const currentChanges = changes[namespace]!;
 
 				if (currentChanges.newValue !== undefined) {
 					this.#data[namespace] = currentChanges.newValue;
@@ -84,7 +84,7 @@ export default class StorageHelper {
 				delete this.#data[namespace];
 			}
 		} else {
-			const namespaceChanges = changes[this.#namespace];
+			const namespaceChanges = changes[this.#namespace]!;
 			const tmp: Storage.StorageAreaOnChangedChangesType = {};
 			let oldKeys: string[] = [];
 			let newKeys: string[] = [];
@@ -106,7 +106,7 @@ export default class StorageHelper {
 
 			for (const key of newKeys) {
 				if (tmp[key] === undefined) tmp[key] = {};
-				tmp[key].newValue = namespaceChanges.newValue[key];
+				tmp[key]!.newValue = namespaceChanges.newValue[key];
 			}
 
 			changes = tmp;

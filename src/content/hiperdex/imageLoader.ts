@@ -11,7 +11,7 @@ export const loadImages = () => {
 	const imageSrcs: string[] = []; // = images.map((img) => img.src.trim());
 
 	for (let i = images.length - 1; i >= 0; i--) {
-		const image = images[i];
+		const image = images[i]!;
 
 		// Skip already loaded images
 		if (image.complete) {

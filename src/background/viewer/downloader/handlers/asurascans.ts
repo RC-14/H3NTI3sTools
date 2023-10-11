@@ -1,13 +1,13 @@
 import { z } from 'zod';
 import genericDataHandler from './genericDataHandler';
 import { decode } from '/src/lib/htmlCharReferences';
-import { COLLECTION_OS_NAME, CollectionSchema, DownloadHandler, MEDIA_OS_NAME, MediaSchema, createCollection, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
+import { COLLECTION_OS_NAME, CollectionSchema, MEDIA_OS_NAME, MediaSchema, createCollection, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
 
 const decodedHtmlEncodedStringSchema = z.string().transform((str, ctx) => decode(str));
 
 const contentInfoSchema = z.object({
 	sources: z.array(z.object({
-		images: z.array(z.string().url())
+		images: z.array(z.string().url()).nonempty()
 	}))
 });
 
@@ -24,17 +24,21 @@ const PROMOTION_URLS = [
 
 const getSourcesFromChapterHTML = (html: string) => {
 	const contentInfoJSON = html.split('>ts_reader.run(').at(-1)!.split(');</script>')[0];
+	if (contentInfoJSON === undefined) throw new Error(`Couldn't parse asurascans chapter html for sources.`);
+
 	const contentInfo = JSON.parse(contentInfoJSON);
 	const parsedContentInfo = contentInfoSchema.parse(contentInfo);
 
 	// Filter out discord promotions
-	const sources = parsedContentInfo.sources[0].images.filter((source) => !PROMOTION_URLS.includes(source));
+	const sources = parsedContentInfo.sources[0]!.images.filter((source) => !PROMOTION_URLS.includes(source));
 
 	return sources;
 };
 
 const getChapterInfoFromChapterHTML = (html: string) => {
 	const historyParams = html.split('HISTORY.push(').at(-1)!.split(');')[0];
+	if (historyParams === undefined) throw new Error(`Couldn't parse asurascans chapter html for info.`);
+
 	const chapterInfoJson = historyParams.substring(historyParams.indexOf(',') + 1).trim();
 	const chapterInfo = JSON.parse(chapterInfoJson);
 	const parsedChapterInfo = chapterInfoSchema.parse(chapterInfo);
@@ -43,7 +47,9 @@ const getChapterInfoFromChapterHTML = (html: string) => {
 };
 
 const getSeriesUrlFromChapterHtml = (html: string) => {
-	const url = html.split('class="allc">').at(-1)!.split('href="')[1].split('"')[0];
+	const url = html.split('class="allc">').at(-1)!.split('href="')[1]?.split('"')[0];
+	if (url === undefined) throw new Error(`Couldn't parse asurascans chapter html for series url.`);
+
 	const parsedUrl = z.string().url().parse(url);
 
 	return parsedUrl;
@@ -63,7 +69,10 @@ const chapterNumberFromUrl = (url: string) => {
 const chapterNumberFromTitle = (title: string) => {
 	const lowerCaseTitle = title.toLowerCase();
 	const afterChapter = lowerCaseTitle.split('chapter')[1];
+	if (afterChapter === undefined) throw new Error(`Couldn't parse asurascans chapter number from title. (doesn't contain "chapter")`);
+
 	const beforeDash = afterChapter.split('-')[0];
+	if (beforeDash === undefined) throw new Error(`Couldn't parse asurascans chapter number from title. (doesn't contain "-")`);
 
 	return parseFloat(beforeDash.trim());
 };

@@ -1,4 +1,4 @@
-import { RuntimeMessageHandler } from './runtimeMessages';
+import type { RuntimeMessageHandler } from './runtimeMessages';
 
 export type StartupHandler = () => void;
 

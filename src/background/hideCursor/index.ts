@@ -1,6 +1,7 @@
-import { Scripting, scripting } from 'webextension-polyfill';
+import type { Scripting } from 'webextension-polyfill';
+import { scripting } from 'webextension-polyfill';
 import StorageHelper from '/src/lib/StorageHelper';
-import { BackgroundFragment } from '/src/lib/fragments';
+import type { BackgroundFragment } from '/src/lib/fragments';
 
 const fragment: BackgroundFragment = {
 	startupHandler: () => {

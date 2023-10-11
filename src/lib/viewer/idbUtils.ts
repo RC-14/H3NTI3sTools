@@ -1,5 +1,5 @@
 import { generateIDBGetter } from '../utils';
-import { Collection, CollectionSchema } from './types';
+import { type Collection, CollectionSchema } from './types';
 
 export const DATA_OS_NAME = 'Data';
 

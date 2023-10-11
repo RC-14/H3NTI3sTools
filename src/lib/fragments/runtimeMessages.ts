@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Runtime } from 'webextension-polyfill';
+import type { Runtime } from 'webextension-polyfill';
 import { JSONValueSchema } from '../json';
 
 export const RuntimeMessageSchema = z.object({

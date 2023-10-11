@@ -1,6 +1,6 @@
 import { HIDDEN_CLASS, hideElement, showElement } from '../../pageUtils';
 import { qs } from '../../utils';
-import { Media, MediaTypeHandler } from '/src/lib/viewer';
+import type { Media, MediaTypeHandler } from '/src/lib/viewer';
 
 let setProgress: ((progress?: number) => void) | undefined;
 
@@ -43,7 +43,7 @@ const preloadNext = (sources: Media['sources'], contentContainer: HTMLDivElement
 
 	if (i + 1 === sources.length) return;
 
-	const source = sources[i + 1];
+	const source = sources[i + 1]!;
 
 	preload(source, contentContainer);
 };
@@ -54,7 +54,7 @@ const preloadPrevious = (sources: Media['sources'], contentContainer: HTMLDivEle
 
 	if (i - 1 === -1) return;
 
-	const source = sources[i - 1];
+	const source = sources[i - 1]!;
 
 	preload(source, contentContainer);
 };

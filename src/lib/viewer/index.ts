@@ -1,5 +1,5 @@
 import mediaTypeHandlersImport from './mediaTypeHandlers';
-import { MediaTypeHandler } from './types';
+import type { MediaTypeHandler } from './types';
 
 export * from './types';
 export * from './idbUtils';

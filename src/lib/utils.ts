@@ -1,5 +1,5 @@
 import { runtime } from 'webextension-polyfill';
-import { RuntimeMessage } from './fragments';
+import type { RuntimeMessage } from './fragments';
 import { encodeAll as encodeAllAsHTMLCharReference } from './htmlCharReferences';
 
 /**

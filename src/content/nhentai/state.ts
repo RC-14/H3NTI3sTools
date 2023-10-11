@@ -8,7 +8,7 @@ const BROWSING_PATHS = ['', 'artist', 'artists', 'category', 'character', 'chara
 const getState = () => {
 	const pathParts = location.pathname.split('/').splice(1);
 
-	if (pathParts.length === 0 || BROWSING_PATHS.includes(pathParts[0])) {
+	if (pathParts.length === 0 || BROWSING_PATHS.includes(pathParts[0]!)) {
 		return 'browsing';
 	}
 

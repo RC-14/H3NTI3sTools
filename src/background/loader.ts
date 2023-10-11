@@ -1,6 +1,7 @@
 import { runtime } from 'webextension-polyfill';
-import { BackgroundFragment, RuntimeMessageHandler, RuntimeMessageSchema, StartupHandler } from '/src/lib/fragments';
-import { JSONValue } from '/src/lib/json.js';
+import type { BackgroundFragment, RuntimeMessageHandler, StartupHandler } from '/src/lib/fragments';
+import { RuntimeMessageSchema } from '/src/lib/fragments';
+import type { JSONValue } from '/src/lib/json.js';
 // Background fragments
 import hideCursor from './hideCursor';
 import historyRecorder from './historyRecorder';

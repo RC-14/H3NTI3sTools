@@ -1,4 +1,4 @@
-import { Media, MediaTypeHandler } from '/src/lib/viewer';
+import type { Media, MediaTypeHandler } from '/src/lib/viewer';
 
 const VIDEO_SKIP_DURATION = 5;
 let video: HTMLVideoElement | undefined = undefined;
@@ -114,7 +114,7 @@ const keybindHandlers = {
 const defaultExport: MediaTypeHandler = {
 	addContentToContentContainer: async (media, contentContainer, getSrcForSource) => {
 		// TODO: Have a smart idea on how to manage multiple videos
-		const src = await getSrcForSource(media.sources[0]);
+		const src = await getSrcForSource(media.sources[0]!);
 
 		const video = document.createElement('video');
 		video.src = src;

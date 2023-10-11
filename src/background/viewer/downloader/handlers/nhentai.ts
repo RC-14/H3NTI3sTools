@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import genericDataHandler from './genericDataHandler';
-import { DownloadHandler } from '/src/lib/viewer';
+import type { DownloadHandler } from '/src/lib/viewer';
 
 const fileTypes = {
 	j: 'jpg',
@@ -32,7 +32,7 @@ const handler: DownloadHandler = {
 		const url = new URL(urlString);
 		if (!url.pathname.startsWith('/g/')) throw new Error(`Not a nhentai gallery url: ${urlString}`);
 
-		const galleryID = parseInt(url.pathname.split('/')[2]);
+		const galleryID = parseInt(url.pathname.split('/')[2]!);
 		if (isNaN(galleryID)) throw new Error(`Nhentai gallery url doesn't contain a parseable gallery ID: ${urlString}`);
 
 		const apiResponse = await fetch(`https://nhentai.net/api/gallery/${galleryID}`).then((response) => response.json());

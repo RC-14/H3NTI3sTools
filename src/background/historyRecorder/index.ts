@@ -1,6 +1,7 @@
-import { History, Runtime, WebNavigation, extension, history, runtime, tabs, webNavigation } from 'webextension-polyfill';
-import { BackgroundFragment } from '/src/lib/fragments';
+import type { History, Runtime, WebNavigation } from 'webextension-polyfill';
+import { extension, history, runtime, tabs, webNavigation } from 'webextension-polyfill';
 import StorageHelper from '/src/lib/StorageHelper';
+import type { BackgroundFragment } from '/src/lib/fragments';
 
 const EXTENSION_BASE_URL = runtime.getURL('');
 const EXTENSION_HISTORY_ENTRY_PROTOCOL = 'ext+h3nti3:';
@@ -65,7 +66,7 @@ tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 	if (changeInfo.status !== 'complete' || !tab.url?.startsWith(`${EXTENSION_BASE_URL}${encodeURIComponent(EXTENSION_HISTORY_ENTRY_PROTOCOL)}`)) return;
 
 	await tabs.update(tabId, {
-		url: EXTENSION_BASE_URL + atob(decodeURIComponent(tab.url.split(encodeURIComponent(EXTENSION_HISTORY_ENTRY_PROTOCOL))[1]))
+		url: EXTENSION_BASE_URL + atob(decodeURIComponent(tab.url.split(encodeURIComponent(EXTENSION_HISTORY_ENTRY_PROTOCOL))[1]!))
 	});
 });
 

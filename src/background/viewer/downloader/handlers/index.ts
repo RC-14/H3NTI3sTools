@@ -6,7 +6,7 @@ import luminousscans from './luminousscans';
 import mangahub from './mangahub';
 import nhentai from './nhentai';
 import pixiv from './pixiv';
-import { DownloadHandler } from '/src/lib/viewer';
+import type { DownloadHandler } from '/src/lib/viewer';
 
 const handlerMap = new Map<string, DownloadHandler>();
 handlerMap.set('asurascans.com', asurascans);

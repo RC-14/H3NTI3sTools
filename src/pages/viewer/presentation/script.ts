@@ -4,7 +4,7 @@ import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
 import { qs, sendRuntimeMessage, showMessage, useTemplate } from '/src/lib/utils';
-import { AddKeybindFunction, CURRENT_MEDIA_SEARCH_PARAM, KeybindHandler, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, PROGRESS_SEARCH_PARAM, PresentationNavigationDirection, RemoveKeybindFunction, UrlSchema, getViewerIDB, mediaTypeHandlers } from '/src/lib/viewer';
+import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, PROGRESS_SEARCH_PARAM, UrlSchema, getViewerIDB, mediaTypeHandlers, type AddKeybindFunction, type KeybindHandler, type Media, type PresentationNavigationDirection, type RemoveKeybindFunction } from '/src/lib/viewer';
 
 // TODO: Split up in multiple files
 
@@ -170,17 +170,23 @@ const addMediaContainerToDOM = async (media: Media) => {
 	}
 
 	const contentContainer = getContentContainerFromMediaContainer(mediaContainer)!;
-	await mediaTypeHandlers[media.type].addContentToContentContainer(media, contentContainer, getUsableSrcForSource);
+	const handler = mediaTypeHandlers[media.type];
+	if (handler === undefined) throw new Error(`No handler found for media type: ${media.type}`);
+
+	await handler.addContentToContentContainer(media, contentContainer, getUsableSrcForSource);
 
 	presentationContainer.append(mediaContainer);
 };
 
 const preload = (index: number, direction: PresentationNavigationDirection) => {
-	const media = mediaList[index];
+	const media = mediaList[index]!;
 	const mediaContainer = getMediaContainer(media.origin)!;
 	const contentContainer = getContentContainerFromMediaContainer(mediaContainer)!;
 
-	mediaTypeHandlers[media.type].preload(media, contentContainer, direction);
+	const handler = mediaTypeHandlers[media.type];
+	if (handler === undefined) throw new Error(`No handler found for media type: ${media.type}`);
+
+	handler.preload(media, contentContainer, direction);
 };
 
 const popstateHandler = (event: PopStateEvent) => {
@@ -191,7 +197,7 @@ const popstateHandler = (event: PopStateEvent) => {
 
 	const { mediaOrigins, currentMedia, progress } = parseSearch();
 
-	if (!(mediaOrigins.length === mediaList.length && mediaOrigins.every((origin, i) => origin === mediaList[i].origin))) {
+	if (!(mediaOrigins.length === mediaList.length && mediaOrigins.every((origin, i) => origin === mediaList[i]!.origin))) {
 		location.reload();
 		return;
 	}
@@ -273,14 +279,22 @@ const showMediaContainer = (media: Media, direction: PresentationNavigationDirec
 
 	showElement(mediaContainer);
 
-	mediaTypeHandlers[media.type].presentMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, addKeybindNoFallback, setProgress, progress);
+
+	const handler = mediaTypeHandlers[media.type];
+	if (handler === undefined) throw new Error(`No handler found for media type: ${media.type}`);
+
+	handler.presentMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, addKeybindNoFallback, setProgress, progress);
 };
 
 const hideMediaContainer = (media: Media, direction: PresentationNavigationDirection = 'forward') => {
 	const mediaContainer = getMediaContainer(media.origin);
 	if (!(mediaContainer instanceof HTMLDivElement)) throw new Error("Couldn't find an element for the given media.");
 
-	mediaTypeHandlers[media.type].hideMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, removeKeybindNoFallback);
+
+	const handler = mediaTypeHandlers[media.type];
+	if (handler === undefined) throw new Error(`No handler found for media type: ${media.type}`);
+
+	handler.hideMedia(media, getContentContainerFromMediaContainer(mediaContainer)!, direction, removeKeybindNoFallback);
 
 	hideElement(mediaContainer);
 };
@@ -294,7 +308,7 @@ const showMedia = (index: number, direction: PresentationNavigationDirection = '
 
 	// Hide the previous media if necessary
 	if (mediaCounter !== -1) {
-		const lastMedia = mediaList[mediaCounter];
+		const lastMedia = mediaList[mediaCounter]!;
 		hideMediaContainer(lastMedia, direction);
 
 		presentationContainer.parentElement!.scrollTo({ top: 0, behavior: 'instant' });
@@ -306,7 +320,7 @@ const showMedia = (index: number, direction: PresentationNavigationDirection = '
 	updateCounterElement();
 	updateUrl();
 
-	const media = mediaList[mediaCounter];
+	const media = mediaList[mediaCounter]!;
 	showMediaContainer(media, direction, progress);
 
 	// Preload the media that could be shown next
@@ -341,10 +355,13 @@ const autoProgressSetDelayKeybind = (newDelay: number) => {
 };
 
 const autoProgressTimeoutHandler = async () => {
-	const currentMedia = mediaList[mediaCounter];
+	const currentMedia = mediaList[mediaCounter]!;
 	const currentMediaContentContainer = getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!;
 
-	const handlerReponse = mediaTypeHandlers[currentMedia.type].autoProgressHandler(currentMedia, currentMediaContentContainer, autoProgressDirection);
+	const handler = mediaTypeHandlers[currentMedia.type];
+	if (handler === undefined) throw new Error(`No handler found for media type: ${currentMedia.type}`);
+
+	const handlerReponse = handler.autoProgressHandler(currentMedia, currentMediaContentContainer, autoProgressDirection);
 
 	if (handlerReponse !== false) {
 		if (handlerReponse !== true) await handlerReponse;
@@ -467,7 +484,7 @@ const addControls = () => {
 
 		const keybindId = getKeybindId(event.code, event.shiftKey, event.ctrlKey, event.altKey);
 
-		const currentMedia = mediaList[mediaCounter];
+		const currentMedia = mediaList[mediaCounter]!;
 		const currentMediaContentContainer = getContentContainerFromMediaContainer(getMediaContainer(currentMedia.origin)!)!;
 
 		let continueProcessing = true;

@@ -1,4 +1,4 @@
-import { DownloadHandler } from '/src/lib/viewer';
+import type { DownloadHandler } from '/src/lib/viewer';
 
 const handler: DownloadHandler = {
 	media: async (url) => {

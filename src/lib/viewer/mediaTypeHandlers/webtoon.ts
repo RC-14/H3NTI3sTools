@@ -1,5 +1,5 @@
 import { qsa } from '../../utils';
-import { MediaTypeHandler } from '/src/lib/viewer';
+import type { MediaTypeHandler } from '/src/lib/viewer';
 
 let setProgress: ((progress?: number) => void) | undefined = undefined;
 

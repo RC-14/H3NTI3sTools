@@ -8,7 +8,7 @@ const apiResponseSchema = z.array(z.object({
 	file: z.object({
 		path: z.string().optional()
 	})
-}));
+})).nonempty();
 
 // For some reason the first image is shown twice (sometimes the first image is a cropped version of the second image)
 // but it won't hurt to remove other duplicates as well.
@@ -24,7 +24,7 @@ export const removeDuplicateImages = async () => {
 		if (src === undefined) return;
 		if (imgSrcs.indexOf(src) === i) return;
 
-		imgWrappers.splice(i, 1)[0].remove();
+		imgWrappers.splice(i, 1)[0]!.remove();
 	});
 
 	// Check if the first image is a completely unnecessary crop of the second image
@@ -39,8 +39,8 @@ export const removeDuplicateImages = async () => {
 	if (parsedApiResponse.attachments.length > 0 && typeof parsedApiResponse.file.path === 'string') {
 		const showFirstImageButton = document.createElement('button');
 		showFirstImageButton.innerText = 'Show Image';
-		showFirstImageButton.addEventListener('click', (event) => showFirstImageButton.replaceWith(imgWrappers[0]), { passive: true, once: true });
+		showFirstImageButton.addEventListener('click', (event) => showFirstImageButton.replaceWith(imgWrappers[0]!), { passive: true, once: true });
 
-		imgWrappers[0].replaceWith(showFirstImageButton);
+		imgWrappers[0]!.replaceWith(showFirstImageButton);
 	}
 };

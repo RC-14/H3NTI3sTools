@@ -1,7 +1,7 @@
-import { Runtime, Tabs, runtime, tabs } from 'webextension-polyfill';
+import { runtime, tabs, type Runtime, type Tabs } from 'webextension-polyfill';
 import { downloadData, downloadMedia } from './downloader';
-import { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
-import { COLLECTION_OS_NAME, CollectionSchema, DATA_OS_NAME, Data, DataSchema, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, Media, MediaSchema, ShowMediaMessageSchema, UrlSchema, getViewerIDB } from '/src/lib/viewer';
+import type { BackgroundFragment, RuntimeMessage } from '/src/lib/fragments';
+import { COLLECTION_OS_NAME, CollectionSchema, DATA_OS_NAME, DataSchema, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, MediaSchema, ShowMediaMessageSchema, UrlSchema, getViewerIDB, type Data, type Media } from '/src/lib/viewer';
 import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 
 const mediaPromiseMap = new Map<string, Promise<void>>();
@@ -73,7 +73,7 @@ const cleanup_mediaPart = () => new Promise<Data['source'][]>(async (resolve, re
 		if (cursor === null) {
 			// Deduplicate in place
 			for (let i = dataWhitelist.length - 1; i >= 0; i--) {
-				if (dataWhitelist.indexOf(dataWhitelist[i])) continue;
+				if (dataWhitelist.indexOf(dataWhitelist[i]!)) continue;
 				dataWhitelist.splice(i, 1);
 			}
 
@@ -189,7 +189,7 @@ messageHandlers.set('cleanup', (data, sender) => {
 		cleanupPromise = null;
 		resolve();
 	});
-	
+
 	return cleanupPromise;
 });
 

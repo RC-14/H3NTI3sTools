@@ -23,8 +23,8 @@ runAfterReadyStateReached('interactive', () => {
 		const previewCount = videoPreviewContainer.children.length;
 
 		for (let i = 1; i < previewCount; i++) {
-			previewElements.push(videoPreviewContainer.children[1]);
-			previewElements[i - 1].remove();
+			previewElements.push(videoPreviewContainer.children[1]!);
+			previewElements[i - 1]!.remove();
 		}
 
 		setTimeout(() => {

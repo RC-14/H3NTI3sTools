@@ -1,5 +1,5 @@
 import { sendRuntimeMessage } from '/src/lib/utils';
-import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, Media, MediaSchema, Name, NameSchema, Url, UrlSchema, getFromObjectStore } from '/src/lib/viewer';
+import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, type Media, type Url } from '/src/lib/viewer';
 
 const dataSrcMap = new Map<string, string>();
 const mediaMap = new Map<Media['origin'], Media>();
