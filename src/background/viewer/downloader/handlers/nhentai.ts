@@ -24,11 +24,8 @@ const apiResponseSchema = z.object({
 	})),
 });
 
-const tagReplacements: {
-	[key: string]: string;
-} = {
-	nakadashi: 'creampie'
-};
+const tagReplacementMap: Map<string, string> = new Map();
+tagReplacementMap.set('nakadashi', 'creampie');
 
 const handler: DownloadHandler = {
 	media: async (url) => {
@@ -48,7 +45,7 @@ const handler: DownloadHandler = {
 					break;
 
 				case 'tag':
-					tags.push(tagReplacements[tag.name] ?? tag.name);
+					tags.push(tagReplacementMap.get(tag.name) ?? tag.name);
 					break;
 
 				case 'language':
