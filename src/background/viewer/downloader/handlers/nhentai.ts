@@ -28,8 +28,12 @@ const tagReplacementMap: Map<string, string> = new Map();
 tagReplacementMap.set('nakadashi', 'creampie');
 
 const handler: DownloadHandler = {
-	media: async (url) => {
-		const galleryID = new URL(url).pathname.split('/').at(-2);
+	media: async (urlString) => {
+		const url = new URL(urlString);
+		if (!url.pathname.startsWith('/g/')) throw new Error(`Not a nhentai gallery url: ${urlString}`);
+
+		const galleryID = parseInt(url.pathname.split('/')[2]);
+		if (isNaN(galleryID)) throw new Error(`Nhentai gallery url doesn't contain a parseable gallery ID: ${urlString}`);
 
 		const apiResponse = await fetch(`https://nhentai.net/api/gallery/${galleryID}`).then((response) => response.json());
 		const parsedApiResponse = apiResponseSchema.parse(apiResponse);
@@ -57,9 +61,9 @@ const handler: DownloadHandler = {
 		}
 
 		return {
-			origin: url,
+			origin: urlString,
 			name: parsedApiResponse.title.pretty,
-			description: galleryID,
+			description: `${galleryID}`,
 			type: 'manga',
 			sources: parsedApiResponse.images.pages.map((page, i) => `https://i.nhentai.net/galleries/${parsedApiResponse.media_id}/${i + 1}.${fileTypes[page.t]}`),
 			favorite: false,
