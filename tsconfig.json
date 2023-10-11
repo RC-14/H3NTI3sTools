@@ -3,27 +3,37 @@
 		"./src/"
 	],
 	"compilerOptions": {
+		/*
+		 * Made with the help of Matt Pocock's TSConfig Cheat Sheet:
+		 * https://www.totaltypescript.com/tsconfig-cheat-sheet
+		 */
+		/* Base Options: */
+		"esModuleInterop": true,
+		"skipLibCheck": true,
 		"target": "ESNext",
+		"verbatimModuleSyntax": true,
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleDetection": "force",
+		/* Strictness */
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		/* If NOT transpiling with TypeScript: */
+		"moduleResolution": "Bundler",
 		"module": "ESNext",
+		"noEmit": true,
+		/* If your code runs in the DOM: */
 		"lib": [
 			"ESNext",
-			"DOM"
+			"DOM",
+			"DOM.Iterable"
 		],
+		/* Project settings / Own preferences: */
 		"useDefineForClassFields": true,
-		"moduleResolution": "Node",
-		"removeComments": true,
-		"importsNotUsedAsValues": "remove",
-		"inlineSourceMap": true,
-		"inlineSources": true,
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"strict": true,
 		"isolatedModules": true,
 		"forceConsistentCasingInFileNames": true,
-		"noEmit": true,
 		"noImplicitReturns": true,
 		"exactOptionalPropertyTypes": true,
-		"skipDefaultLibCheck": true,
 		"paths": {
 			"/*": [
 				"./*"
