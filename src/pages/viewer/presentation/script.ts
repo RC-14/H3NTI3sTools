@@ -428,8 +428,6 @@ const addAutoProgressFunctionality = () => {
 
 // TODO: Toolbox menu for reordering media
 
-// TODO: Add pornHider toolbox menu and keybind
-
 const getToolboxMenu = (id: string) => {
 	const parsedId = ToolboxMenuIdSchema.parse(id);
 
