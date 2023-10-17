@@ -7,7 +7,7 @@ import { clearSelection, getSelection } from '/src/lib/viewer/utils';
 const mediaPromiseMap = new Map<string, Promise<void>>();
 const dataPromiseMap = new Map<Media['sources'][number], Promise<void>>();
 
-let cleanupPromise: Promise<void> | null;
+let cleanupPromise: Promise<void> | null = null;
 
 const show = (origins: string[], targetTab?: Tabs.Tab['id'] | null) => {
 	const parsedOrigins = UrlSchema.array().parse(origins);
