@@ -11,6 +11,7 @@ import type { DownloadHandler } from '/src/lib/viewer';
 const handlerMap = new Map<string, DownloadHandler>();
 handlerMap.set('asurascans.com', asurascans);
 handlerMap.set('asuracomics.com', asurascans);
+handlerMap.set('asuratoon.com', asurascans);
 handlerMap.set('asura.gg', asurascans);
 handlerMap.set('flamescans.org', flamescans);
 handlerMap.set('generic', genericDataHandler);
@@ -18,6 +19,7 @@ handlerMap.set('generic', genericDataHandler);
 // TODO: Add handler for hiperdex
 handlerMap.set('kemono.party', kemono);
 handlerMap.set('luminousscans.com', luminousscans);
+handlerMap.set('luminousscans.gg', luminousscans);
 handlerMap.set('mangahub.io', mangahub);
 handlerMap.set('mghubcdn.com', mangahub);
 handlerMap.set('nacm.xyz', asurascans);
