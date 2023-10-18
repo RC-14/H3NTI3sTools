@@ -25,13 +25,13 @@ body {
 	flex-direction: row;
 	justify-content: space-around;
 	overflow-y: hidden;
-	height: var(--navbar-height);
+	max-height: var(--navbar-height);
 	width: 100%;
 	background-color: rgb(17, 21, 28);
 }
 
 #navbar:hover {
-	overflow-y: overlay;
+	max-height: calc(var(--navbar-height) * 2.3);
 }
 
 .navbar-item {
