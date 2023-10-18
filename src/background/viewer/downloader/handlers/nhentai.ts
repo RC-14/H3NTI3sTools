@@ -61,7 +61,7 @@ const handler: DownloadHandler = {
 		}
 
 		return {
-			origin: urlString,
+			origin: `https://nhentai.net/g/${galleryID}/`,
 			name: parsedApiResponse.title.pretty,
 			description: `${galleryID}`,
 			type: 'manga',
