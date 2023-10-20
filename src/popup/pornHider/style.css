@@ -1,0 +1,79 @@
+#filter {
+	width: calc(100% - 8px);
+}
+
+#button-wrapper {
+	display: flex;
+	width: calc(100% - 8px);
+	justify-content: space-evenly;
+	margin: 5px 0px;
+}
+
+#tab-list {
+	padding: 0px 2rem;
+	list-style-type: decimal;
+	color: whitesmoke;
+}
+
+#tab-list>li:not(:last-of-type):not(.filtered)::after {
+	content: "";
+	width: calc(100% - 8px);
+	display: block;
+	height: 1.5px;
+	background-color: rgb(64, 64, 64);
+	margin: 3px;
+}
+
+#tab-list>li.hidden {
+	display: list-item !important;
+}
+
+#tab-list>li.filtered {
+	height: 0px;
+	overflow: hidden;
+}
+
+#tab-list>li>div {
+	display: flex;
+	align-items: center;
+}
+
+#tab-list>li p {
+	display: inline-block;
+	width: 100%;
+	height: 1rem;
+	margin: 0px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+	mask-image: linear-gradient(90deg, black 85%, transparent);
+}
+
+#tab-list>li.hidden p {
+	text-decoration: line-through;
+}
+
+#tab-list>li:hover p[name="title"] {
+	display: none;
+}
+
+#tab-list>li:not(:hover) p[name="url"] {
+	display: none;
+}
+
+#tab-list>li.ignore button[name="visibility-toggle-button"] {
+	width: 0px;
+	overflow: hidden;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+#tab-list>li button[name="visibility-toggle-button"]::after {
+	content: "Hide";
+}
+
+#tab-list>li.hidden button[name="visibility-toggle-button"]::after {
+	content: "Show";
+}

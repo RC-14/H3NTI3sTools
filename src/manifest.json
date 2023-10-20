@@ -149,6 +149,7 @@
 		"history",
 		"scripting",
 		"storage",
+		"tabHide",
 		"unlimitedStorage",
 		"webNavigation",
 		"webRequest",
