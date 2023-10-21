@@ -31,7 +31,7 @@ export const removeDuplicateImages = async () => {
 
 	// Use the api to get information about this post
 	const apiUrl = new URL(location.href);
-	apiUrl.pathname = '/api' + apiUrl.pathname;
+	apiUrl.pathname = '/api/v1' + apiUrl.pathname;
 	const apiResponse = await fetch(apiUrl).then((response) => response.json());
 	const parsedApiResponse = apiResponseSchema.parse(apiResponse)[0];
 

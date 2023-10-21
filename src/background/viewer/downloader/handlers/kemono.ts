@@ -19,7 +19,7 @@ const apiResponseSchema = z.array(z.object({
 const handler: DownloadHandler = {
 	media: async (url) => {
 		const apiUrl = new URL(url);
-		apiUrl.pathname = '/api' + apiUrl.pathname;
+		apiUrl.pathname = '/api/v1' + apiUrl.pathname;
 
 		const apiResponse = await fetch(apiUrl).then((response) => response.json());
 		const parsedApiResponse = apiResponseSchema.parse(apiResponse).at(0);
