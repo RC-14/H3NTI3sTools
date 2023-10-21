@@ -5,7 +5,7 @@ import type { DownloadHandler } from '/src/lib/viewer';
 
 const creatorChache = new Map<string, string>();
 
-const apiResponseSchema = z.array(z.object({
+const apiResponseSchema = z.object({
 	title: z.string(),
 	content: z.string(),
 	attachments: z.array(z.object({
@@ -14,7 +14,7 @@ const apiResponseSchema = z.array(z.object({
 	file: z.object({
 		path: z.string().optional()
 	})
-}));
+});
 
 const handler: DownloadHandler = {
 	media: async (url) => {
@@ -22,9 +22,7 @@ const handler: DownloadHandler = {
 		apiUrl.pathname = '/api/v1' + apiUrl.pathname;
 
 		const apiResponse = await fetch(apiUrl).then((response) => response.json());
-		const parsedApiResponse = apiResponseSchema.parse(apiResponse).at(0);
-
-		if (parsedApiResponse === undefined) throw new Error(`Empty api response for: ${apiUrl.href}`);
+		const parsedApiResponse = apiResponseSchema.parse(apiResponse);
 
 		const attachments = parsedApiResponse.attachments.filter((item) => ['png', 'jpg', 'gif', 'webp'].includes(item.path.split('.').at(-1)!));
 

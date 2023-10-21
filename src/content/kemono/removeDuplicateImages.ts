@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import { qs, qsa } from '/src/lib/utils';
 
-const apiResponseSchema = z.array(z.object({
+const apiResponseSchema = z.object({
 	attachments: z.array(z.object({
 		path: z.string()
 	})),
 	file: z.object({
 		path: z.string().optional()
 	})
-})).nonempty();
+});
 
 // For some reason the first image is shown twice (sometimes the first image is a cropped version of the second image)
 // but it won't hurt to remove other duplicates as well.
@@ -33,7 +33,7 @@ export const removeDuplicateImages = async () => {
 	const apiUrl = new URL(location.href);
 	apiUrl.pathname = '/api/v1' + apiUrl.pathname;
 	const apiResponse = await fetch(apiUrl).then((response) => response.json());
-	const parsedApiResponse = apiResponseSchema.parse(apiResponse)[0];
+	const parsedApiResponse = apiResponseSchema.parse(apiResponse);
 
 	// If the api tells us there aren't as many images as we have we remove the first one
 	if (parsedApiResponse.attachments.length > 0 && typeof parsedApiResponse.file.path === 'string') {
