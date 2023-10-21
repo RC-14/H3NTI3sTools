@@ -2,6 +2,8 @@ import { z } from 'zod';
 import handlerMap from './handlers';
 import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
 
+// TODO: Rewrite the whole thing with pointers to "media" and "data" be URIs that use "h3nti3+type+handler" protocols where type specifies the type (media or data) and handler specifies the handler to use.
+
 type DownloadQueue = { url: string, resolve: () => void, reject: (reason: Error) => void; }[];
 type QueueMap = Map<string, DownloadQueue>;
 type ActiveDownloadersMap = Map<string, boolean>;
