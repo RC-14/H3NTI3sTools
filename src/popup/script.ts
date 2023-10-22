@@ -1,5 +1,6 @@
 import { runtime } from 'webextension-polyfill';
 import { qs, useTemplate } from '../lib/utils';
+import '/src/lib/devToolHelpers';
 
 const tabList: { name: string, fragmentId: string; }[] = [
 	{ fragmentId: 'pornHider', name: 'Porn Hider' },

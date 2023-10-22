@@ -1,4 +1,5 @@
 import { tabs, windows, type Tabs } from 'webextension-polyfill';
+import '/src/lib/devToolHelpers';
 import { qs, qsa, useTemplate } from '/src/lib/utils';
 
 const filterInput = qs<HTMLInputElement>('input[type="text"]#filter');

@@ -1,3 +1,4 @@
+import '/src/lib/devToolHelpers';
 import { qs, sendRuntimeMessage } from '/src/lib/utils';
 
 const privateHistoryPermissionWarningElement = qs<HTMLHeadingElement>('h4#privateHistoryPermissionWarning');

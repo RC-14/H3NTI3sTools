@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { getMediaInfo, getUsableSrcForSource } from './cachedIDBUtils';
+import '/src/lib/devToolHelpers';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
