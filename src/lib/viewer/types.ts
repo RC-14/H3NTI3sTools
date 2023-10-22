@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const SingleLineStringRefine: [(str: string) => boolean, string] = [(str) => !str.includes('\n'), "String can't have multiple lines."];
 
-const NonEmptyStringSchema = z.string().nonempty();
+const NonEmptyStringSchema = z.string().min(1);
 
 export const NameSchema = NonEmptyStringSchema.trim().refine(...SingleLineStringRefine);
 export type Name = z.infer<typeof NameSchema>;
