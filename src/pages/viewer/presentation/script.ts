@@ -223,6 +223,10 @@ const updateUrl = () => {
 	history.pushState(undefined, '', url);
 };
 
+const updateTitle = () => {
+	document.title = `${document.title.split(' | ')[0]!} | ${mediaList[mediaCounter]!.origin}`
+}
+
 const setProgress = (newProgress?: number) => {
 	// Prevent calling history.pushtate() to often
 	if (lastProgressSet + 3_000 > Date.now()) return;
@@ -320,6 +324,7 @@ const showMedia = (index: number, direction: PresentationNavigationDirection = '
 	mediaCounter = index;
 	updateCounterElement();
 	updateUrl();
+	updateTitle();
 
 	const media = mediaList[mediaCounter]!;
 	showMediaContainer(media, direction, progress);
