@@ -209,16 +209,15 @@ const defaultExport: MediaTypeHandler = {
 			return;
 		}
 
-		show(media.sources, contentContainer, 0);
-		// switch (direction) {
-		// 	case 'backward':
-		// 		show(media.sources, contentContainer, media.sources.length - 1);
-		// 		break;
+		switch (direction) {
+			case 'backward':
+				show(media.sources, contentContainer, media.sources.length - 1);
+				break;
 
-		// 	case 'forward':
-		// 		show(media.sources, contentContainer, 0);
-		// 		break;
-		// }
+			case 'forward':
+				show(media.sources, contentContainer, 0);
+				break;
+		}
 	},
 	hideMedia: (media, contentContainer, direction, removeKeybind) => {
 		hideElement(qs<HTMLImageElement>(`img:not(.${HIDDEN_CLASS})`, contentContainer)!);
