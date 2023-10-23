@@ -4,6 +4,7 @@ import { qs, qsa, useTemplate } from '/src/lib/utils';
 
 const filterInput = qs<HTMLInputElement>('input[type="text"]#filter');
 const hideAllButton = qs<HTMLButtonElement>('button#hide-all-button');
+const toggleAllButton = qs<HTMLButtonElement>('button#toggle-all-button');
 const showAllButton = qs<HTMLButtonElement>('button#show-all-button');
 const tabListElement = qs<HTMLOListElement>('ol#tab-list');
 const tabListEntryElementTemplate = qs<HTMLTemplateElement>('template#tab-list-entry-template');
@@ -11,6 +12,7 @@ const tabListEntryElementTemplate = qs<HTMLTemplateElement>('template#tab-list-e
 if (!(
 	filterInput &&
 	hideAllButton &&
+	toggleAllButton &&
 	showAllButton &&
 	tabListElement &&
 	tabListEntryElementTemplate
@@ -139,6 +141,35 @@ const hideAllButtonClickListener = () => {
 	});
 };
 
+const toggleAllButtonClickListener = () => {
+	const hiddenTabElements = qsa<HTMLLIElement>('& > li.hidden:not(.filtered):not(.ignore)', tabListElement);
+	const visibleTabElements = qsa<HTMLLIElement>('& > li:not(.hidden):not(.filtered):not(.ignore)', tabListElement);
+	const hiddenTabIDs: number[] = [];
+	const visibleTabIDs: number[] = [];
+
+	for (const tabElement of hiddenTabElements) {
+		const tabId = parseInt(tabElement.getAttribute('name') ?? '');
+		if (isNaN(tabId)) throw new Error(`Tab List Entry element doesn't have a tabId set as the name.`);
+
+		hiddenTabIDs.push(tabId);
+	}
+
+	for (const tabElement of visibleTabElements) {
+		const tabId = parseInt(tabElement.getAttribute('name') ?? '');
+		if (isNaN(tabId)) throw new Error(`Tab List Entry element doesn't have a tabId set as the name.`);
+
+		visibleTabIDs.push(tabId);
+	}
+
+	tabs.show(hiddenTabIDs).catch((error) => {
+		throw new Error(`Toggling hidden tabs failed with an error: ${error}`);
+	});
+
+	tabs.hide(hiddenTabIDs).catch((error) => {
+		throw new Error(`Toggling visible tabs failed with an error: ${error}`);
+	});
+};
+
 const showAllButtonClickListener = () => {
 	const tabElements = qsa<HTMLLIElement>('& > li.hidden:not(.filtered):not(.ignore)', tabListElement);
 	const tabIDs: number[] = [];
@@ -197,6 +228,7 @@ const init = async () => {
 	tabListElement.addEventListener('click', toggleVisibilityButtonsClickListener, { passive: true });
 
 	hideAllButton.addEventListener('click', hideAllButtonClickListener, { passive: true });
+	toggleAllButton.addEventListener('click', toggleAllButtonClickListener, { passive: true });
 	showAllButton.addEventListener('click', showAllButtonClickListener, { passive: true });
 
 	filterInput.addEventListener('input', filterInputInputListener, { passive: true });
