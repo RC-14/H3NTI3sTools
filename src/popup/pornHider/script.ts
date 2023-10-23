@@ -165,7 +165,7 @@ const toggleAllButtonClickListener = () => {
 		throw new Error(`Toggling hidden tabs failed with an error: ${error}`);
 	});
 
-	tabs.hide(hiddenTabIDs).catch((error) => {
+	tabs.hide(visibleTabIDs).catch((error) => {
 		throw new Error(`Toggling visible tabs failed with an error: ${error}`);
 	});
 };
