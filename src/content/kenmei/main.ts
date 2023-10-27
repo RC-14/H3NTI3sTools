@@ -1,6 +1,6 @@
 import { qs } from '/src/lib/utils';
 
-const DARK_MODE_CLASS = 'dark'
+const DARK_MODE_CLASS = 'dark';
 
 const enableDarkMode = () => {
 	if (!document.documentElement.classList.contains(DARK_MODE_CLASS)) document.documentElement.classList.add(DARK_MODE_CLASS);
@@ -14,5 +14,5 @@ observer.observe(document.documentElement, {
 });
 
 // Automatically check the remember me checkbox in case I need to log in again.
-const rememberMeCheckbox = qs<HTMLInputElement>('input#checkbox-b9LmWY[type="checkbox"]');
+const rememberMeCheckbox = qs<HTMLInputElement>('input[type="checkbox"][data-v-55ca7f47]');
 if (rememberMeCheckbox?.checked === false) rememberMeCheckbox.click(); // The proper styling for the checkbox only gets applied on click
