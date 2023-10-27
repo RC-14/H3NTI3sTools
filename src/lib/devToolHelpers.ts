@@ -16,7 +16,7 @@ const writeToPageContext = (key: string, value: unknown) => {
 
 let addedHelperFunctions = false;
 
-writeToPageContext('h3nti3Utils', {
+const h3nti3Utils = {
 	addHelperFunctionsToWindow: () => {
 		if (addedHelperFunctions) return;
 		addedHelperFunctions = true;
@@ -24,6 +24,10 @@ writeToPageContext('h3nti3Utils', {
 		writeToPageContext('qs', qs);
 		writeToPageContext('qsa', qsa);
 		writeToPageContext('debugH3NTI3sTools', () => { debugger; });
+	},
+	get _getHelperFunctionsInWindow() {
+		this.addHelperFunctionsToWindow();
+		return;
 	},
 	nhentaiMediaSortCompareFunction: (a: GalleryMedia, b: GalleryMedia) => {
 		const aCreatorString = a.creatorNames.map(e => e.toLowerCase()).sort().join('\n');
@@ -67,4 +71,6 @@ writeToPageContext('h3nti3Utils', {
 		}
 		return aNames[diff.lastIndexOf(Math.min(...diff))]! > bNames[diff.lastIndexOf(Math.min(...diff))]!;
 	}
-});
+};
+
+writeToPageContext('h3nti3Utils', h3nti3Utils);
