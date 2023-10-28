@@ -432,7 +432,7 @@ const addAutoProgressFunctionality = () => {
 	applyAutoProgressSettings();
 };
 
-// TODO: Toolbox menu for reordering media
+// TODO: Toolbox menu for reordering media (https://www.youtube.com/watch?v=jfYWwQrtzzY)
 
 const getToolboxMenu = (id: string) => {
 	const parsedId = ToolboxMenuIdSchema.parse(id);
