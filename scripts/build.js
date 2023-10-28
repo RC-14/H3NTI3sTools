@@ -8,7 +8,7 @@ const BUILD_CONFIG = {
 	minify: true,
 	sourcemap: 'inline',
 	sourcesContent: true,
-	target: 'firefox118'
+	target: 'firefox119'
 };
 
 const MANIFEST_PATH = 'src/manifest.json';
