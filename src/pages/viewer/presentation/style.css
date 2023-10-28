@@ -1,60 +1,5 @@
 @import '../../base.css';
 
-main {
-	height: 100vh;
-	width: 100vw;
-	overflow: scroll;
-}
-
-#error-container {
-	width: 100vw;
-	height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-}
-
-#error-title {
-	color: red;
-	font-size: 2rem;
-}
-
-#error-description {
-	font-size: 1.3rem;
-}
-
-#media-counter {
-	position: absolute;
-	right: 3px;
-	top: 3px;
-	text-shadow: black 0 0 5px;
-}
-
-/* Offset for the container for the messages by showMessage() to prevent them from getting hidden behind #media-counter */
-#h3nti3-messages {
-	top: calc(1rem + 3px) !important;
-}
-
-#presentation-container {
-	overflow: hidden;
-}
-
-.content-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 100vw;
-	min-height: 100vh;
-}
-
-.content-container>* {
-	width: auto;
-	height: auto;
-	max-width: 100vw;
-	max-height: 100vh;
-}
-
 .loading {
 	min-width: 5vw;
 	min-height: 5vh;
@@ -64,70 +9,123 @@ main {
 	background-position: center;
 }
 
-.content-container>.content-counter {
-	width: fit-content;
-	height: fit-content;
+main {
+	height: 100vh;
+	width: 100vw;
+	overflow: scroll;
+
+	>#error-container {
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+
+		>#error-title {
+			color: red;
+			font-size: 2rem;
+		}
+
+		>#error-description {
+			font-size: 1.3rem;
+		}
+	}
+
+	>#presentation-container {
+		overflow: hidden;
+
+		>.media-container {
+			.content-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				width: 100vw;
+				min-height: 100vh;
+
+				>* {
+					width: auto;
+					height: auto;
+					max-width: 100vw;
+					max-height: 100vh;
+				}
+
+				>.content-counter {
+					width: fit-content;
+					height: fit-content;
+					position: absolute;
+					right: 3px;
+					bottom: 3px;
+					text-shadow: black 0 0 5px;
+				}
+			}
+
+			.info-container {
+				position: absolute;
+				left: 3px;
+				top: 3px;
+				text-shadow: black 0 0 5px;
+
+				>.creator-list {
+					margin-top: 5px;
+					font-size: .9rem;
+				}
+
+				>div {
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-start;
+					align-items: center;
+
+					>* {
+						display: inline-block;
+					}
+
+					>.origin-link {
+						margin: 0px 5px;
+						text-shadow: grey 0 0 1px;
+					}
+
+					>.favorite-button {
+						width: 1.1rem;
+						height: 1.1rem;
+						margin: 0 3px;
+						border-radius: .45rem;
+						background-color: rgba(0, 0, 0, 0.1);
+						background-size: contain;
+						background-image: url(../../../images/star/yellow-outline.svg);
+					}
+				}
+			}
+
+			&[data-favorite="true"] .favorite-button {
+				background-image: url(../../../images/star/yellow.svg);
+			}
+
+			/* Allow scrolling even when the cursor is hidden with hideCursor */
+			&[data-type="webtoon"] {
+				pointer-events: auto !important;
+
+				>.content-container {
+					flex-direction: column;
+					justify-content: flex-start;
+
+					>img {
+						width: 25vw;
+						max-height: none;
+					}
+				}
+			}
+
+		}
+	}
+}
+
+#media-counter {
 	position: absolute;
 	right: 3px;
-	bottom: 3px;
-	text-shadow: black 0 0 5px;
-}
-
-.info-container {
-	position: absolute;
-	left: 3px;
 	top: 3px;
 	text-shadow: black 0 0 5px;
-}
-
-.info-container>div {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-	align-items: center;
-}
-
-.info-container>div>* {
-	display: inline-block;
-}
-
-.origin-link {
-	margin: 0px 5px;
-	text-shadow: grey 0 0 1px;
-}
-
-.favorite-button {
-	width: 1.1rem;
-	height: 1.1rem;
-	margin: 0 3px;
-	border-radius: .45rem;
-	background-color: rgba(0, 0, 0, 0.1);
-	background-size: contain;
-	background-image: url(../../../images/star/yellow-outline.svg);
-}
-
-.media-container[data-favorite="true"] .favorite-button {
-	background-image: url(../../../images/star/yellow.svg);
-}
-
-.creator-list {
-	margin-top: 5px;
-	font-size: .9rem;
-}
-
-/* Allow scrolling even when the cursor is hidden with hideCursor */
-.media-container[data-type="webtoon"] {
-	pointer-events: auto !important;
-}
-
-.media-container[data-type="webtoon"]>.content-container {
-	flex-direction: column;
-	justify-content: flex-start;
-}
-
-.media-container[data-type="webtoon"]>.content-container>img {
-	width: 25vw;
-	max-height: none;
 }
 
 #toolbox-wrapper {
@@ -144,75 +142,83 @@ main {
 	flex-wrap: wrap-reverse;
 	max-width: 30vw;
 	max-height: 50vh;
+
+	>#toolbox-icon {
+		--bar-width: 1.5rem;
+		--bar-height: .25rem;
+		--gap: .2rem;
+
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap);
+
+		&::before,
+		>p,
+		&::after {
+			content: "";
+			width: var(--bar-width);
+			height: var(--bar-height);
+			background-color: white;
+			appearance: none;
+			pointer-events: none;
+			cursor: pointer;
+		}
+	}
+
+	#toolbox-menu-selector {
+		margin: 0px auto;
+		padding: .1rem;
+		background-color: rgb(40, 40, 40);
+		color: inherit;
+		border-radius: .2rem;
+
+		&:active {
+			background-color: rgb(50, 50, 50);
+		}
+	}
+
+	#toolbox-menu-list {
+		width: 100%;
+		margin-bottom: 10px;
+		list-style: none;
+
+		>.toolbox-menu {
+			width: 100%;
+
+			button {
+				margin: 2.5px;
+				padding: .15rem;
+				border-radius: .3rem;
+				color: inherit;
+				background-color: rgb(40, 40, 40);
+				cursor: pointer;
+
+				&:active {
+					background-color: rgb(50, 50, 50);
+				}
+			}
+
+			input[type="number"] {
+				width: 4rem;
+				margin: 0px 2.5px;
+			}
+
+			&:not(.selected) {
+				display: none;
+			}
+		}
+	}
+
+	&:not(.open) {
+
+		>#toolbox-menu-selector,
+		>#toolbox-menu-list {
+			display: none;
+		}
+	}
 }
 
-#toolbox-wrapper:not(.open)>#toolbox-menu-selector,
-#toolbox-wrapper:not(.open)>#toolbox-menu-list {
-	display: none;
-}
-
-#toolbox-icon {
-	--bar-width: 1.5rem;
-	--bar-height: .25rem;
-	--gap: .2rem;
-
-	display: flex;
-	flex-direction: column;
-	gap: var(--gap);
-}
-
-#toolbox-icon::before,
-#toolbox-icon>p,
-#toolbox-icon::after {
-	content: "";
-	width: var(--bar-width);
-	height: var(--bar-height);
-	background-color: white;
-	appearance: none;
-	pointer-events: none;
-	cursor: pointer;
-}
-
-#toolbox-menu-selector {
-	margin: 0px auto;
-	padding: .1rem;
-	background-color: rgb(40, 40, 40);
-	color: inherit;
-	border-radius: .2rem;
-}
-
-#toolbox-menu-selector:active {
-	background-color: rgb(50, 50, 50);
-}
-
-#toolbox-menu-list {
-	width: 100%;
-	margin-bottom: 10px;
-	list-style: none;
-}
-
-#toolbox-menu-list>.toolbox-menu:not(.selected) {
-	display: none;
-}
-
-.toolbox-menu {
-	width: 100%;
-}
-
-.toolbox-menu button {
-	margin: 2.5px;
-	padding: .15rem;
-	border-radius: .3rem;
-	color: inherit;
-	background-color: rgb(40, 40, 40);
-	cursor: pointer;
-}
-
-.toolbox-menu button:active {
-	background-color: rgb(50, 50, 50);
-}
-
-.toolbox-menu input[type="number"] {
-	width: 4rem;
-	margin: 0px 2.5px;
+/* Offset for the container for the messages by showMessage() to prevent them from getting hidden behind #media-counter */
+#h3nti3-messages {
+	top: calc(1rem + 3px) !important;
 }

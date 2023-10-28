@@ -24,67 +24,69 @@ button:hover {
 	margin-bottom: 0px;
 	height: calc(100vh - 80px);
 	overflow: scroll;
-}
 
-#tab-list>li:not(:last-of-type):not(.filtered)::after {
-	content: "";
-	width: calc(100% - 8px);
-	display: block;
-	height: 1.5px;
-	background-color: rgb(64, 64, 64);
-	margin: 3px;
-}
+	>li {
+		>div {
+			display: flex;
+			align-items: center;
+		}
 
-#tab-list>li.hidden {
-	display: list-item !important;
-}
+		p {
+			display: inline-block;
+			width: 100%;
+			height: fit-content;
+			margin: 0px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: clip;
+			mask-image: linear-gradient(90deg, black 85%, transparent);
+		}
 
-#tab-list>li.filtered {
-	height: 0px;
-	overflow: hidden;
-}
+		button[name="visibility-toggle-button"]::after {
+			content: "Hide";
+		}
 
-#tab-list>li>div {
-	display: flex;
-	align-items: center;
-}
+		&.hidden {
+			display: list-item !important;
 
-#tab-list>li p {
-	display: inline-block;
-	width: 100%;
-	height: fit-content;
-	margin: 0px;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: clip;
-	mask-image: linear-gradient(90deg, black 85%, transparent);
-}
+			p {
+				text-decoration: line-through;
+			}
 
-#tab-list>li.hidden p {
-	text-decoration: line-through;
-}
+			button[name="visibility-toggle-button"]::after {
+				content: "Show";
+			}
+		}
 
-#tab-list>li:hover p[name="title"] {
-	display: none;
-}
+		&.filtered {
+			height: 0px;
+			overflow: hidden;
+		}
 
-#tab-list>li:not(:hover) p[name="url"] {
-	display: none;
-}
+		&.ignore button[name="visibility-toggle-button"] {
+			width: 0px;
+			overflow: hidden;
+			border-left-width: 0px;
+			border-right-width: 0px;
+			padding-left: 0px;
+			padding-right: 0px;
+		}
 
-#tab-list>li.ignore button[name="visibility-toggle-button"] {
-	width: 0px;
-	overflow: hidden;
-	border-left-width: 0px;
-	border-right-width: 0px;
-	padding-left: 0px;
-	padding-right: 0px;
-}
+		&:hover p[name="title"] {
+			display: none;
+		}
 
-#tab-list>li button[name="visibility-toggle-button"]::after {
-	content: "Hide";
-}
+		&:not(:hover) p[name="url"] {
+			display: none;
+		}
 
-#tab-list>li.hidden button[name="visibility-toggle-button"]::after {
-	content: "Show";
+		&:not(:last-of-type):not(.filtered)::after {
+			content: "";
+			width: calc(100% - 8px);
+			display: block;
+			height: 1.5px;
+			background-color: rgb(64, 64, 64);
+			margin: 3px;
+		}
+	}
 }
