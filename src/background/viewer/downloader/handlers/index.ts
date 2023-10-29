@@ -14,6 +14,7 @@ handlerMap.set('asuracomics.com', asurascans);
 handlerMap.set('asuratoon.com', asurascans);
 handlerMap.set('asura.gg', asurascans);
 handlerMap.set('flamescans.org', flamescans);
+handlerMap.set('flamecomics.com', flamescans);
 handlerMap.set('generic', genericDataHandler);
 // TODO: Add handler for hentai2read
 // TODO: Add handler for hiperdex
