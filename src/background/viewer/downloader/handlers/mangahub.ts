@@ -1,7 +1,7 @@
 import { cookies, tabs, webRequest, type WebRequest } from 'webextension-polyfill';
 import { z } from 'zod';
-import genericDataHandler from './genericDataHandler';
-import { COLLECTION_OS_NAME, CollectionSchema, createCollection, type DownloadHandler, getFromObjectStore, getViewerIDB } from '/src/lib/viewer';
+import { dataHandler } from './genericDataHandler';
+import { COLLECTION_OS_NAME, CollectionSchema, createCollection, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
 
 const API_URL = 'https://api.mghubcdn.com/graphql';
 const IMG_URL_BASE = 'https://imgx.mghubcdn.com/';
@@ -192,7 +192,7 @@ const handler: DownloadHandler = {
 				await clearAccessToken();
 				setRecentlyCookie(chapterNumber);
 				mediaRetry = true;
-				return await genericDataHandler.media(urlString);
+				return await handler.media(urlString);
 			}
 
 			lastError = Date.now();
@@ -213,7 +213,7 @@ const handler: DownloadHandler = {
 			creatorNames: []
 		};
 	},
-	data: genericDataHandler.data
+	data: dataHandler
 };
 
 export default handler;

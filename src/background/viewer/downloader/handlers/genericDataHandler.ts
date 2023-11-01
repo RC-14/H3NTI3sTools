@@ -13,3 +13,5 @@ const handler: DownloadHandler = {
 };
 
 export default handler;
+// For convenient importing into other handlers
+export const dataHandler = handler.data;

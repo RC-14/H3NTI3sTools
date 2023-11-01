@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import genericDataHandler from './genericDataHandler';
+import { dataHandler } from './genericDataHandler';
 import type { DownloadHandler } from '/src/lib/viewer';
 
 const fileTypes = {
@@ -71,7 +71,7 @@ const handler: DownloadHandler = {
 			creatorNames: creators
 		};
 	},
-	data: genericDataHandler.data
+	data: dataHandler
 };
 
 export default handler;

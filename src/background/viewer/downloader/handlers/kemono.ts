@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import genericDataHandler from './genericDataHandler';
+import { dataHandler } from './genericDataHandler';
 import { decode } from '/src/lib/htmlCharReferences';
 import type { DownloadHandler } from '/src/lib/viewer';
 
@@ -42,7 +42,7 @@ const handler: DownloadHandler = {
 
 			const creator = html.split('<span itemprop="name">')[1]?.split('</span>')[0];
 			if (creator === undefined) throw new Error(`Couldn't parse creator from kemono html.`);
-			
+
 			creatorChache.set(creatorUrl.pathname, creator);
 		}
 
@@ -57,7 +57,7 @@ const handler: DownloadHandler = {
 			creatorNames: [creatorChache.get(creatorUrl.pathname)!]
 		};
 	},
-	data: (url) => new Promise((resolve, reject) => setTimeout(async () => resolve(await genericDataHandler.data(url)), 1_000))
+	data: (url) => new Promise((resolve, reject) => setTimeout(async () => resolve(await dataHandler(url)), 1_000))
 };
 
 export default handler;

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import genericDataHandler from './genericDataHandler';
+import { dataHandler } from './genericDataHandler';
 import { decode } from '/src/lib/htmlCharReferences';
 import { COLLECTION_OS_NAME, CollectionSchema, MEDIA_OS_NAME, MediaSchema, createCollection, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
 
@@ -190,7 +190,7 @@ const handler: DownloadHandler = {
 			creatorNames: []
 		};
 	},
-	data: genericDataHandler.data
+	data: dataHandler
 };
 
 export default handler;
