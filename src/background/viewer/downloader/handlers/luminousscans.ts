@@ -46,17 +46,6 @@ const getSeriesUrlFromChapterHtml = (html: string) => {
 	return parsedUrl;
 };
 
-const chapterNumberFromUrl = (url: string) => {
-	const { pathname } = new URL(url);
-	const path = pathname.split('/').filter(Boolean).at(-1)!;
-
-	const parts = path.split('-');
-	parts.splice(0, parts.indexOf('chapter') + 1);
-	parts.splice(2);
-
-	return parseFloat(parts.join('.'));
-};
-
 const chapterNumberFromTitle = (title: string) => {
 	const lowerCaseTitle = title.toLowerCase();
 	const afterChapter = lowerCaseTitle.split('chapter')[1];
@@ -108,7 +97,7 @@ const addToCollection = (chapterUrl: string, chapterTitle: string, seriesName: s
 	for (const origin of parsedCollection.data.mediaOrigins) {
 		sortArray.push({
 			origin,
-			chapterNumber: chapterNumberFromUrl(origin)
+			chapterNumber: chapterNumberFromTitle(chapterTitle)
 		});
 
 		const entry = sortArray.at(-1)!;
@@ -134,12 +123,8 @@ const addToCollection = (chapterUrl: string, chapterTitle: string, seriesName: s
 
 	await Promise.all(promises);
 
-	let chapterNumber = chapterNumberFromUrl(chapterUrl);
-	if (isNaN(chapterNumber)) {
-		chapterNumber = chapterNumberFromTitle(chapterTitle);
-
-		if (isNaN(chapterNumber)) chapterNumber = -1;
-	}
+	let chapterNumber = chapterNumberFromTitle(chapterTitle);
+	if (isNaN(chapterNumber)) chapterNumber = -1;
 
 	sortArray.push({ origin: chapterUrl, chapterNumber });
 
