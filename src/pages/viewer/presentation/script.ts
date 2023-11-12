@@ -27,10 +27,10 @@ const toolboxIcon = qs<HTMLLabelElement>('#toolbox-icon');
 const toolboxMenuSelector = qs<HTMLSelectElement>('select#toolbox-menu-selector');
 const toolboxMenuList = qs<HTMLUListElement>(`ul#${TOOLBOX_MENU_LIST_ID}`);
 
-const autoProgressMenu = qs<HTMLLIElement>(`#autoProgress-menu`);
-const autoProgressToggleButton = qs<HTMLButtonElement>('#autoProgress-toggle-button');
-const autoProgressDelayInput = qs<HTMLInputElement>('#autoProgress-delay-input');
-const autoProgressApplyDelayButton = qs<HTMLButtonElement>('#autoProgress-delay-apply-button');
+const autoProgressMenu = qs<HTMLLIElement>('li#autoProgress-menu');
+const autoProgressToggleButton = qs<HTMLButtonElement>('button#autoProgress-toggle-button');
+const autoProgressDelayInput = qs<HTMLInputElement>('input#autoProgress-delay-input');
+const autoProgressApplyDelayButton = qs<HTMLButtonElement>('button#autoProgress-delay-apply-button');
 
 const errorContainer = qs<HTMLDivElement>('div#error-container');
 const errorTitle = qs<HTMLParagraphElement>('p#error-title');
