@@ -224,8 +224,8 @@ const updateUrl = () => {
 };
 
 const updateTitle = () => {
-	document.title = `${document.title.split(' | ')[0]!} | ${mediaList[mediaCounter]!.origin}`
-}
+	document.title = `${document.title.split(' | ')[0]!} | ${mediaList[mediaCounter]!.origin}`;
+};
 
 const setProgress = (newProgress?: number) => {
 	// Prevent calling history.pushtate() to often
