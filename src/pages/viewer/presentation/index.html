@@ -31,6 +31,7 @@
 		</label>
 		<select id="toolbox-menu-selector">
 			<option value="autoProgress">Auto Progress</option>
+			<option value="editPresentation">Edit Presentation</option>
 		</select>
 		<ul id="toolbox-menu-list">
 			<li id="autoProgress-menu" name="autoProgress" class="toolbox-menu">
@@ -40,6 +41,15 @@
 					<button id="autoProgress-delay-apply-button">Apply</button>
 				</p>
 				<button id="autoProgress-toggle-button">Start</button>
+			</li>
+			<li id="editPresentation-menu" name="editPresentation" class="toolbox-menu">
+				<div>
+					<input id="editPresentation-origin-input" type="url" placeholder="https://example.com/...">
+					<button id="editPresentation-add-button">Add</button>
+				</div>
+				<ol id="editPresentation-list"></ol>
+				<button id="editPresentation-reset-button">Reset</button>
+				<button id="editPresentation-apply-button">Apply</button>
 			</li>
 		</ul>
 	</div>
@@ -59,6 +69,17 @@
 			</div>
 
 		</div>
+	</template>
+
+	<template id="editPresentation-list-item-template">
+		<li draggable="true">
+			<div>
+				<div>
+					<p></p>
+					<button>X</button>
+				</div>
+			</div>
+		</li>
 	</template>
 
 </body>

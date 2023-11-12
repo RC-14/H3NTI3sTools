@@ -4,7 +4,7 @@ import '/src/lib/devToolHelpers';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
-import { qs, sendRuntimeMessage, showMessage, useTemplate } from '/src/lib/utils';
+import { qs, qsa, sendRuntimeMessage, showMessage, useTemplate } from '/src/lib/utils';
 import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, PROGRESS_SEARCH_PARAM, UrlSchema, getViewerIDB, mediaTypeHandlers, type AddKeybindFunction, type KeybindHandler, type Media, type PresentationNavigationDirection, type RemoveKeybindFunction } from '/src/lib/viewer';
 
 // TODO: Split up in multiple files
@@ -32,6 +32,14 @@ const autoProgressToggleButton = qs<HTMLButtonElement>('button#autoProgress-togg
 const autoProgressDelayInput = qs<HTMLInputElement>('input#autoProgress-delay-input');
 const autoProgressApplyDelayButton = qs<HTMLButtonElement>('button#autoProgress-delay-apply-button');
 
+const editPresentationMenu = qs<HTMLLIElement>('li#editPresentation-menu');
+const editPresentationOriginInput = qs<HTMLInputElement>('input#editPresentation-origin-input');
+const editPresentationAddButton = qs<HTMLButtonElement>('button#editPresentation-add-button');
+const editPresentationList = qs<HTMLOListElement>('ol#editPresentation-list');
+const editPresentationResetButton = qs<HTMLButtonElement>('button#editPresentation-reset-button');
+const editPresentationApplyButton = qs<HTMLButtonElement>('button#editPresentation-apply-button');
+const editPresentationListItemTemplate = qs<HTMLTemplateElement>('template#editPresentation-list-item-template');
+
 const errorContainer = qs<HTMLDivElement>('div#error-container');
 const errorTitle = qs<HTMLParagraphElement>('p#error-title');
 const errorDescription = qs<HTMLParagraphElement>('p#error-description');
@@ -48,6 +56,13 @@ if (!(
 	autoProgressToggleButton &&
 	autoProgressDelayInput &&
 	autoProgressApplyDelayButton &&
+	editPresentationMenu &&
+	editPresentationOriginInput &&
+	editPresentationAddButton &&
+	editPresentationList &&
+	editPresentationResetButton &&
+	editPresentationApplyButton &&
+	editPresentationListItemTemplate &&
 	errorContainer &&
 	errorTitle &&
 	errorDescription
@@ -432,7 +447,101 @@ const addAutoProgressFunctionality = () => {
 	applyAutoProgressSettings();
 };
 
-// TODO: Toolbox menu for reordering media (https://www.youtube.com/watch?v=jfYWwQrtzzY)
+const addEditPresentationListEntry = (url: string) => {
+	const listEntry = useTemplate(editPresentationListItemTemplate);
+	if (!(listEntry instanceof HTMLLIElement)) throw new Error(`The editPresentation list item template is corrupted.`);
+
+	const textElement = qs<HTMLParagraphElement>('p', listEntry);
+	if (!textElement) throw new Error("Couldn't find a p element inside the editPresentation list entry.");
+
+	textElement.innerText = url;
+	editPresentationList.append(listEntry);
+};
+
+const editPresentationResetList = () => {
+	for (let i = editPresentationList.childElementCount - 1; i >= 0; i--) {
+		editPresentationList.children[i]?.remove();
+	}
+
+	const { mediaOrigins } = parseSearch();
+
+	for (const origin of mediaOrigins) {
+		addEditPresentationListEntry(origin);
+	}
+
+	editPresentationList.firstElementChild?.scrollIntoView({ behavior: 'instant' });
+};
+
+const editPresentationAddButtonClickListener = () => {
+	if (!editPresentationOriginInput.validity.valid || editPresentationOriginInput.value.trim() === '') return;
+
+	addEditPresentationListEntry(editPresentationOriginInput.value.trim());
+	editPresentationOriginInput.value = '';
+
+	editPresentationList.lastElementChild?.scrollIntoView({ behavior: 'instant' });
+};
+
+const editPresentationOriginInputKeydownListener = (event: KeyboardEvent) => {
+	if (event.code === 'Enter') editPresentationAddButton.click();
+};
+
+const editPresentationListRemoveButtonClickListener = (event: MouseEvent) => {
+	if (event.target instanceof HTMLButtonElement) {
+		// '!' is my easy way of getting an error thrown in case something went wrong.
+		event.target.parentElement!.parentElement!.parentElement!.remove();
+	}
+};
+
+const editPresentationListItemDragStartEndListener = (event: DragEvent) => {
+	if (event.target instanceof HTMLLIElement) {
+		event.target.classList.toggle('dragging');
+	}
+};
+
+const editPresentationListDragoverListener = (event: DragEvent) => {
+	const dragging = qs<HTMLLIElement>('li.dragging', editPresentationList);
+	if (!dragging) throw new Error("Couldn't find an element being dragged.");
+
+	event.preventDefault();
+
+	const listItems = qsa<HTMLLIElement>('&>li', editPresentationList);
+	const afterElement: { offset: number, element?: (typeof listItems)[number]; } = { offset: Number.NEGATIVE_INFINITY };
+
+	for (const listItem of listItems) {
+		const box = listItem.getBoundingClientRect();
+		const offset = event.clientY - box.top - box.height / 2;
+
+		if (offset >= 0 || offset < afterElement.offset) continue;
+
+		afterElement.element = listItem;
+		afterElement.offset = offset;
+	}
+
+	if (afterElement.element) {
+		editPresentationList.insertBefore(dragging, afterElement.element);
+	} else {
+		editPresentationList.append(dragging);
+	}
+};
+
+const editPresentationApplyButtonClickListener = () => {
+	const textElements = qsa<HTMLParagraphElement>('p', editPresentationList);
+	const origins = [...textElements].map((element) => element.innerText);
+	location.search = `m=${btoa(JSON.stringify(origins))}`;
+};
+
+const addEditPresentationFunctionality = () => {
+	editPresentationResetList();
+
+	editPresentationAddButton.addEventListener('click', editPresentationAddButtonClickListener, { passive: true });
+	editPresentationOriginInput.addEventListener('keydown', editPresentationOriginInputKeydownListener, { passive: true });
+	editPresentationList.addEventListener('click', editPresentationListRemoveButtonClickListener, { passive: true });
+	editPresentationList.addEventListener('dragstart', editPresentationListItemDragStartEndListener, { passive: true });
+	editPresentationList.addEventListener('dragend', editPresentationListItemDragStartEndListener, { passive: true });
+	editPresentationList.addEventListener('dragover', editPresentationListDragoverListener);
+	editPresentationResetButton.addEventListener('click', editPresentationResetList, { passive: true });
+	editPresentationApplyButton.addEventListener('click', editPresentationApplyButtonClickListener, { passive: true });
+};
 
 const getToolboxMenu = (id: string) => {
 	const parsedId = ToolboxMenuIdSchema.parse(id);
@@ -446,6 +555,7 @@ const getToolboxMenu = (id: string) => {
 
 const addToolboxFunctionality = () => {
 	addAutoProgressFunctionality();
+	addEditPresentationFunctionality();
 
 	toolboxMenuSelector.addEventListener('change', (event) => {
 		const previousMenu = qs(`#${TOOLBOX_MENU_LIST_ID} > .selected`);
