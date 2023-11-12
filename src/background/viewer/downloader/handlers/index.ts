@@ -19,6 +19,7 @@ handlerMap.set('generic', genericDataHandler);
 // TODO: Add handler for hentai2read
 // TODO: Add handler for hiperdex
 handlerMap.set('kemono.party', kemono);
+handlerMap.set('kemono.su', kemono);
 handlerMap.set('luminousscans.com', luminousscans);
 handlerMap.set('luminousscans.gg', luminousscans);
 handlerMap.set('mangahub.io', mangahub);
