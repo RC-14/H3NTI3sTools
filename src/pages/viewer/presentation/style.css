@@ -151,6 +151,7 @@ main {
 		display: flex;
 		flex-direction: column;
 		gap: var(--gap);
+		cursor: pointer;
 
 		&::before,
 		>p,
@@ -161,7 +162,6 @@ main {
 			background-color: white;
 			appearance: none;
 			pointer-events: none;
-			cursor: pointer;
 		}
 	}
 
