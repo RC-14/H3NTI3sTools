@@ -1,7 +1,7 @@
 import '/src/lib/devToolHelpers';
 import { qs, sendRuntimeMessage } from '/src/lib/utils';
 
-const cleanupButton = qs<HTMLButtonElement>('button#cleanupButton');
+const cleanupButton = qs<HTMLButtonElement>('button#cleanup-button');
 if (!(cleanupButton instanceof HTMLButtonElement)) throw new Error(`Didn't find cleanup button.`);
 
 cleanupButton.addEventListener('click', async (event) => {

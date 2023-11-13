@@ -7,7 +7,7 @@ body {
 	align-items: center;
 }
 
-#cleanupButton {
+#cleanup-button {
 	background-color: rgb(50, 50, 50);
 	color: inherit;
 	border-style: solid;
