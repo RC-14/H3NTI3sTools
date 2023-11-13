@@ -16,6 +16,14 @@ body {
 	min-height: 100vh;
 }
 
+button {
+	cursor: pointer;
+
+	&:disabled {
+		cursor: unset;
+	}
+}
+
 .hidden {
 	display: none !important;
 }

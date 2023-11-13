@@ -16,6 +16,14 @@ html, body {
 	height: 100%;
 }
 
+button {
+	cursor: pointer;
+
+	&:disabled {
+		cursor: unset;
+	}
+}
+
 .hidden {
 	display: none !important;
 }
