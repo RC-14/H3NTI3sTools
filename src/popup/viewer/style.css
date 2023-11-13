@@ -7,7 +7,7 @@ body {
 	align-items: center;
 }
 
-#cleanup-button {
+button {
 	background-color: rgb(50, 50, 50);
 	color: inherit;
 	border-style: solid;
@@ -15,4 +15,10 @@ body {
 	border-radius: .5rem;
 	cursor: pointer;
 	padding: .1rem;
+	margin: 3px;
+
+	&:disabled {
+		cursor: unset;
+		opacity: .5;
+	}
 }
