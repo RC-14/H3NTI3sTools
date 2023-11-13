@@ -58,7 +58,7 @@ export type Collection = z.infer<typeof CollectionSchema>;
 
 export const ShowMediaMessageSchema = z.object({
 	origins: UrlSchema.array(),
-	targetTab: z.union([z.number().int(), z.null()]).optional() // If not set a new tab, if null the current tab and otherwise the tab with the respective ID.
+	targetTab: z.number().int() // A tab ID, -1 (no/new tab) or -2 (current tab)
 });
 export type ShowMediaMessage = z.infer<typeof ShowMediaMessageSchema>;
 

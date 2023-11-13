@@ -9,16 +9,17 @@ const dataPromiseMap = new Map<Media['sources'][number], Promise<void>>();
 
 let cleanupPromise: Promise<void> | null = null;
 
-const show = (origins: string[], targetTab?: Tabs.Tab['id'] | null) => {
+const show = (origins: string[], targetTab: NonNullable<Tabs.Tab['id']>) => {
+	if (targetTab < -2 || targetTab !== Math.floor(targetTab)) throw new Error(`[viewer] Invalid target tab: ${targetTab}`);
 	const parsedOrigins = UrlSchema.array().parse(origins);
 
 	const url = new URL(runtime.getURL('pages/viewer/presentation/index.html'));
 	url.searchParams.set(MEDIA_ORIGINS_SEARCH_PARAM, btoa(JSON.stringify(parsedOrigins)));
 
-	if (targetTab === undefined) {
+	if (targetTab === -1) {
 		tabs.create({ url: url.href });
 		return;
-	} else if (targetTab === null) {
+	} else if (targetTab === -2) {
 		tabs.update({ url: url.href });
 		return;
 	}
@@ -138,7 +139,7 @@ messageHandlers.set('showMedia', async (data, sender) => {
 });
 
 messageHandlers.set('showSelection', async (data, sender) => {
-	if (data !== undefined && data !== null && typeof data !== 'number') throw new Error(`[viewer] Got an invalid target tab: ${data}`);
+	if (typeof data !== 'number') throw new Error(`[viewer] Got an invalid target tab: ${data}`);
 
 	const origins = await getSelection();
 
