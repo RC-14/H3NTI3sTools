@@ -98,7 +98,7 @@ main {
 				}
 			}
 
-			&[data-favorite="true"] .favorite-button {
+			&[data-favorite="true"] .info-container>div>.favorite-button {
 				background-image: url(../../../images/star/yellow.svg);
 			}
 
