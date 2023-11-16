@@ -81,7 +81,7 @@ const fragment: BackgroundFragment = {
 			return;
 		}
 
-		storage.set(PRIVATE_HISTORY_ENABLED_STORAGE_KEY, privateHistoryEnabled);
+		updatePrivateHistoryEnabledInStorage();
 	},
 	runtimeMessageHandler: async (msg, data, sender) => {
 		switch (msg) {
