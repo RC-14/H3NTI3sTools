@@ -4,7 +4,7 @@ import '/src/lib/devToolHelpers';
 import { addHideCursorListeners } from '/src/lib/hideCursor';
 import { preventSpaceBarScroll } from '/src/lib/noSpaceBarScroll';
 import { hideElement, showElement } from '/src/lib/pageUtils';
-import { qs, qsa, sendRuntimeMessage, showMessage, useTemplate } from '/src/lib/utils';
+import { isElementEditable, qs, qsa, sendRuntimeMessage, showMessage, useTemplate } from '/src/lib/utils';
 import { CURRENT_MEDIA_SEARCH_PARAM, MEDIA_ORIGINS_SEARCH_PARAM, MEDIA_OS_NAME, PROGRESS_SEARCH_PARAM, UrlSchema, getViewerIDB, mediaTypeHandlers, type AddKeybindFunction, type KeybindHandler, type Media, type PresentationNavigationDirection, type RemoveKeybindFunction } from '/src/lib/viewer';
 
 // TODO: Split up in multiple files
@@ -616,7 +616,7 @@ const addControls = () => {
 
 	// Add keybind event listener
 	document.addEventListener('keydown', (event) => {
-		if (!controlsEnabled) return;
+		if (!controlsEnabled || event.target instanceof HTMLElement && isElementEditable(event.target)) return;
 
 		const keybindId = getKeybindId(event.code, event.shiftKey, event.ctrlKey, event.altKey);
 
