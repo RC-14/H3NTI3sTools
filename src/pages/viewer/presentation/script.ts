@@ -119,7 +119,16 @@ const getInfoForAllMedia = async (mediaOrigins: string[]): Promise<Media[]> => {
 
 	const settledPromises = await Promise.allSettled(mediaInfoPromises);
 
-	const results = settledPromises.filter((result): result is PromiseFulfilledResult<Media> => result.status === 'fulfilled');
+	const results: PromiseFulfilledResult<Media>[] = [];
+	
+	for (const promise of settledPromises) {
+		if (promise.status === 'fulfilled') {
+			results.push(promise);
+			continue;
+		}
+
+		console.warn(promise.reason);
+	}
 
 	return results.map((result) => result.value);
 };
