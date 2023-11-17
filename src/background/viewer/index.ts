@@ -187,6 +187,9 @@ messageHandlers.set('cleanup', (data, sender) => {
 		const dataWhitelist = await cleanup_mediaPart();
 		await cleanup_dataPart(dataWhitelist);
 
+		mediaPromiseMap.clear();
+		dataPromiseMap.clear();
+
 		cleanupPromise = null;
 		resolve();
 	});
