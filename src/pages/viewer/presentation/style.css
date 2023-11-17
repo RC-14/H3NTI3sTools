@@ -22,13 +22,19 @@ main {
 		align-items: center;
 		flex-direction: column;
 
+		p {
+			text-align: center;
+		}
+
 		>#error-title {
 			color: red;
 			font-size: 2rem;
+			max-width: min(50vw, 50ch);;
 		}
 
 		>#error-description {
 			font-size: 1.3rem;
+			max-width: 60vw;
 		}
 	}
 
