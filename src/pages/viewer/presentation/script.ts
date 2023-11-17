@@ -447,7 +447,7 @@ const addAutoProgressFunctionality = () => {
 	applyAutoProgressSettings();
 };
 
-const addEditPresentationListEntry = (url: string) => {
+const addEditPresentationListEntry = (url: string, insertAtStart = false) => {
 	const listEntry = useTemplate(editPresentationListItemTemplate);
 	if (!(listEntry instanceof HTMLLIElement)) throw new Error(`The editPresentation list item template is corrupted.`);
 
@@ -455,7 +455,12 @@ const addEditPresentationListEntry = (url: string) => {
 	if (!textElement) throw new Error("Couldn't find a p element inside the editPresentation list entry.");
 
 	textElement.innerText = url;
-	editPresentationList.append(listEntry);
+
+	if (insertAtStart) {
+		editPresentationList.prepend(listEntry);
+	} else {
+		editPresentationList.append(listEntry);
+	}
 };
 
 const editPresentationResetList = () => {
@@ -472,13 +477,19 @@ const editPresentationResetList = () => {
 	editPresentationList.firstElementChild?.scrollIntoView({ behavior: 'instant' });
 };
 
-const editPresentationAddButtonClickListener = () => {
+const editPresentationAddButtonClickListener = (event: MouseEvent) => {
 	if (!editPresentationOriginInput.validity.valid || editPresentationOriginInput.value.trim() === '') return;
 
-	addEditPresentationListEntry(editPresentationOriginInput.value.trim());
+	const insertAtStart = event.shiftKey;
+
+	addEditPresentationListEntry(editPresentationOriginInput.value.trim(), insertAtStart);
 	editPresentationOriginInput.value = '';
 
-	editPresentationList.lastElementChild?.scrollIntoView({ behavior: 'instant' });
+	if (insertAtStart) {
+		editPresentationList.firstElementChild?.scrollIntoView({ behavior: 'instant' });
+	} else {
+		editPresentationList.lastElementChild?.scrollIntoView({ behavior: 'instant' });
+	}
 };
 
 const editPresentationOriginInputKeydownListener = (event: KeyboardEvent) => {
