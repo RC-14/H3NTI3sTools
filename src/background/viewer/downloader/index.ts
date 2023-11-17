@@ -35,6 +35,20 @@ const writeToIdb = (data: unknown, validationSchema: z.AnyZodObject, objectStore
 	}
 
 	const db = await getViewerIDB();
+
+	const readTransaction = db.transaction(objectStoreName, 'readonly');
+	const keyPath = readTransaction.objectStore(objectStoreName).keyPath;
+	readTransaction.commit();
+
+	if (Array.isArray(keyPath)) throw new Error(`Can't handle array keyPaths: ${keyPath}`);
+	const key = parsedData.data[keyPath];
+
+	if (await isInIdb(key, validationSchema, objectStoreName)) {
+		console.warn(new Error(`Tried to write data to iDB for a key that's already present. (object store: "${objectStoreName}", key: "${key}")`));
+		resolve();
+		return;
+	}
+
 	const transaction = db.transaction(objectStoreName, 'readwrite');
 	const request = transaction.objectStore(objectStoreName).add(parsedData.data);
 
