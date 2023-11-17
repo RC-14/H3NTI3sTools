@@ -649,10 +649,15 @@ const init = async () => {
 
 	const { mediaOrigins, currentMedia, progress } = parseSearch();
 
+	if (mediaOrigins.length === 0) {
+		showError('Nothing to show', 'The search part of the URL contains an empty array.');
+		return;
+	}
+
 	mediaList.push(...await getInfoForAllMedia(mediaOrigins));
 
 	if (mediaList.length === 0) {
-		showError('Nothing to show', 'The search part of the URL contains an empty array.');
+		showError('Nothing to show', 'The search part of the URL contains no valid origins.');
 		return;
 	}
 
