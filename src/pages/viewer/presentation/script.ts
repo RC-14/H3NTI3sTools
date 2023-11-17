@@ -666,7 +666,7 @@ const init = async () => {
 	mediaList.push(...await getInfoForAllMedia(mediaOrigins));
 
 	if (mediaList.length === 0) {
-		showError('Nothing to show', 'The search part of the URL contains no valid origins.');
+		showError('Nothing to show', `The search part of the URL contains no valid origins.\n${JSON.stringify(mediaOrigins)}`);
 		return;
 	}
 
