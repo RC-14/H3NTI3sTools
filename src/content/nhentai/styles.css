@@ -1,3 +1,4 @@
+/* Green marking for "full color" tag on galleries */
 #tags > div > span > a[href="/tag/full-color/"] > span.name {
 	background-color: #3d643f;
 }
@@ -6,6 +7,21 @@ div.gallery[data-tags~="20905"] > a > div.caption {
 	background-color: #3d643f;
 }
 
+/* Fix width of gallery id to prevent clicking it by accident */
 #gallery_id {
 	width: fit-content;
+}
+
+/* Prevent comment overflow */
+#comments {
+	width: inherit;
+
+	&>.comment {
+		width: inherit;
+		
+		&>.body-wrapper {
+			width: inherit;
+			overflow-x: hidden;
+		}
+	}
 }
