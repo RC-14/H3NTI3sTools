@@ -359,10 +359,12 @@ const showMedia = (index: number, direction: PresentationNavigationDirection = '
 };
 
 const showNextMedia = () => {
+	if (mediaList.length === 1) return;
 	showMedia((mediaCounter + 1) % mediaList.length, 'forward');
 };
 
 const showPreviousMedia = () => {
+	if (mediaList.length === 1) return;
 	showMedia((mediaCounter + mediaList.length - 1) % mediaList.length, 'backward');
 };
 
