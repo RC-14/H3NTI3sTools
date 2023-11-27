@@ -1,3 +1,5 @@
+// TODO: Manage creation and deletion of temporary profile here to avoid copying indexedDB
+
 module.exports = {
 	sourceDir: 'build',
 	artifactsDir: 'dist',
