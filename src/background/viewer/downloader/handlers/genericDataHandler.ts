@@ -5,7 +5,7 @@ const handler: DownloadHandler = {
 		throw new Error(`Can't handle media. (${url})`);
 	},
 	data: (url) => new Promise((resolve, reject) => {
-		fetch(url).then(response => response.blob()).then(blob => ({ source: url, blob })).catch(reject);
+		fetch(url).then(response => response.blob()).then(blob => resolve({ source: url, blob })).catch(reject);
 	})
 };
 
