@@ -4,12 +4,9 @@ const handler: DownloadHandler = {
 	media: async (url) => {
 		throw new Error(`Can't handle media. (${url})`);
 	},
-	data: async (url) => {
-		return {
-			source: url,
-			blob: await fetch(url).then(response => response.blob())
-		};
-	}
+	data: (url) => new Promise((resolve, reject) => {
+		fetch(url).then(response => response.blob()).then(blob => ({ source: url, blob })).catch(reject);
+	})
 };
 
 export default handler;

@@ -57,7 +57,7 @@ const handler: DownloadHandler = {
 			creatorNames: [creatorChache.get(creatorUrl.pathname)!]
 		};
 	},
-	data: (url) => new Promise((resolve, reject) => setTimeout(async () => resolve(await dataHandler(url)), 1_000))
+	data: (url) => new Promise((resolve, reject) => setTimeout(() => dataHandler(url).then(resolve).catch(reject), 1_000))
 };
 
 export default handler;
