@@ -173,8 +173,8 @@ messageHandlers.set('downloadData', async (data, sender) => {
 	try {
 		await dataPromiseMap.get(source);
 	} catch (error) {
-		console.error(error);
 		dataPromiseMap.delete(source);
+		console.error(error);
 		return false;
 	}
 	return true;

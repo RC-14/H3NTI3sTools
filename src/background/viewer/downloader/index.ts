@@ -78,18 +78,6 @@ const downloader = async (queue: DownloadQueue, handler: (url: string) => Promis
 			await writeToIdb(result, validationSchema, objectStoreName);
 			current.resolve();
 		} catch (error) {
-			/*
-			 * Technically I don't know if it's an error
-			 * but what am I supposed to do if it isn't?
-			 * 
-			 * Throw an error?
-			 * 
-			 * What am I going to do with the not error
-			 * that probably contains information about
-			 * something I should fix?
-			 * 
-			 * The better question here is "Why can you even throw something that's not an error?".
-			 */
 			current.reject(new Error(`Error during download (object store: "${objectStoreName}"): ${error}`));
 		}
 	}
@@ -114,7 +102,7 @@ const queueDownload = (url: string, queueMap: QueueMap, activeDownloadersMap: Ac
 	const parsedUrl = UrlSchema.parse(url);
 
 	const hostDomain = getHostDomainFromUrl(parsedUrl);
-	if (!handlerMap.has(hostDomain) && handlerType !== 'data') throw new Error(`No download handler for domain: ${hostDomain}`);
+	if (!handlerMap.has(hostDomain) && handlerType !== 'data') reject(new Error(`No download handler for domain: ${hostDomain}`));
 
 	if (!queueMap.has(hostDomain)) {
 		queueMap.set(hostDomain, []);
@@ -130,7 +118,11 @@ const queueDownload = (url: string, queueMap: QueueMap, activeDownloadersMap: Ac
 
 	if (activeDownloadersMap.get(hostDomain)) return;
 
-	startDownloader(hostDomain, queue, activeDownloadersMap, validationSchema, objectStoreName, handlerType);
+	try {
+		startDownloader(hostDomain, queue, activeDownloadersMap, validationSchema, objectStoreName, handlerType);
+	} catch (error) {
+		reject(error);
+	}
 });
 
 export const downloadMedia = (url: string) => queueDownload(url, mediaQueues, activeMediaDownloaders, MediaSchema, MEDIA_OS_NAME, 'media');
