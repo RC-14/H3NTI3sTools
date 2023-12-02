@@ -74,7 +74,7 @@ const cleanup_mediaPart = () => new Promise<Data['source'][]>(async (resolve, re
 		if (cursor === null) {
 			// Deduplicate in place
 			for (let i = dataWhitelist.length - 1; i >= 0; i--) {
-				if (dataWhitelist.indexOf(dataWhitelist[i]!)) continue;
+				if (dataWhitelist.indexOf(dataWhitelist[i]!) === i) continue;
 				dataWhitelist.splice(i, 1);
 			}
 
