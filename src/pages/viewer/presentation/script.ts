@@ -75,7 +75,6 @@ const keybindMap: Map<string, KeybindHandler[]> = new Map();
 let controlsEnabled = false;
 let mediaCounter = -1;
 let progress: number | undefined = undefined;
-let lastProgressSet: number = 0;
 let ignorePopState = false;
 let autoProgressDirection: PresentationNavigationDirection = 'forward';
 let autoProgressTimeoutDelay = -1;
@@ -244,7 +243,7 @@ const updateUrl = () => {
 	if (url.href === location.href) return;
 
 	ignorePopState = true;
-	history.pushState(undefined, '', url);
+	history.replaceState(undefined, '', url);
 };
 
 const updateTitle = () => {
@@ -252,10 +251,6 @@ const updateTitle = () => {
 };
 
 const setProgress = (newProgress?: number) => {
-	// Prevent calling history.pushtate() to often
-	if (lastProgressSet + 3_000 > Date.now()) return;
-	lastProgressSet = Date.now();
-
 	progress = newProgress;
 
 	updateUrl();
