@@ -623,6 +623,8 @@ const addControls = () => {
 		let continueProcessing = true;
 
 		if (keybindMap.has(keybindId)) {
+			event.preventDefault();
+
 			const funcArray = keybindMap.get(keybindId)!;
 
 			for (const func of funcArray) {
@@ -638,6 +640,8 @@ const addControls = () => {
 
 		if (!keybindMap.has(fallbackKeybindId)) return;
 
+		event.preventDefault();
+
 		const fallbackFuncArray = keybindMap.get(fallbackKeybindId)!;
 
 		continueProcessing = true;
@@ -646,7 +650,7 @@ const addControls = () => {
 			continueProcessing = fallbackFunc(currentMedia, currentMediaContentContainer, event) ?? true;
 			if (!continueProcessing) break;
 		}
-	}, { passive: true });
+	});
 };
 
 const init = async () => {
