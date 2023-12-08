@@ -499,7 +499,7 @@ const editPresentationAddButtonClickListener = (event: MouseEvent) => {
 };
 
 const editPresentationOriginInputKeydownListener = (event: KeyboardEvent) => {
-	if (event.code === 'Enter') editPresentationAddButton.click();
+	if (event.code === 'Enter') editPresentationAddButton.dispatchEvent(new MouseEvent('click', { shiftKey: event.shiftKey }));
 };
 
 const editPresentationListRemoveButtonClickListener = (event: MouseEvent) => {
