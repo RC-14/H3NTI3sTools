@@ -2,7 +2,6 @@ import asurascans from './asurascans';
 import flamescans from './flamescans';
 import genericDataHandler from './genericDataHandler';
 import kemono from './kemono';
-import luminousscans from './luminousscans';
 import mangahub from './mangahub';
 import nhentai from './nhentai';
 import pixiv from './pixiv';
@@ -20,8 +19,6 @@ handlerMap.set('generic', genericDataHandler);
 // TODO: Add handler for hiperdex
 handlerMap.set('kemono.party', kemono);
 handlerMap.set('kemono.su', kemono);
-handlerMap.set('luminousscans.com', luminousscans);
-handlerMap.set('luminousscans.gg', luminousscans);
 handlerMap.set('mangahub.io', mangahub);
 handlerMap.set('mghubcdn.com', mangahub);
 handlerMap.set('nacm.xyz', asurascans);
