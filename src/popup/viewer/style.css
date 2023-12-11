@@ -16,6 +16,7 @@ button {
 	cursor: pointer;
 	padding: .1rem;
 	margin: 3px;
+	max-width: 75vw;
 
 	&:disabled {
 		cursor: unset;
