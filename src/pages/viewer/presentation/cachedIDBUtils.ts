@@ -1,3 +1,5 @@
+// TODO: Completely handle this in the background script
+
 import { sendRuntimeMessage } from '/src/lib/utils';
 import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, type Media, type Url } from '/src/lib/viewer';
 
