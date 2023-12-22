@@ -29,7 +29,7 @@ main {
 		>#error-title {
 			color: red;
 			font-size: 2rem;
-			max-width: min(50vw, 50ch);;
+			max-width: min(50vw, 50ch);
 		}
 
 		>#error-description {
@@ -261,6 +261,13 @@ main {
 				&[type="number"] {
 					width: 4rem;
 				}
+			}
+
+			.ugly-hack {
+				display: flex;
+				flex-direction: row-reverse;
+				align-items: baseline;
+				max-width: 100%;
 			}
 
 			&:not(.selected) {
