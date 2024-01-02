@@ -105,7 +105,7 @@ const handler: DownloadHandler = {
 			type: types[parsedApiResponse.body.illustType],
 			sources,
 			favorite: false,
-			tags: parsedApiResponse.body.tags.tags.map((tag) => tag.translation?.en ?? tag.romaji ?? tag.tag),
+			tags: parsedApiResponse.body.tags.tags.map((tag) => tag.translation?.en || tag.romaji || tag.tag).filter(tag => tag.length > 0),
 			creatorNames: [parsedApiResponse.body.userAccount],
 		};
 	},
