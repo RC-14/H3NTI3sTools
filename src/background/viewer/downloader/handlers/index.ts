@@ -20,7 +20,7 @@ handlerMap.set('generic', genericDataHandler);
 handlerMap.set('kemono.party', kemono);
 handlerMap.set('kemono.su', kemono);
 handlerMap.set('mangahub.io', mangahub);
-handlerMap.set('mghubcdn.com', mangahub);
+handlerMap.set('mghcdn.com', mangahub);
 handlerMap.set('nacm.xyz', asurascans);
 handlerMap.set('nhentai.net', nhentai);
 handlerMap.set('pixiv.net', pixiv);
