@@ -266,7 +266,7 @@ main {
 			.ugly-hack {
 				display: flex;
 				align-items: baseline;
-				max-width: 100%;
+				width: 100%;
 
 				input {
 					flex-shrink: 2;
