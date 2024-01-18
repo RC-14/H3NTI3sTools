@@ -265,9 +265,15 @@ main {
 
 			.ugly-hack {
 				display: flex;
-				flex-direction: row-reverse;
 				align-items: baseline;
 				max-width: 100%;
+
+				input {
+					flex-shrink: 2;
+					min-width: 0px;
+					flex-grow: 2;
+					max-width: 20rem;
+				}
 			}
 
 			&:not(.selected) {
