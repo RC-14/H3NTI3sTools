@@ -1,0 +1,7 @@
+/* Make sure the image fits on the screen */
+#img {
+	max-width: 90vw;
+	max-height: 90vh;
+	width: auto !important;
+	height: auto !important;
+}

@@ -56,6 +56,18 @@
 		},
 		{
 			"matches": [
+				"*://e-hentai.org/*"
+			],
+			"js": [
+				"./content/e-hentai/main.js"
+			],
+			"css": [
+				"./content/e-hentai/styles.css"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"*://hanime.tv/*"
 			],
 			"js": [
