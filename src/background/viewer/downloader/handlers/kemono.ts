@@ -3,6 +3,8 @@ import { dataHandler } from './genericDataHandler';
 import { decode } from '/src/lib/htmlCharReferences';
 import type { DownloadHandler } from '/src/lib/viewer';
 
+const ALLOWED_FILE_TYPES = ['png', 'jpg', 'gif', 'webp'];
+
 const creatorChache = new Map<string, string>();
 
 const apiResponseSchema = z.object({
@@ -16,6 +18,8 @@ const apiResponseSchema = z.object({
 	})
 });
 
+const isAllowedFileType = (path: string) => ALLOWED_FILE_TYPES.includes(path.split('.').at(-1)!)
+
 const handler: DownloadHandler = {
 	media: async (url) => {
 		const apiUrl = new URL(url);
@@ -24,13 +28,16 @@ const handler: DownloadHandler = {
 		const apiResponse = await fetch(apiUrl).then((response) => response.json());
 		const parsedApiResponse = apiResponseSchema.parse(apiResponse);
 
-		const attachments = parsedApiResponse.attachments.filter((item) => ['png', 'jpg', 'gif', 'webp'].includes(item.path.split('.').at(-1)!));
-
-		if (attachments.length === 0) {
-			if (parsedApiResponse.file.path === undefined) throw new Error(`No attachments for post: ${url}`);
-
-			attachments.push({ path: parsedApiResponse.file.path });
+		const attachmentPaths = parsedApiResponse.attachments.filter((item) => isAllowedFileType(item.path)).map(item => item.path);
+		if (
+			parsedApiResponse.file.path !== undefined &&
+			isAllowedFileType(parsedApiResponse.file.path) &&
+			!attachmentPaths.includes(parsedApiResponse.file.path)
+		) {
+			attachmentPaths.unshift(parsedApiResponse.file.path);
 		}
+
+		if (attachmentPaths.length === 0) throw new Error(`No attachments for post: ${url}`);
 
 		const creatorUrl = new URL(url);
 		creatorUrl.pathname = creatorUrl.pathname.split('/post/')[0]!;
@@ -51,7 +58,7 @@ const handler: DownloadHandler = {
 			name: parsedApiResponse.title,
 			description: decode(parsedApiResponse.content.replaceAll(/<[^>]+>/g, '')) || undefined,
 			type: 'gallery',
-			sources: attachments.map((item) => 'https://c1.kemono.party/data' + item.path),
+			sources: attachmentPaths.map((path) => 'https://c1.kemono.party/data' + path),
 			favorite: false,
 			tags: [],
 			creatorNames: [creatorChache.get(creatorUrl.pathname)!]
