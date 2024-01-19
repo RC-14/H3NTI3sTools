@@ -7,6 +7,9 @@ const EXTENSION_BASE_URL = runtime.getURL('');
 const EXTENSION_HISTORY_ENTRY_PROTOCOL = 'ext+h3nti3:';
 const PRIVATE_HISTORY_ENABLED_STORAGE_KEY = 'privateHistoryEnabled';
 
+const TRANSITION_TYPE_REPLACEMENT_MAP: Map<History.TransitionType, History.TransitionType> = new Map();
+TRANSITION_TYPE_REPLACEMENT_MAP.set('form_submit', 'link');
+
 const storage = new StorageHelper('local', 'historyRecorder');
 
 let privateHistoryEnabled = false;
@@ -30,6 +33,9 @@ const privateHistoryWebNavigationCommittedListener = async (details: WebNavigati
 	} else {
 		historyEntry.transition = details.transitionType;
 	}
+
+	const transitionReplacement = TRANSITION_TYPE_REPLACEMENT_MAP.get(historyEntry.transition)
+	if (transitionReplacement !== undefined) historyEntry.transition = transitionReplacement;
 
 	history.addUrl(historyEntry);
 };
