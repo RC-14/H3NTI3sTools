@@ -42,20 +42,22 @@ const handler: DownloadHandler = {
 		const creators: string[] = [];
 
 		for (const tag of parsedApiResponse.tags) {
+			const trimmedTagName = tag.name.trim();
+
 			switch (tag.type) {
 				case 'artist':
 				case 'group':
-					creators.push(tag.name);
+					creators.push(trimmedTagName);
 					break;
 
 				case 'tag':
-					tags.push(tagReplacementMap.get(tag.name) ?? tag.name);
+					tags.push(tagReplacementMap.get(trimmedTagName) ?? trimmedTagName);
 					break;
 
 				case 'language':
 				case 'character':
 				case 'parody':
-					tags.push(tag.name);
+					tags.push(trimmedTagName);
 					break;
 			}
 		}

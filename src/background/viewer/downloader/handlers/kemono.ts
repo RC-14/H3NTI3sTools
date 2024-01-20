@@ -47,8 +47,8 @@ const handler: DownloadHandler = {
 				redirect: 'error'
 			}).then((response) => response.text());
 
-			const creator = html.split('<span itemprop="name">')[1]?.split('</span>')[0];
-			if (creator === undefined) throw new Error(`Couldn't parse creator from kemono html.`);
+			const creator = html.split('<span itemprop="name">')[1]?.split('</span>')[0]?.trim();
+			if (creator === undefined || creator.length === 0) throw new Error(`Couldn't parse creator from kemono html.`);
 
 			creatorChache.set(creatorUrl.pathname, creator);
 		}
