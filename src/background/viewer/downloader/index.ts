@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import handlerMap from './handlers';
-import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
+import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, getViewerIDB, type DownloadHandler, type Data, type Media } from '/src/lib/viewer';
 
 // TODO: Rewrite the whole thing with pointers to "media" and "data" be URIs that use "h3nti3+type+handler" protocols where type specifies the type (media or data) and handler specifies the handler to use.
 
@@ -64,7 +64,7 @@ const writeToIdb = (data: unknown, validationSchema: z.AnyZodObject, objectStore
 	transaction.commit();
 });
 
-const downloader = async (queue: DownloadQueue, handler: (url: string) => Promise<unknown>, validationSchema: z.AnyZodObject, objectStoreName: IDBObjectStore['name']) => {
+const downloader = async (queue: DownloadQueue, handler: (url: string) => Promise<Media | Data>, validationSchema: z.AnyZodObject, objectStoreName: IDBObjectStore['name']) => {
 	while (queue.length > 0) {
 		const current = queue.splice(0, 1)[0]!;
 
@@ -75,6 +75,11 @@ const downloader = async (queue: DownloadQueue, handler: (url: string) => Promis
 
 		try {
 			const result = await handler(current.url);
+
+			if ('creatorNames' in result) {
+				result.creatorNames = result.creatorNames.map(name => name.trim().toLowerCase()).filter((name, i, arr) => name.length > 0 && i === arr.indexOf(name));
+			}
+
 			await writeToIdb(result, validationSchema, objectStoreName);
 			current.resolve();
 		} catch (error) {
