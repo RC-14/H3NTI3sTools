@@ -1,5 +1,6 @@
 import asurascans from './asurascans';
 import flamescans from './flamescans';
+import ehentai from './ehentai';
 import genericDataHandler from './genericDataHandler';
 import kemono from './kemono';
 import mangahub from './mangahub';
@@ -12,6 +13,7 @@ handlerMap.set('asurascans.com', asurascans);
 handlerMap.set('asuracomics.com', asurascans);
 handlerMap.set('asuratoon.com', asurascans);
 handlerMap.set('asura.gg', asurascans);
+handlerMap.set('e-hentai.org', ehentai);
 handlerMap.set('flamescans.org', flamescans);
 handlerMap.set('flamecomics.com', flamescans);
 handlerMap.set('generic', genericDataHandler);
