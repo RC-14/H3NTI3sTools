@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { dataHandler } from './genericDataHandler';
 import type { DownloadHandler } from '/src/lib/viewer';
 
 const PAGE_URL_START = 'https://e-hentai.org/s/';
@@ -33,32 +32,16 @@ const getGalleryHTMLs = async (url: URL): Promise<[string, ...string[]]> => {
 	return galleryHTMLs;
 };
 
-const getPageIDs = (galleryHTMLs: Awaited<ReturnType<typeof getGalleryHTMLs>>): string[] => {
+const getPageUrls = (galleryHTMLs: Awaited<ReturnType<typeof getGalleryHTMLs>>): string[] => {
 	const pageIDs: string[] = [];
 
 	for (const html of galleryHTMLs) {
 		const splitHTML = html.split(PAGE_URL_START).splice(1);
 
-		for (const chunk of splitHTML) pageIDs.push(chunk.split('"', 1)[0]!);
+		for (const chunk of splitHTML) pageIDs.push(PAGE_URL_START + chunk.split('"', 1)[0]!);
 	}
 
 	return pageIDs;
-};
-
-const getSourcesFromGalleryHTMLs = async (galleryHTMLs: Awaited<ReturnType<typeof getGalleryHTMLs>>): Promise<string[]> => {
-	const pageIDs = getPageIDs(galleryHTMLs);
-
-	const sources: string[] = [];
-
-	for (const id of pageIDs) {
-		const pageHTML = await fetch(PAGE_URL_START + id).then(response => response.text());
-
-		const imgId = pageHTML.split(FULLIMG_URL_START).at(-1)!.split('"', 1)[0]!;
-
-		sources.push(FULLIMG_URL_START + imgId);
-	}
-
-	return sources;
 };
 
 const getGalleryMetadata = async (galleryURL: URL) => {
@@ -93,8 +76,6 @@ const handler: DownloadHandler = {
 		url.hash = '';
 
 		const galleryHTMLs = await getGalleryHTMLs(url);
-		const sources = await getSourcesFromGalleryHTMLs(galleryHTMLs);
-
 		const galleryMetadata = await getGalleryMetadata(url);
 
 		const tags: string[] = [];
@@ -119,13 +100,31 @@ const handler: DownloadHandler = {
 			origin: urlString,
 			name: galleryMetadata.title,
 			type: 'manga',
-			sources,
+			sources: getPageUrls(galleryHTMLs),
 			favorite: false,
 			tags,
 			creatorNames,
 		};
 	},
-	data: dataHandler
+	data: async (url) => {
+		const pageHTML = await fetch(url).then(response => response.text());
+
+		let imgUrl: string;
+
+		const fullimgSplit = pageHTML.split(FULLIMG_URL_START);
+
+		if (fullimgSplit.length > 1) {
+			const imgId = fullimgSplit.at(-1)!.split('"', 1)[0]!;
+			imgUrl = FULLIMG_URL_START + imgId;
+		} else {
+			imgUrl = pageHTML.split('id="img" src="').at(-1)!.split('"')[0]!;
+		}
+
+		return {
+			source: url,
+			blob: await fetch(imgUrl).then(response => response.blob())
+		};
+	}
 };
 
 export default handler;
