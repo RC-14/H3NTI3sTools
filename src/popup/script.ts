@@ -3,7 +3,6 @@ import { qs, useTemplate } from '../lib/utils';
 import '/src/lib/devToolHelpers';
 
 const tabList: { name: string, fragmentId: string; }[] = [
-	{ fragmentId: 'tabHider', name: 'Tab Hider' },
 	{ fragmentId: 'viewer', name: 'Viewer' },
 	{ fragmentId: 'historyRecorder', name: 'History Recorder' }
 ];
