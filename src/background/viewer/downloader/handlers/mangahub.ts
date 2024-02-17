@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { dataHandler } from './genericDataHandler';
 import { COLLECTION_OS_NAME, CollectionSchema, createCollection, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
 
-const API_URL = 'https://mangahub.io/api/graphql';
+const API_URL = 'https://api.mghcdn.com/graphql';
 const IMG_URL_BASE = 'https://imgx.mghcdn.com/';
 const ACCESS_TOKEN_URL = 'https://mangahub.io/';
 const ACCESS_TOKEN_COOKIE_NAME = 'mhub_access';
