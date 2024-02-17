@@ -134,6 +134,17 @@ main {
 	text-shadow: black 0 0 5px;
 }
 
+:root:has(.loading) #media-counter::before {
+	content: "";
+	display: inline-block;
+	height: 2rem;
+	width: 2rem;
+	margin-top: -1.5rem;
+	translate: 20% 33%;
+	background-image: url(../../../images/spinner/light.svg);
+	background-size: contain;
+}
+
 #toolbox-wrapper {
 	position: absolute;
 	bottom: 5px;
