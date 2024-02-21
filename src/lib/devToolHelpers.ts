@@ -14,20 +14,9 @@ const writeToPageContext = (key: string, value: unknown) => {
 	});
 };
 
-let addedHelperFunctions = false;
-
 const h3nti3Utils = {
-	addHelperFunctionsToWindow: () => {
-		if (addedHelperFunctions) return;
-		addedHelperFunctions = true;
-
-		writeToPageContext('qs', qs);
-		writeToPageContext('qsa', qsa);
-		writeToPageContext('debugH3NTI3sTools', () => { debugger; });
-	},
-	get _getHelperFunctionsInWindow() {
-		this.addHelperFunctionsToWindow();
-		return;
+	debug: () => {
+		debugger;
 	},
 	nhentaiMediaSortCompareFunction: (a: GalleryMedia, b: GalleryMedia) => {
 		const aCreatorString = a.creatorNames.map(e => e.toLowerCase()).sort().join('\n');
@@ -74,3 +63,5 @@ const h3nti3Utils = {
 };
 
 writeToPageContext('h3nti3Utils', h3nti3Utils);
+writeToPageContext('qs', qs);
+writeToPageContext('qsa', qsa);
