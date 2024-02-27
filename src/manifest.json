@@ -216,7 +216,6 @@
 		"unlimitedStorage",
 		"webNavigation",
 		"webRequest",
-		"webRequestAuthProvider",
 		"webRequestBlocking",
 		"webRequestFilterResponse",
 		"webRequestFilterResponse.serviceWorkerScript"
