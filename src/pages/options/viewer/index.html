@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Viewer Options</title>
+	<link rel="stylesheet" href="style.css">
+	<script type="module" src="script.js"></script>
+</head>
+
+<body>
+	<div id="category-buttons-area">
+		<template id="category-button-template">
+			<button class="category-button" data-category-name=""></button>
+		</template>
+	</div>
+	<main hidden>
+		<div id="new-alias-container">
+			<input id="new-alias-input" type="text">
+			<button id="new-alias-button">Add</button>
+		</div>
+
+		<div id="category-containers-wrapper">
+			<template id="category-container-template">
+				<ol class="category-container" data-category-name=""></ol>
+			</template>
+			<template id="alias-container-template">
+				<li class="alias-container">
+					<p class="alias-name" contenteditable="true"></p>
+					<div class="alias-new-entry-container">
+						<input class="alias-new-entry-input" type="text">
+						<button class="alias-new-entry-button">Add</button>
+					</div>
+					<ol class="alias-list"></ol>
+				</li>
+			</template>
+			<template id="alias-list-entry-container-template">
+				<li class="alias-list-entry-container">
+					<p class="alias-list-entry" contenteditable="true"></p>
+					<button class="alias-list-entry-remove-button">x</button>
+				</li>
+			</template>
+		</div>
+	</main>
+	<button id="save-button">Save</button>
+</body>
+
+</html>

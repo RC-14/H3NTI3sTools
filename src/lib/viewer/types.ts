@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 const SingleLineStringRefine: [(str: string) => boolean, string] = [(str) => !str.includes('\n'), "String can't have multiple lines."];
 
-const NonEmptyStringSchema = z.string().min(1);
+const NonEmptyTrimmedLowerCaseSingleLineStringSchema = z.string().min(1).trim().toLowerCase().refine(...SingleLineStringRefine);
 
-export const NameSchema = NonEmptyStringSchema.trim().refine(...SingleLineStringRefine);
+export const NameSchema = NonEmptyTrimmedLowerCaseSingleLineStringSchema;
 export type Name = z.infer<typeof NameSchema>;
 export const DescriptionSchema = z.string();
 export type Description = z.infer<typeof DescriptionSchema>;
@@ -12,7 +12,7 @@ export const UrlSchema = z.string().url();
 export type Url = z.infer<typeof UrlSchema>;
 export const MediaTypeSchema = z.enum(['gallery', 'manga', 'webtoon', 'video']);
 export type MediaType = z.infer<typeof MediaTypeSchema>;
-export const TagSchema = NonEmptyStringSchema.trim().toLowerCase().refine(...SingleLineStringRefine);
+export const TagSchema = NonEmptyTrimmedLowerCaseSingleLineStringSchema;
 export type Tag = z.infer<typeof TagSchema>;
 
 export const DataSchema = z.object({
@@ -65,7 +65,7 @@ export type ShowMediaMessage = z.infer<typeof ShowMediaMessageSchema>;
 export type PresentationNavigationDirection = "forward" | "backward";
 
 export type KeybindHandler = (media: Media, contentContainer: HTMLDivElement, event: KeyboardEvent) => boolean | void;
-export type AddKeybindFunction = (trigger: string | { key: string, shift?: boolean, ctrl?: boolean }, func: KeybindHandler) => void;
+export type AddKeybindFunction = (trigger: string | { key: string, shift?: boolean, ctrl?: boolean; }, func: KeybindHandler) => void;
 export type RemoveKeybindFunction = AddKeybindFunction;
 
 export type MediaTypeHandler = {
@@ -80,3 +80,8 @@ export type DownloadHandler = {
 	media: (url: Url) => Promise<Media>,
 	data: (url: Url) => Promise<Data>;
 };
+
+export const AliasCategorySchema = z.record(NonEmptyTrimmedLowerCaseSingleLineStringSchema, NonEmptyTrimmedLowerCaseSingleLineStringSchema.array());
+export type AliasCategory = z.infer<typeof AliasCategorySchema>;
+export const AliasStorageSchema = z.record(NonEmptyTrimmedLowerCaseSingleLineStringSchema, AliasCategorySchema);
+export type AliasStorage = z.infer<typeof AliasStorageSchema>;

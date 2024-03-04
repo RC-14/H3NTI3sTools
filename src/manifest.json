@@ -16,6 +16,10 @@
 			"./background/loader.js"
 		]
 	},
+	"options_ui": {
+		"open_in_tab": true,
+		"page": "./pages/options/index.html"
+	},
 	"browser_action": {
 		"default_area": "navbar",
 		"default_icon": "./images/icon/120.png",
