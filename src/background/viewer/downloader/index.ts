@@ -1,12 +1,15 @@
 import { z } from 'zod';
 import handlerMap from './handlers';
-import { DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, getViewerIDB, type DownloadHandler, type Data, type Media } from '/src/lib/viewer';
+import StorageHelper from '/src/lib/StorageHelper';
+import { AliasStorageSchema, DATA_OS_NAME, DataSchema, MEDIA_OS_NAME, MediaSchema, UrlSchema, getFromObjectStore, getViewerIDB, type AliasStorage, type Data, type DownloadHandler, type Media } from '/src/lib/viewer';
 
 // TODO: Rewrite the whole thing with pointers to "media" and "data" be URIs that use "h3nti3+type+handler" protocols where type specifies the type (media or data) and handler specifies the handler to use.
 
 type DownloadQueue = { url: string, resolve: () => void, reject: (reason: Error) => void; }[];
 type QueueMap = Map<string, DownloadQueue>;
 type ActiveDownloadersMap = Map<string, boolean>;
+
+const storage = new StorageHelper('local', 'viewer');
 
 const mediaQueues: QueueMap = new Map();
 const dataQueues: QueueMap = new Map();
@@ -20,6 +23,23 @@ const getHostDomainFromUrl = (url: string) => {
 	const hostParts = host.split('.');
 
 	return hostParts.splice(hostParts.length - 2).join('.');
+};
+
+const resolveAliases = (nameSet: Set<string>, category: string, aliasStorage: AliasStorage) => {
+	if (!(category in aliasStorage)) return;
+
+	const creatorAliases = aliasStorage[category]!;
+
+	const aliasNames = Object.keys(creatorAliases);
+
+	for (let i = 0; i < aliasNames.length; i++) {
+		nameSet.forEach((name) => {
+			if (!creatorAliases[aliasNames[i]!]!.includes(name)) return;
+
+			nameSet.delete(name);
+			nameSet.add(aliasNames[i]!);
+		});
+	}
 };
 
 const isInIdb = async (key: IDBValidKey, validationSchema: z.AnyZodObject, objectStoreName: IDBObjectStore['name']) => {
@@ -76,8 +96,17 @@ const downloader = async (queue: DownloadQueue, handler: (url: string) => Promis
 		try {
 			const result = await handler(current.url);
 
+			const aliasStorage = AliasStorageSchema.parse(await storage.get('aliases'));
+
 			if ('creatorNames' in result) {
-				result.creatorNames = result.creatorNames.map(name => name.trim().toLowerCase()).filter((name, i, arr) => name.length > 0 && i === arr.indexOf(name));
+				const creatorsSet = new Set(result.creatorNames.map(name => name.trim().toLowerCase()));
+				resolveAliases(creatorsSet, 'creators', aliasStorage);
+				result.creatorNames = [...creatorsSet];
+			}
+			if ('tags' in result) {
+				const tagsSet = new Set(result.tags.map(name => name.trim().toLowerCase()));
+				resolveAliases(tagsSet, 'tags', aliasStorage);
+				result.tags = [...tagsSet];
 			}
 
 			await writeToIdb(result, validationSchema, objectStoreName);

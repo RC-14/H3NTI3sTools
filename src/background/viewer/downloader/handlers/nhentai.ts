@@ -24,9 +24,6 @@ const apiResponseSchema = z.object({
 	})),
 });
 
-const tagReplacementMap: Map<string, string> = new Map();
-tagReplacementMap.set('nakadashi', 'creampie');
-
 const handler: DownloadHandler = {
 	media: async (urlString) => {
 		const url = new URL(urlString);
@@ -51,9 +48,6 @@ const handler: DownloadHandler = {
 					break;
 
 				case 'tag':
-					tags.push(tagReplacementMap.get(trimmedTagName) ?? trimmedTagName);
-					break;
-
 				case 'language':
 				case 'character':
 				case 'parody':

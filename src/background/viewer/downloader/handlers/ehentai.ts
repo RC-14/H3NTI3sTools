@@ -11,9 +11,6 @@ const apiResponseSchema = z.object({
 	})).nonempty()
 });
 
-const tagReplacementMap: Map<string, string> = new Map();
-tagReplacementMap.set('nakadashi', 'creampie');
-
 const getGalleryHTMLs = async (url: URL): Promise<[string, ...string[]]> => {
 	const galleryHTMLs: [string, ...string[]] = [await fetch(url).then(response => response.text())];
 
@@ -91,7 +88,7 @@ const handler: DownloadHandler = {
 					break;
 
 				default:
-					tags.push(tagReplacementMap.get(tagName) ?? tagName);
+					tags.push(tagName);
 					break;
 			}
 		}
