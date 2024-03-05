@@ -155,11 +155,17 @@ const categoryContainerEventHandlers: {
 			if (!inputElement.value.trim()) return;
 
 			aliasListElement.prepend(createAliasListEntry(inputElement.value));
+
+			inputElement.value = '';
 		},
 		'alias-list-entry-remove-button': (event) => void (event.target as HTMLElement).parentElement!.remove()
 	},
 	keypress: {
-		// 'alias-name': (event) => { },
+		'alias-name': (event) => {
+			if (event.code !== 'Enter') return;
+
+			event.preventDefault();
+		},
 		'alias-new-entry-input': (event) => {
 			if (event.code !== 'Enter') return;
 
@@ -171,7 +177,11 @@ const categoryContainerEventHandlers: {
 
 			buttonElement.click();
 		},
-		// 'alias-list-entry': (event) => { }
+		'alias-list-entry': (event) => {
+			if (event.code !== 'Enter') return;
+
+			event.preventDefault();
+		}
 	}
 };
 
