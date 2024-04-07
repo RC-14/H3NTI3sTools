@@ -1,7 +1,8 @@
-import { qs, isElementEditable } from '/src/lib/utils';
+import { qs, isElementEditable, runAfterReadyStateReached } from '/src/lib/utils';
 import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
 import state from './state';
 import { applyCustomReaderSettings } from './readerSettingsUtils';
+import addUseInSearchButton from './useInSearchButton';
 
 const next = () => {
 	qs<HTMLAnchorElement>('a.next')?.click();
@@ -10,36 +11,49 @@ const previous = () => {
 	qs<HTMLAnchorElement>('a.previous')?.click();
 };
 
-if (state === 'browsing' || state === 'searching') {
-	addNextPreviousShortcuts(next, previous);
-} else if (state === 'reading') {
-	applyCustomReaderSettings();
-
-	document.addEventListener('keydown', (event) => {
-		if (isElementEditable(event.target as HTMLElement)) return;
-
-		switch (event.code) {
-			case 'Escape':
-				event.preventDefault();
-				setTimeout(() => {
-					qs<HTMLAnchorElement>('a.go-back')?.click();
-				}, 100);
-				break;
-
-			case 'Space':
-				if (event.shiftKey) {
-					previous();
-				} else {
-					next();
-				}
-				break;
+switch (state) {
+	case 'browsing':
+		if (['artist', 'category', 'character', 'group', 'language', 'parody', 'tag'].includes(location.pathname.split('/')[1]!)) {
+			runAfterReadyStateReached('complete', addUseInSearchButton);
 		}
-	});
-} else if (state === 'lookingAtGallery') {
-	document.addEventListener('keydown', (event) => {
-		if (event.code !== 'Space' || isElementEditable(event.target as HTMLElement)) return;
+	case 'searching':
+		addNextPreviousShortcuts(next, previous);
+		break;
 
-		const firstPageLink = qs('#cover a');
-		if (firstPageLink instanceof HTMLAnchorElement) firstPageLink.click();
-	});
-};
+	case 'reading':
+		applyCustomReaderSettings();
+
+		document.addEventListener('keydown', (event) => {
+			if (isElementEditable(event.target as HTMLElement)) return;
+
+			switch (event.code) {
+				case 'Escape':
+					event.preventDefault();
+					setTimeout(() => {
+						qs<HTMLAnchorElement>('a.go-back')?.click();
+					}, 100);
+					break;
+
+				case 'Space':
+					if (event.shiftKey) {
+						previous();
+					} else {
+						next();
+					}
+					break;
+			}
+		});
+		break;
+
+	case 'lookingAtGallery':
+		document.addEventListener('keydown', (event) => {
+			if (event.code !== 'Space' || isElementEditable(event.target as HTMLElement)) return;
+
+			const firstPageLink = qs('#cover a');
+			if (firstPageLink instanceof HTMLAnchorElement) firstPageLink.click();
+		});
+		break;
+
+	case 'unknown':
+		break;
+}
