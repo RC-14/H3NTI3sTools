@@ -129,7 +129,7 @@ export const addEnglishAndFullColorButtons = () => {
 			{
 				style: {
 					width: '22.5px',
-					height: '15',
+					height: '15px',
 					margin: '0px',
 					border: 'none',
 					padding: '0px',
@@ -144,7 +144,7 @@ export const addEnglishAndFullColorButtons = () => {
 			{
 				style: {
 					width: '22.5px',
-					height: '15',
+					height: '15px',
 					margin: '0px',
 					border: 'none',
 					padding: '0px',
