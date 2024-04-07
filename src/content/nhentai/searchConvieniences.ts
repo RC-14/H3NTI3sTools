@@ -19,8 +19,11 @@ const buttonClickHandler = (event: MouseEvent) => {
 
 	const elem = event.currentTarget;
 	if (!(elem instanceof HTMLButtonElement)) throw new Error('event.currentTarget is not a button element.');
+	if (elem.dataset.tag === undefined) throw new Error("The data-tag attribute of the button isn't set");
 
-	if (searchInputElement.value.length === 0 || searchInputElement.value.endsWith(' ')) {
+	if (searchInputElement.value.includes(elem.dataset.tag)) {
+		// Don't add it if it's already there
+	} else if (searchInputElement.value.length === 0 || searchInputElement.value.endsWith(' ')) {
 		searchInputElement.value += elem.dataset.tag;
 	} else {
 		searchInputElement.value += ' ' + elem.dataset.tag;
