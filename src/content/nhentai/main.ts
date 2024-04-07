@@ -1,8 +1,8 @@
-import { qs, isElementEditable, runAfterReadyStateReached } from '/src/lib/utils';
-import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
-import state from './state';
 import { applyCustomReaderSettings } from './readerSettingsUtils';
-import addUseInSearchButton from './useInSearchButton';
+import { addUseInSearchButton } from './searchConvieniences';
+import state from './state';
+import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
+import { isElementEditable, qs, runAfterReadyStateReached } from '/src/lib/utils';
 
 const next = () => {
 	qs<HTMLAnchorElement>('a.next')?.click();
