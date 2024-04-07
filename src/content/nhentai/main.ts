@@ -1,5 +1,5 @@
 import { applyCustomReaderSettings } from './readerSettingsUtils';
-import { addUseInSearchButton } from './searchConvieniences';
+import { addEnglishAndFullColorButtons, addUseInSearchButton } from './searchConveniences';
 import state from './state';
 import { addNextPreviousShortcuts } from '/src/lib/nextPreviousShortcuts';
 import { isElementEditable, qs, runAfterReadyStateReached } from '/src/lib/utils';
@@ -10,6 +10,8 @@ const next = () => {
 const previous = () => {
 	qs<HTMLAnchorElement>('a.previous')?.click();
 };
+
+runAfterReadyStateReached('complete', addEnglishAndFullColorButtons);
 
 switch (state) {
 	case 'browsing':
