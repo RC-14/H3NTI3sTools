@@ -47,6 +47,8 @@ const makeButtonElement = (tag: string, child: string | Node, { classes, style }
 
 	elem.addEventListener('click', buttonClickHandler);
 
+	elem.type = 'button';
+
 	elem.append(child);
 
 	return elem;
