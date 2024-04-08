@@ -158,6 +158,6 @@ export const addEnglishAndFullColorButtons = () => {
 	);
 
 
-	searchInputElement.style.paddingLeft = '30px';
+	searchInputElement.style.paddingLeft = '35px';
 	searchInputElement.parentElement!.insertBefore(container, searchInputElement);
 };
