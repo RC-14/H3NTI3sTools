@@ -121,6 +121,7 @@ export const addEnglishAndFullColorButtons = () => {
 	container.style.width = '27.5px';
 	container.style.height = '40px';
 	container.style.marginRight = '-30px';
+	container.style.marginBottom = '-2px';
 	container.style.position = 'relative';
 	container.style.top = '-6.25px';
 
