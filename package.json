@@ -16,7 +16,7 @@
 		"@total-typescript/ts-reset": "^0.5.1",
 		"@types/webextension-polyfill": "^0.10.7",
 		"esbuild": "0.20.2",
-		"typescript": "^5.4.4",
+		"typescript": "^5.4.5",
 		"web-ext": "^7.11.0"
 	}
 }
