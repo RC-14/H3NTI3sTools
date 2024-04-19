@@ -23,7 +23,7 @@ const PROMOTION_URLS = [
 ];
 
 const getSourcesFromChapterHTML = (html: string) => {
-	const contentInfoJSON = html.split('>ts_reader.run(').at(-1)!.split(');</script>')[0];
+	const contentInfoJSON = html.split('ts_reader.run(').at(-1)!.split(');')[0];
 	if (contentInfoJSON === undefined) throw new Error(`Couldn't parse asurascans chapter html for sources.`);
 
 	const contentInfo = JSON.parse(contentInfoJSON);
