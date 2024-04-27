@@ -35,6 +35,7 @@ const autoProgressApplyDelayButton = qs<HTMLButtonElement>('button#autoProgress-
 const editPresentationMenu = qs<HTMLLIElement>('li#editPresentation-menu');
 const editPresentationOriginInput = qs<HTMLInputElement>('input#editPresentation-origin-input');
 const editPresentationAddButton = qs<HTMLButtonElement>('button#editPresentation-add-button');
+const editPresentationAddFromClipboardButton = qs<HTMLButtonElement>('button#editPresentation-add-from-clipboard-button');
 const editPresentationList = qs<HTMLOListElement>('ol#editPresentation-list');
 const editPresentationResetButton = qs<HTMLButtonElement>('button#editPresentation-reset-button');
 const editPresentationApplyButton = qs<HTMLButtonElement>('button#editPresentation-apply-button');
@@ -59,6 +60,7 @@ if (!(
 	editPresentationMenu &&
 	editPresentationOriginInput &&
 	editPresentationAddButton &&
+	editPresentationAddFromClipboardButton &&
 	editPresentationList &&
 	editPresentationResetButton &&
 	editPresentationApplyButton &&
@@ -119,7 +121,7 @@ const getInfoForAllMedia = async (mediaOrigins: string[]): Promise<Media[]> => {
 	const settledPromises = await Promise.allSettled(mediaInfoPromises);
 
 	const results: PromiseFulfilledResult<Media>[] = [];
-	
+
 	for (const promise of settledPromises) {
 		if (promise.status === 'fulfilled') {
 			results.push(promise);
@@ -498,6 +500,36 @@ const editPresentationAddButtonClickListener = (event: MouseEvent) => {
 	}
 };
 
+const editPresentationAddFromClipboardButtonClickListener = async (event: MouseEvent) => {
+	const rawText = await navigator.clipboard.readText();
+	const splitText = rawText.split('\n');
+
+	const newEntryList: string[] = [];
+	for (const line of splitText) {
+		newEntryList.unshift(line.trim());
+		if (newEntryList[0]!.length === 0) continue;
+
+		if (!URL.canParse(newEntryList[0]!)) {
+			console.warn('Got invalid data from clipboard.');
+			return;
+		}
+	}
+
+	const insertAtStart = event.shiftKey;
+
+	if (!insertAtStart) newEntryList.reverse();
+
+	for (const entry of newEntryList) {
+		addEditPresentationListEntry(entry, insertAtStart);
+	}
+
+	if (insertAtStart) {
+		editPresentationList.firstElementChild?.scrollIntoView({ behavior: 'instant' });
+	} else {
+		editPresentationList.lastElementChild?.scrollIntoView({ behavior: 'instant' });
+	}
+};
+
 const editPresentationOriginInputKeydownListener = (event: KeyboardEvent) => {
 	if (event.code === 'Enter') editPresentationAddButton.dispatchEvent(new MouseEvent('click', { shiftKey: event.shiftKey }));
 };
@@ -551,6 +583,7 @@ const addEditPresentationFunctionality = () => {
 	editPresentationResetList();
 
 	editPresentationAddButton.addEventListener('click', editPresentationAddButtonClickListener, { passive: true });
+	editPresentationAddFromClipboardButton.addEventListener('click', editPresentationAddFromClipboardButtonClickListener, { passive: true });
 	editPresentationOriginInput.addEventListener('keydown', editPresentationOriginInputKeydownListener, { passive: true });
 	editPresentationList.addEventListener('click', editPresentationListRemoveButtonClickListener, { passive: true });
 	editPresentationList.addEventListener('dragstart', editPresentationListItemDragStartEndListener, { passive: true });
