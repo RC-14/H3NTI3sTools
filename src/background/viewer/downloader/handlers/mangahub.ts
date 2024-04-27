@@ -1,7 +1,7 @@
 import { cookies, tabs, webRequest, type WebRequest } from 'webextension-polyfill';
 import { z } from 'zod';
 import { dataHandler } from './genericDataHandler';
-import { COLLECTION_OS_NAME, CollectionSchema, createCollection, getFromObjectStore, getViewerIDB, type DownloadHandler } from '/src/lib/viewer';
+import { type DownloadHandler } from '/src/lib/viewer';
 
 const API_URL = 'https://api.mghcdn.com/graphql';
 const IMG_URL_BASE = 'https://imgx.mghcdn.com/';
@@ -112,51 +112,6 @@ const chapterNumberFromUrl = (url: URL) => {
 	return parseFloat(url.pathname.split('chapter-').at(-1)!);
 };
 
-const addToCollection = (chapterUrl: URL, seriesInfo: z.infer<typeof apiResponseSchema>['data']['manga']) => new Promise<void>(async (resolve, reject) => {
-	const seriesName = seriesInfo.title;
-
-	const collection = await getFromObjectStore(seriesName, COLLECTION_OS_NAME);
-	const parsedCollection = CollectionSchema.safeParse(collection);
-
-	if (!parsedCollection.success) {
-		await createCollection(seriesName, [chapterUrl.href], {
-			description: seriesInfo.description,
-			image: IMG_URL_BASE + seriesInfo.image
-		});
-		resolve();
-		return;
-	}
-
-	const sortArray: { origin: string, chapterNumber: number; }[] = [];
-
-	for (const origin of parsedCollection.data.mediaOrigins) {
-		sortArray.push({
-			origin,
-			chapterNumber: chapterNumberFromUrl(new URL(origin))
-		});
-	}
-	sortArray.push({ origin: chapterUrl.href, chapterNumber: chapterNumberFromUrl(chapterUrl) });
-
-	sortArray.sort((a, b) => a.chapterNumber - b.chapterNumber);
-
-	parsedCollection.data.mediaOrigins = sortArray.map((entry) => entry.origin);
-
-	const db = await getViewerIDB();
-	const transaction = db.transaction(COLLECTION_OS_NAME, 'readwrite');
-	const request = transaction.objectStore(COLLECTION_OS_NAME).put(parsedCollection.data);
-
-	request.addEventListener('error', (event) => {
-		db.close();
-		reject(new Error(`[mangahub] Couldn't update collection ("${parsedCollection.data.name}"): ${request.error}`));
-	});
-	request.addEventListener('success', (event) => {
-		db.close();
-		resolve();
-	});
-
-	transaction.commit();
-});
-
 const handler: DownloadHandler = {
 	media: async (urlString) => {
 		const retry = mediaRetry;
@@ -171,7 +126,7 @@ const handler: DownloadHandler = {
 		const slug = seriesSlugFromUrl(url);
 		const chapterNumber = chapterNumberFromUrl(url);
 
-		const query = `{chapter(x:m01,slug:"${slug}",number:${chapterNumber}){pages}manga(x:m01,slug:"${slug}"){title,description,image}}`;
+		const query = `{chapter(x:m01,slug:"${slug}",number:${chapterNumber}){pages}manga(x:m01,slug:"${slug}"){title}}`;
 
 		const request = new Request(API_URL, {
 			method: 'POST',
@@ -200,8 +155,6 @@ const handler: DownloadHandler = {
 		}
 
 		const parsedApiResponse = apiResponseSchema.parse(apiResponse);
-
-		await addToCollection(url, parsedApiResponse.data.manga);
 
 		return {
 			origin: urlString,
