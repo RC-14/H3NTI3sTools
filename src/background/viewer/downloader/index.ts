@@ -96,7 +96,7 @@ const downloader = async (queue: DownloadQueue, handler: (url: string) => Promis
 		try {
 			const result = await handler(current.url);
 
-			const aliasStorage = AliasStorageSchema.parse(await storage.get('aliases'));
+			const aliasStorage = AliasStorageSchema.parse(await storage.get('aliases') ?? {});
 
 			if ('creatorNames' in result) {
 				const creatorsSet = new Set(result.creatorNames.map(name => name.trim().toLowerCase()));
