@@ -7,7 +7,7 @@ module.exports = {
 		target: ['firefox-desktop'],
 		// startUrl: ['about:addons','about:debugging#/runtime/this-firefox'],
 		firefox: 'firefoxdeveloperedition',
-		firefoxProfile: 'dev-edition-default',
+		firefoxProfile: 'dev-edition',
 		keepProfileChanges: false,
 		preInstall: true
 	},
