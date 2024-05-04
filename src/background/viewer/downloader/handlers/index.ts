@@ -13,6 +13,7 @@ handlerMap.set('asurascans.com', asurascans);
 handlerMap.set('asuracomics.com', asurascans);
 handlerMap.set('asuratoon.com', asurascans);
 handlerMap.set('asura.gg', asurascans);
+handlerMap.set('asuracomic.net', asurascans);
 handlerMap.set('e-hentai.org', ehentai);
 handlerMap.set('flamescans.org', flamescans);
 handlerMap.set('flamecomics.com', flamescans);
