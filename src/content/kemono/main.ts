@@ -1,5 +1,4 @@
 import { hideContent } from './hideContent';
-import { noImageClick } from './noImageClick';
 import { removeDuplicateImages } from './removeDuplicateImages';
 import { runAfterReadyStateReached } from '/src/lib/utils';
 
@@ -9,6 +8,4 @@ if (location.pathname.match(/^\/\w+\/user\/\d+\/post\/\d+/i)) {
 		hideContent();
 		removeDuplicateImages();
 	});
-
-	runAfterReadyStateReached('complete', noImageClick);
 }
