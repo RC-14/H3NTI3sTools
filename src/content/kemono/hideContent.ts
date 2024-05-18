@@ -1,4 +1,4 @@
-import { qs, qsa } from '/src/lib/utils';
+import { qs } from '/src/lib/utils';
 
 // Most of the time I don't want to see the content but the files instead, so I just hide the content
 export const hideContent = () => {
@@ -15,11 +15,6 @@ export const hideContent = () => {
 	if (content.childElementCount === 1 && !content.innerText.includes('\n')) {
 		if (content.firstElementChild instanceof HTMLParagraphElement && content.firstElementChild.childElementCount === 0) return;
 		if (content.firstElementChild instanceof HTMLAnchorElement && content.firstElementChild.childElementCount === 0) return;
-	}
-
-	for (const img of Array.from(qsa<HTMLImageElement>('img', content))) {
-		img.loading = 'lazy';
-		img.decoding = 'async';
 	}
 
 	// Show content button
