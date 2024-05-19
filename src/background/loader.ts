@@ -3,11 +3,13 @@ import type { BackgroundFragment, ExternalRuntimeMessageHandler, RuntimeMessageH
 import { RuntimeMessageSchema } from '/src/lib/fragments';
 import type { JSONValue } from '/src/lib/json.js';
 // Background fragments
+import fullscreenOnStartup from './fullscreenOnStartup';
 import hideCursor from './hideCursor';
 import historyRecorder from './historyRecorder';
 import viewer from './viewer';
 
 const fragments: Map<string, BackgroundFragment> = new Map();
+fragments.set('fullscreenOnStartup', fullscreenOnStartup);
 fragments.set('hideCursor', hideCursor);
 fragments.set('historyRecorder', historyRecorder);
 fragments.set('viewer', viewer);
