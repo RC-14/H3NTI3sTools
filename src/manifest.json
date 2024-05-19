@@ -95,7 +95,8 @@
 			"matches": [
 				"*://hiperdex.com/*",
 				"*://1sthiperdex.com/*",
-				"*://hiperdex.xyz/*"
+				"*://hiperdex.xyz/*",
+				"*://hiperdex.top/*"
 			],
 			"js": [
 				"./content/hiperdex/main.js"
