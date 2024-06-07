@@ -19,7 +19,6 @@ handlerMap.set('flamescans.org', flamescans);
 handlerMap.set('flamecomics.com', flamescans);
 handlerMap.set('flamecomics.me', flamescans);
 handlerMap.set('generic', genericDataHandler);
-// TODO: Add handler for hentai2read
 handlerMap.set('kemono.party', kemono);
 handlerMap.set('kemono.su', kemono);
 handlerMap.set('mangahub.io', mangahub);
