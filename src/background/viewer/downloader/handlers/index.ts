@@ -17,6 +17,7 @@ handlerMap.set('asuracomic.net', asurascans);
 handlerMap.set('e-hentai.org', ehentai);
 handlerMap.set('flamescans.org', flamescans);
 handlerMap.set('flamecomics.com', flamescans);
+handlerMap.set('flamecomics.me', flamescans);
 handlerMap.set('generic', genericDataHandler);
 // TODO: Add handler for hentai2read
 handlerMap.set('kemono.party', kemono);
