@@ -1,4 +1,5 @@
 import asurascans from './asurascans';
+import comick from './comick';
 import flamescans from './flamescans';
 import ehentai from './ehentai';
 import genericDataHandler from './genericDataHandler';
@@ -14,6 +15,8 @@ handlerMap.set('asuracomics.com', asurascans);
 handlerMap.set('asuratoon.com', asurascans);
 handlerMap.set('asura.gg', asurascans);
 handlerMap.set('asuracomic.net', asurascans);
+handlerMap.set('comick.io', comick);
+handlerMap.set('comick.pictures', comick);
 handlerMap.set('e-hentai.org', ehentai);
 handlerMap.set('flamescans.org', flamescans);
 handlerMap.set('flamecomics.com', flamescans);
