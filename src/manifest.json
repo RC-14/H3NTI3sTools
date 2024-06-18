@@ -60,6 +60,15 @@
 		},
 		{
 			"matches": [
+				"*://comick.io/*"
+			],
+			"js": [
+				"./content/comick/main.js"
+			],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"*://e-hentai.org/*"
 			],
 			"js": [
