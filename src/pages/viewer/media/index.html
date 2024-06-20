@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="../../../images/icon/120.png">
+	<title>Viewer Media</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" type="module"></script>
+</head>
+
+<body>
+
+	<div id="error-container">
+		<h1 id="error-title"></h1>
+		<p id="error-description"></p>
+	</div>
+
+	<main>
+		<div id="media-info-container">
+			<a id="media-origin"></a>
+			<select id="media-type">
+				<option value="" disabled>-- Media Type --</option>
+				<option value="gallery">Gallery</option>
+				<option value="manga">Manga</option>
+				<option value="webtoon">Webtoon</option>
+				<option value="video">Video</option>
+			</select>
+			<h1 id="media-title"></h1>
+			<p id="media-description"></p>
+			<img id="media-image">
+			<ul id="media-creator-list">
+				<button class="media-add-button"></button>
+			</ul>
+			<button id="media-favorite"></button>
+			<ul id="media-tag-list">
+				<button class="media-add-button"></button>
+			</ul>
+		</div>
+		<ol id="media-cotent-container"></ol>
+	</main>
+
+</body>
+
+</html>
