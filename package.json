@@ -17,6 +17,6 @@
 		"@types/webextension-polyfill": "^0.10.7",
 		"esbuild": "0.21.5",
 		"typescript": "^5.4.5",
-		"web-ext": "^8.1.0"
+		"web-ext": "^8.2.0"
 	}
 }
